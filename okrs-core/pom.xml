@@ -5,6 +5,40 @@
   <artifactId>okrs-core</artifactId>
   <modelVersion>4.0.0</modelVersion>
 
+  <dependencies>
+    <!-- SPRING -->
+    <dependency>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+
+    <!-- DATABASE -->
+    <dependency>
+      <artifactId>mysql-connector-java</artifactId>
+      <groupId>mysql</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>h2</artifactId>
+      <groupId>com.h2database</groupId>
+    </dependency>
+
+    <!-- MIGRATION -->
+    <dependency>
+      <artifactId>liquibase-core</artifactId>
+      <groupId>org.liquibase</groupId>
+    </dependency>
+
+    <!-- LOMBOK -->
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+    </dependency>
+  </dependencies>
+
   <parent>
     <artifactId>okrs-backend</artifactId>
     <groupId>org.ptit.okrs</groupId>
