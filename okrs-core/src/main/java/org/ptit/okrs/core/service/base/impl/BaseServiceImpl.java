@@ -1,9 +1,9 @@
-package org.ptit.okrs.core.service.impl;
+package org.ptit.okrs.core.service.base.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.core.entity.BaseEntity;
-import org.ptit.okrs.core.repository.BaseRepository;
-import org.ptit.okrs.core.service.BaseService;
+import org.ptit.okrs.core.entity.base.BaseEntity;
+import org.ptit.okrs.core.repository.base.BaseRepository;
+import org.ptit.okrs.core.service.base.BaseService;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package org.ptit.okrs.core.service;
+package org.ptit.okrs.core.service.base;
 
-import org.ptit.okrs.core.entity.BaseEntity;
+import org.ptit.okrs.core.entity.base.BaseEntity;
 
 import java.util.List;
 
