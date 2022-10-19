@@ -36,18 +36,23 @@
     <dependencies>
       <!-- INTERNAL -->
       <dependency>
-        <groupId>org.ptit.okrs</groupId>
         <artifactId>core-authentication</artifactId>
+        <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.ptit.okrs</groupId>
         <artifactId>core-email</artifactId>
+        <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <artifactId>core-exception</artifactId>
         <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>okrs-core</artifactId>
+        <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
 
