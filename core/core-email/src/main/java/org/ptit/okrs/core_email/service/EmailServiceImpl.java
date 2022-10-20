@@ -5,7 +5,7 @@ import org.ptit.okrs.core_exception.InternalServerError;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
-import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.util.Map;
 
@@ -13,10 +13,10 @@ import java.util.Map;
 public class EmailServiceImpl implements EmailService {
 
   private final JavaMailSender emailSender;
-  private final TemplateEngine templateEngine;
+  private final SpringTemplateEngine templateEngine;
   private final String emailFrom;
 
-  public EmailServiceImpl(JavaMailSender emailSender, TemplateEngine templateEngine, String emailFrom) {
+  public EmailServiceImpl(JavaMailSender emailSender, SpringTemplateEngine templateEngine, String emailFrom) {
     this.emailSender = emailSender;
     this.templateEngine = templateEngine;
     this.emailFrom = emailFrom;

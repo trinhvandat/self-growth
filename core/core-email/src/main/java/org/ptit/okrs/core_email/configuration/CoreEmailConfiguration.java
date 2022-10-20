@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 @Configuration
 public class CoreEmailConfiguration {
@@ -17,7 +17,7 @@ public class CoreEmailConfiguration {
   private String emailFrom;
 
   @Bean
-  public EmailService emailService(JavaMailSender emailSender, TemplateEngine templateEngine) {
+  public EmailService emailService(JavaMailSender emailSender, SpringTemplateEngine templateEngine) {
     return new EmailServiceImpl(emailSender, templateEngine, emailFrom);
   }
 
