@@ -1,3 +1,7 @@
+application:
+  swagger:
+    base_packages: "org.ptit.okrs.api.controller"
+
 spring:
   application:
     name: okrs-service
