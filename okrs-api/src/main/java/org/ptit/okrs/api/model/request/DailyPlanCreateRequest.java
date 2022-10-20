@@ -1,4 +1,4 @@
-package org.ptit.okrs.api.model;
+package org.ptit.okrs.api.model.request;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

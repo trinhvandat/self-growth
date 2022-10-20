@@ -12,7 +12,6 @@ public class DailyPlanResponse {
   private String description;
   private DailyPlanStatus status;
   private Integer date;
-  private String userId;
   private String note;
   private String keyResultId;
 }
