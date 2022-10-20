@@ -36,6 +36,11 @@
     <dependencies>
       <!-- INTERNAL -->
       <dependency>
+        <artifactId>core-api-exception</artifactId>
+        <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>core-authentication</artifactId>
         <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>

@@ -7,6 +7,10 @@
   <dependencies>
     <!-- INTERNAL -->
     <dependency>
+      <artifactId>core-api-exception</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
       <artifactId>okrs-core</artifactId>
       <groupId>org.ptit.okrs</groupId>
     </dependency>
