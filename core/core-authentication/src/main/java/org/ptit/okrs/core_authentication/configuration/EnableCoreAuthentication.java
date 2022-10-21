@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Import({
     CoreAuthenticationConfiguration.class,
-    WebSecurityConfiguration.class,
+    OkrsWebSecurityConfiguration.class,
     JpaAuthTransactionConfiguration.class
 })
 @Retention(RetentionPolicy.RUNTIME)

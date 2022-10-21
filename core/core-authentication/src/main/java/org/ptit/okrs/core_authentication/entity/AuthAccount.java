@@ -11,4 +11,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Table(name = "account")
 public class AuthAccount extends BaseEntity {
+  private String username;
+  private String password;
+  private Boolean isActivated;
 }

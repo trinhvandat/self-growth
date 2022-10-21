@@ -6,7 +6,15 @@
 
   <dependencies>
     <dependency>
-      <artifactId>spring-boot-starter</artifactId>
+      <artifactId>core-exception</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>core-util</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-web</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
@@ -24,6 +32,10 @@
     <dependency>
       <artifactId>mysql-connector-java</artifactId>
       <groupId>mysql</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>jjwt</artifactId>
+      <groupId>io.jsonwebtoken</groupId>
     </dependency>
   </dependencies>
 
