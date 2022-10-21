@@ -19,6 +19,6 @@ public class Notification extends BaseEntityWithUpdater {
     private String content;
 
     @Column(nullable = false)
-    private String receiverId;
+    private String userId;
 
 }
