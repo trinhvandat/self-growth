@@ -5,11 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Data
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "notification")
 public class Notification {
@@ -20,11 +18,14 @@ public class Notification {
     private String id;
 
     @Column(name = "content")
-    @NotBlank(message = "Content can not be null")
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", updatable = false, insertable = false)
     private User user;
 
+    @AllArgsConstructor(staticName = "of")
+    @Data
+    @NoArgsConstructor
+    protected static class User {
+        private String userId;
+    }
 }
