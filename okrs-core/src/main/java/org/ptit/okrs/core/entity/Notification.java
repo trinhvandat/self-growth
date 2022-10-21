@@ -3,6 +3,8 @@ package org.ptit.okrs.core.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ptit.okrs.core.entity.base.BaseEntityWithUpdater;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
@@ -10,22 +12,13 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "notification")
-public class Notification {
+@EntityListeners(AuditingEntityListener.class)
+public class Notification extends BaseEntityWithUpdater {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private String id;
-
-    @Column(name = "content")
+    @Column(nullable = false)
     private String content;
 
-    private User user;
+    @Column(nullable = false)
+    private String receiverId;
 
-    @AllArgsConstructor(staticName = "of")
-    @Data
-    @NoArgsConstructor
-    protected static class User {
-        private String userId;
-    }
 }
