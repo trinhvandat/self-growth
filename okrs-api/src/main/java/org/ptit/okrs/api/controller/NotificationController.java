@@ -1,17 +1,18 @@
 package org.ptit.okrs.api.controller;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.api.model.request.NotificationRequest;
 import org.ptit.okrs.api.model.response.NotificationResponse;
-import org.ptit.okrs.core.entity.Notification;
+import org.ptit.okrs.api.model.response.OkrsResponse;
 import org.ptit.okrs.core.service.NotificationService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import static org.ptit.okrs.api.constant.OkrsApiConstant.BaseUrl.NOTIFICATION_BASE_URL;
 
@@ -23,25 +24,44 @@ public class NotificationController {
 
     private final NotificationService service;
 
-    @PostMapping
-    public ResponseEntity<NotificationResponse> createNotification(@Validated @RequestBody NotificationRequest notificationRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.createNotification(notificationRequestDTO));
+    @ApiOperation("Create new notification")
+    @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response")
+    @PostMapping(consumes = "application/json")
+    @ResponseStatus(HttpStatus.CREATED)
+    public OkrsResponse create(@Validated @RequestBody NotificationRequest request) {
+        log.info("(create)request: {}", request);
+        return OkrsResponse.of(
+                HttpStatus.CREATED.value(),
+                service.create(
+                        request.getContent(),
+                        "Default user id" //TODO: id of the user -> get by auth
+                )
+        );
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<NotificationResponse> updateNotification(@Validated @PathVariable("id") int notificationId,
-                                                                   @RequestBody NotificationRequest notificationRequestDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(service.updateNotification(notificationId, notificationRequestDTO));
+    @ApiOperation("Get list notification")
+    @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping()
+    public OkrsResponse list() {
+        return OkrsResponse.of(HttpStatus.OK.value(), new ArrayList<NotificationResponse>());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<NotificationResponse> deleteNotification(@PathVariable("id") int notificationId) {
-        return ResponseEntity.status(HttpStatus.OK).body(notificationService.deleteNotification(notificationId));
+    @ApiOperation("Get notification by id")
+    @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(path = "{id}")
+    public OkrsResponse get(@PathVariable("id") String id) {
+        return OkrsResponse.of(HttpStatus.OK.value(), new NotificationResponse());
     }
 
-    @GetMapping
-    public ResponseEntity<List<Notification>> listNotifications() {
-        return ResponseEntity.status(HttpStatus.OK).body(notificationService.listNotification());
+    @ApiOperation("Update notification")
+    @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping(path = "{id}")
+    public OkrsResponse update(@PathVariable("id") String id) {
+        log.info("(update)id: {}", id);
+        return OkrsResponse.of(HttpStatus.OK.value(), new NotificationResponse());
     }
 
 }
