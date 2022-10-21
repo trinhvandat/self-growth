@@ -15,7 +15,7 @@ public interface EmailService {
    * Send mail with html
    * @param subject - the subject of the email
    * @param to - the email address of the receiver
-   * @param template - the html template of the email
+   * @param template - the file name html template of the email
    * @param properties - the properties of the html template
    */
   void send(String subject, String to, String template, Map<String, Object> properties);
