@@ -11,5 +11,12 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Table(name = "user")
 public class AuthUser extends BaseEntity {
-
+  private String name;
+  private String phone;
+  private String email;
+  private Integer dateOfBirth;
+  private String gender;
+  private String accountId;
+  private String address;
+  private String avatar;
 }
