@@ -2,28 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>core-email</artifactId>
+  <artifactId>core-swagger</artifactId>
 
   <dependencies>
     <dependency>
-      <artifactId>core-exception</artifactId>
-      <groupId>org.ptit.okrs</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>lombok</artifactId>
-      <groupId>org.projectlombok</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>spring-boot-starter-test</artifactId>
+      <artifactId>spring-boot-starter</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
-      <artifactId>spring-boot-starter-mail</artifactId>
-      <groupId>org.springframework.boot</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <groupId>io.springfox</groupId>
     </dependency>
     <dependency>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-      <groupId>org.springframework.boot</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <groupId>io.springfox</groupId>
     </dependency>
   </dependencies>
 

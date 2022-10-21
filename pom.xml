@@ -30,24 +30,45 @@
     <lombok.version>1.18.24</lombok.version>
     <h2.version>2.1.214</h2.version>
     <liquibase.version>4.17.0</liquibase.version>
+    <swagger.version>2.4.0</swagger.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <!-- INTERNAL -->
       <dependency>
+        <artifactId>core-api-exception</artifactId>
         <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>core-authentication</artifactId>
+        <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.ptit.okrs</groupId>
         <artifactId>core-email</artifactId>
+        <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <artifactId>core-exception</artifactId>
         <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>core-swagger</artifactId>
+        <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>core-util</artifactId>
+        <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>okrs-core</artifactId>
+        <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
 
@@ -78,6 +99,19 @@
         <artifactId>lombok</artifactId>
         <optional>true</optional>
         <version>${lombok.version}</version>
+      </dependency>
+
+      <!-- SWAGGER -->
+      <dependency>
+        <artifactId>springfox-swagger2</artifactId>
+        <groupId>io.springfox</groupId>
+        <version>${swagger.version}</version>
+      </dependency>
+
+      <dependency>
+        <artifactId>springfox-swagger-ui</artifactId>
+        <groupId>io.springfox</groupId>
+        <version>${swagger.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

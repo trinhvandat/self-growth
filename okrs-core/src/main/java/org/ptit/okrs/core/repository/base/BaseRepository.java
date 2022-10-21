@@ -1,6 +1,6 @@
-package org.ptit.okrs.core.repository;
+package org.ptit.okrs.core.repository.base;
 
-import org.ptit.okrs.core.entity.BaseEntity;
+import org.ptit.okrs.core.entity.base.BaseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 

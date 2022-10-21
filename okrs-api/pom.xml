@@ -7,14 +7,30 @@
   <dependencies>
     <!-- INTERNAL -->
     <dependency>
+      <artifactId>core-api-exception</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>core-swagger</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
       <artifactId>okrs-core</artifactId>
       <groupId>org.ptit.okrs</groupId>
     </dependency>
 
     <!-- SPRING -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-validation</artifactId>
+      <groupId>org.springframework.boot</groupId>
     </dependency>
   </dependencies>
 

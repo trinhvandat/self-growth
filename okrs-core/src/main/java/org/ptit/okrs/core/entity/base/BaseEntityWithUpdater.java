@@ -1,4 +1,4 @@
-package org.ptit.okrs.core.entity;
+package org.ptit.okrs.core.entity.base;
 
 import lombok.Data;
 import org.springframework.data.annotation.LastModifiedBy;
