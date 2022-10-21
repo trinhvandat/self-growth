@@ -14,4 +14,38 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    * @return task of the daily plan
    */
   DailyPlanResponse create(String title, String description, String userId, String keyResultId);
+
+  /**
+   * Delete daily plan
+   * @param id - id of the daily plan you want to delete
+   */
+  void deleteById(String id);
+
+  /**
+   * Link daily plan to key results
+   * @param keyResultId - id of the key results want to link
+   * @return - The information of the daily plan has been linked
+   */
+  DailyPlanResponse linkDailyPlanToKeyResults(String keyResultId);
+
+  /**
+   * Update daily plan
+   *
+   * @param id          - id of the daily plan want to update
+   * @param title       - title of the task
+   * @param description - description of the task
+   * @param date        - date of the task
+   * @param note        - note of the task
+   * @param userId      - userId of the task
+   * @return - information of daily plan after update
+   */
+  DailyPlanResponse update(String id, String title, String description, Integer date, String note, String userId);
+
+  /**
+   * Update status daily plan
+   * @param id - id of the dail plan want to update status
+   * @return - information of daily plan after updating status
+   */
+  DailyPlanResponse updateStatusDailyPlan(String id);
+
 }
