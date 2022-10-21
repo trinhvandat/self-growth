@@ -1,10 +1,15 @@
 package org.ptit.okrs.core_email.service;
 
+import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_email.constant.EmailConstant;
 import org.ptit.okrs.core_exception.InternalServerError;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.util.Map;
@@ -42,6 +47,21 @@ public class EmailServiceImpl implements EmailService {
   @Async
   @Override
   public void send(String subject, String to, String template, Map<String, Object> properties) {
-
+    log.info("(send)subject: {}, to: {}, template: {}, properties: {}", subject, to, template, properties);
+    try {
+      var message = emailSender.createMimeMessage();
+      message.setRecipients(Message.RecipientType.TO, to);
+      message.setSubject(subject);
+      message.setContent(getContent(template, properties), EmailConstant.CONTENT_TYPE_TEXT_HTML);
+      emailSender.send(message);
+    } catch (Exception ex) {
+      log.info("(send)subject: {}, to: {}, ex: {} ", subject, to, ex.getMessage());
+      throw new InternalServerError("Send mail failed to email: {}" + to);
+    }
+  }
+  private String getContent(String template, Map<String, Object> properties) {
+     var context = new Context();
+    context.setVariables(properties);
+    return templateEngine.process(template, context);
   }
 }
