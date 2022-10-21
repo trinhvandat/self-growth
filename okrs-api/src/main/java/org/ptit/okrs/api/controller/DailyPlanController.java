@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.api.model.request.DailyPlanCreateRequest;
+import org.ptit.okrs.api.model.request.DailyPlanUpdateRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.model.GetDetailDailyPlanResponse;
@@ -42,6 +43,24 @@ public class DailyPlanController {
     );
   }
 
+  @ApiOperation("Delete task of daily plan by id")
+  @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+  @ResponseStatus(HttpStatus.OK)
+  @DeleteMapping(params = "{id}")
+  public void delete(@PathVariable("id") String id) {
+    log.info("(delete)id: {}", id);
+    service.deleteById(id);
+  }
+
+  @ApiOperation("Link task of daily plan to key result")
+  @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+  @ResponseStatus(HttpStatus.OK)
+  @PatchMapping(path = "/link/{id}")
+  public OkrsResponse linkDailyPlanToKeyResults(@PathVariable("id") String id) {
+    log.info("(linkDailyPlanToKeyResults)id: {}", id);
+    return OkrsResponse.of(HttpStatus.OK.value(), service.linkDailyPlanToKeyResults(id));
+  }
+
   @ApiOperation("Get list task of daily plan by date")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
@@ -66,8 +85,24 @@ public class DailyPlanController {
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
   @PutMapping(path = "{id}")
-  public OkrsResponse update(@PathVariable("id") String id) {
-    log.info("(update)id: {}", id);
-    return OkrsResponse.of(HttpStatus.OK.value(), new DailyPlanResponse());
+  public OkrsResponse update(@PathVariable("id") String id, @Validated @RequestBody
+  DailyPlanUpdateRequest request) {
+    log.info("(update)id: {}, title: {}", id, request.getTitle());
+    return OkrsResponse.of(HttpStatus.OK.value(),
+        service.update(id,
+            request.getTitle(),
+            request.getDescription(),
+            request.getDate(),
+            request.getNote(),
+            request.getKeyResultId()));
+  }
+
+  @ApiOperation("Update status task of daily plan")
+  @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+  @PatchMapping(path = "/{id}/status")
+  @ResponseStatus(HttpStatus.OK)
+  public OkrsResponse updateStatusDailyPlan(@PathVariable("id") String id) {
+    log.info("(updateStatusDailyPlan)id: {}", id);
+    return OkrsResponse.of(HttpStatus.OK.value(), service.updateStatusDailyPlan(id));
   }
 }
