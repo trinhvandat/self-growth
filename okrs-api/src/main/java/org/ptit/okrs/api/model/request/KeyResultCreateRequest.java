@@ -6,6 +6,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ptit.okrs.core_exception.BadRequestException;
+import org.ptit.okrs.core_util.ValidationUtils;
 
 @Data
 @NoArgsConstructor
@@ -19,4 +21,11 @@ public class KeyResultCreateRequest {
   @Min(0)
   @Max(100)
   private Integer progress;
+
+  public void validate() {
+    if (!ValidationUtils.validateStartDateAndEndDate(startDate, endDate)) {
+      //TODO: AnhNHS add specific exception
+      throw new BadRequestException();
+    }
+  }
 }

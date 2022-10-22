@@ -77,4 +77,10 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
       String userId) {
     return null;
   }
+
+  @Override
+  public void validateKeyResultPeriodTime(String id, Integer keyResultStartDate, Integer keyResultEndDate) {
+    var objective = find(id);
+    //TODO: AnhNHS
+  }
 }
