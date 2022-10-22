@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.api.model.request.DailyPlanCreateRequest;
 import org.ptit.okrs.api.model.request.DailyPlanUpdateRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
+import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.model.GetDetailDailyPlanResponse;
 import org.ptit.okrs.core.service.DailyPlanService;
@@ -94,6 +95,7 @@ public class DailyPlanController {
             request.getDescription(),
             request.getDate(),
             request.getNote(),
+            "Default user id", //TODO: id of the user -> get by auth
             request.getKeyResultId()));
   }
 
@@ -101,8 +103,9 @@ public class DailyPlanController {
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @PatchMapping(path = "/{id}/status")
   @ResponseStatus(HttpStatus.OK)
-  public OkrsResponse updateStatusDailyPlan(@PathVariable("id") String id) {
+  public OkrsResponse updateStatusDailyPlan(@PathVariable("id") String id, @Validated @RequestBody
+  DailyPlanStatus status) {
     log.info("(updateStatusDailyPlan)id: {}", id);
-    return OkrsResponse.of(HttpStatus.OK.value(), service.updateStatusDailyPlan(id));
+    return OkrsResponse.of(HttpStatus.OK.value(), service.updateStatusDailyPlan(id, status));
   }
 }

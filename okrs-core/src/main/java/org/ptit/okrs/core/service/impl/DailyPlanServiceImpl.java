@@ -1,11 +1,16 @@
 package org.ptit.okrs.core.service.impl;
 
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.service.DailyPlanService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,13 +48,47 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   }
 
   @Override
+  @Transactional(readOnly = true)
   public DailyPlanResponse update(String id, String title, String description, Integer date,
-      String note, String userId) {
-    return null;
+      String note, String userId, String keyResultId) {
+    log.info("(update)id: {}, title: {}", id, title);
+    DailyPlan dailyPlanCheck =
+        repository
+            .findById(id)
+            .orElseThrow(
+                () -> {
+                  try {
+                    throw new NotFoundException();
+                  } catch (NotFoundException e) {
+                    throw new RuntimeException(e);
+                  }
+                });
+    dailyPlanCheck.setTitle(title);
+    dailyPlanCheck.setDescription(description);
+    dailyPlanCheck.setDate(date);
+    dailyPlanCheck.setNote(note);
+    dailyPlanCheck.setUserId(userId);
+    dailyPlanCheck.setKeyResultId(keyResultId);
+    DailyPlan update = repository.save(dailyPlanCheck);
+    return DailyPlanResponse.from(update);
   }
 
   @Override
-  public DailyPlanResponse updateStatusDailyPlan(String Id) {
-    return null;
+  public DailyPlanResponse updateStatusDailyPlan(String id, DailyPlanStatus status) {
+    log.info("(updateStatusDailyPlan)id: {}, status: {}", id, status);
+    DailyPlan dailyPlanCheck =
+        repository
+            .findById(id)
+            .orElseThrow(
+                () -> {
+                  try {
+                    throw new NotFoundException();
+                  } catch (NotFoundException e) {
+                    throw new RuntimeException(e);
+                  }
+                });
+    dailyPlanCheck.setStatus(status);
+    DailyPlan update = repository.save(dailyPlanCheck);
+    return DailyPlanResponse.from(update);
   }
 }
