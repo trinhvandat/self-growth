@@ -24,10 +24,11 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
 
   /**
    * Link daily plan to key results
+   * @param id - the id of the daily plan
    * @param keyResultId - id of the key results want to link
    * @return - The information of the daily plan has been linked
    */
-  DailyPlanResponse linkDailyPlanToKeyResults(String keyResultId);
+  DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId);
 
   /**
    * Update daily plan

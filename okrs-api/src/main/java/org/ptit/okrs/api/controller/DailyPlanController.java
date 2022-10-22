@@ -47,7 +47,7 @@ public class DailyPlanController {
   @ApiOperation("Delete task of daily plan by id")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
-  @DeleteMapping(params = "{id}")
+  @DeleteMapping(path = "{id}")
   public void delete(@PathVariable("id") String id) {
     log.info("(delete)id: {}", id);
     service.deleteById(id);
@@ -57,9 +57,12 @@ public class DailyPlanController {
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
   @PatchMapping(path = "/link/{id}")
-  public OkrsResponse linkDailyPlanToKeyResults(@PathVariable("id") String id) {
+  public OkrsResponse linkDailyPlanToKeyResults(
+      @PathVariable("id") String id,
+      @ApiParam(required = true) @RequestParam("keyResultId") String keyResultId
+  ) {
     log.info("(linkDailyPlanToKeyResults)id: {}", id);
-    return OkrsResponse.of(HttpStatus.OK.value(), service.linkDailyPlanToKeyResults(id));
+    return OkrsResponse.of(HttpStatus.OK.value(), service.linkDailyPlanToKeyResults(id, keyResultId));
   }
 
   @ApiOperation("Get list task of daily plan by date")

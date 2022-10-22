@@ -43,7 +43,7 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   }
 
   @Override
-  public DailyPlanResponse linkDailyPlanToKeyResults(String keyResultId) {
+  public DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId) {
     return null;
   }
 
