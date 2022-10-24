@@ -1,4 +1,9 @@
 application:
+
+  i18n:
+    - classpath://okrs-core
+    - classpath://okrs-api
+
   swagger:
     base_packages: "org.ptit.okrs.api.controller"
 

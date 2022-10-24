@@ -32,6 +32,7 @@
     <liquibase.version>4.17.0</liquibase.version>
     <swagger.version>2.4.0</swagger.version>
     <jwt.version>0.9.1</jwt.version>
+    <hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
   </properties>
 
   <dependencyManagement>
@@ -119,6 +120,13 @@
         <groupId>io.jsonwebtoken</groupId>
         <artifactId>jjwt</artifactId>
         <version>${jwt.version}</version>
+      </dependency>
+
+      <!-- VALIDATION -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-validator.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

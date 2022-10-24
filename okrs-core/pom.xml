@@ -47,6 +47,11 @@
       <groupId>org.projectlombok</groupId>
     </dependency>
 
+    <!-- VALIDATION -->
+    <dependency>
+      <artifactId>hibernate-validator</artifactId>
+      <groupId>org.hibernate.validator</groupId>
+    </dependency>
   </dependencies>
 
   <parent>
