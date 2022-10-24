@@ -14,8 +14,8 @@ public class ValidationUtils {
   /**
    * Function validate int date with date format: yyyyMMdd
    *
-   * @param date
-   * @return
+   * @param date - date need to check
+   * @return boolean
    */
   public static boolean validateDate(Integer date) {
     var dateStr = String.valueOf(date).trim();
