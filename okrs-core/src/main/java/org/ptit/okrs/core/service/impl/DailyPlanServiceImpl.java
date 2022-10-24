@@ -1,24 +1,22 @@
 package org.ptit.okrs.core.service.impl;
 
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.service.DailyPlanService;
+import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.transaction.annotation.Transactional;
+import org.ptit.okrs.core_exception.NotFoundException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements DailyPlanService {
-  private final DailyPlanRepository repository;
 
   public static final String DUPLICATE_KEY_MESSAGE = "Not be able to perform tasks at the same time";
+  private final DailyPlanRepository repository;
 
   public DailyPlanServiceImpl(DailyPlanRepository repository) {
     super(repository);
@@ -27,10 +25,12 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
 
   @Override
   @Transactional(readOnly = true)
-  public DailyPlanResponse create(String title, String description, String userId, String keyResultId) {
+  public DailyPlanResponse create(String title, String description, String userId,
+      String keyResultId) {
     log.info("(create)title: {}", title);
     try {
-      return DailyPlanResponse.from(repository.save(title, description, userId, keyResultId));
+      return DailyPlanResponse.from(
+          create(DailyPlan.of(title, description, userId, keyResultId)));
     } catch (DuplicateKeyException er) {
       log.error("(create)exception : {}", er.getClass().getName());
       throw new DuplicateKeyException(DUPLICATE_KEY_MESSAGE);
@@ -39,12 +39,22 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
 
   @Override
   public void deleteById(String id) {
-
   }
 
   @Override
+  @Transactional(readOnly = true)
   public DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId) {
-    return null;
+    log.info("(linkDailyPlanToKeyResults)id: {}, keyResultId: {}", id, keyResultId);
+    DailyPlan dailyPlanCheck =
+        repository
+            .findById(id)
+            .orElseThrow(
+                () -> {
+                  throw new NotFoundException(id, DailyPlan.class.getSimpleName());
+                });
+    dailyPlanCheck.setKeyResultId(keyResultId);
+    DailyPlan update = update(dailyPlanCheck);
+    return DailyPlanResponse.from(update);
   }
 
   @Override
@@ -57,11 +67,7 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
             .findById(id)
             .orElseThrow(
                 () -> {
-                  try {
-                    throw new NotFoundException();
-                  } catch (NotFoundException e) {
-                    throw new RuntimeException(e);
-                  }
+                  throw new NotFoundException(id, DailyPlan.class.getSimpleName());
                 });
     dailyPlanCheck.setTitle(title);
     dailyPlanCheck.setDescription(description);
@@ -69,11 +75,12 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
     dailyPlanCheck.setNote(note);
     dailyPlanCheck.setUserId(userId);
     dailyPlanCheck.setKeyResultId(keyResultId);
-    DailyPlan update = repository.save(dailyPlanCheck);
+    DailyPlan update = update(dailyPlanCheck);
     return DailyPlanResponse.from(update);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public DailyPlanResponse updateStatusDailyPlan(String id, DailyPlanStatus status) {
     log.info("(updateStatusDailyPlan)id: {}, status: {}", id, status);
     DailyPlan dailyPlanCheck =
@@ -81,14 +88,10 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
             .findById(id)
             .orElseThrow(
                 () -> {
-                  try {
-                    throw new NotFoundException();
-                  } catch (NotFoundException e) {
-                    throw new RuntimeException(e);
-                  }
+                  throw new NotFoundException(id, DailyPlan.class.getSimpleName());
                 });
     dailyPlanCheck.setStatus(status);
-    DailyPlan update = repository.save(dailyPlanCheck);
+    DailyPlan update = update(dailyPlanCheck);
     return DailyPlanResponse.from(update);
   }
 }

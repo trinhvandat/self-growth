@@ -1,8 +1,10 @@
 package org.ptit.okrs.core.service;
 
+import org.ptit.okrs.core.entity.KeyResult;
 import org.ptit.okrs.core.model.KeyResultResponse;
+import org.ptit.okrs.core.service.base.BaseService;
 
-public interface KeyResultService {
+public interface KeyResultService extends BaseService<KeyResult> {
 
   /**
    * Create new key result
@@ -62,4 +64,6 @@ public interface KeyResultService {
    * @return the updated key result
    */
   KeyResultResponse updateProgress(String id, String objectiveId, Integer progress);
+
+  void validateExist(String keyResultId);
 }
