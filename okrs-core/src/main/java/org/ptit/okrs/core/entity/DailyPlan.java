@@ -31,4 +31,13 @@ public class DailyPlan extends BaseEntityWithUpdater {
   private String note;
 
   private String keyResultId;
+
+  public static DailyPlan of(String title, String description, String userId, String keyResultId) {
+    DailyPlan dailyPlan = new DailyPlan();
+    dailyPlan.setTitle(title);
+    dailyPlan.setDescription(description);
+    dailyPlan.setUserId(userId);
+    dailyPlan.setKeyResultId(keyResultId);
+    return dailyPlan;
+  }
 }

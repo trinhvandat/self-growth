@@ -3,12 +3,15 @@ package org.ptit.okrs.core.configuration;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.repository.KeyResultRepository;
 import org.ptit.okrs.core.repository.ObjectiveRepository;
+import org.ptit.okrs.core.repository.UserRepository;
 import org.ptit.okrs.core.service.DailyPlanService;
 import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.ObjectiveService;
+import org.ptit.okrs.core.service.UserService;
 import org.ptit.okrs.core.service.impl.DailyPlanServiceImpl;
 import org.ptit.okrs.core.service.impl.KeyResultServiceImpl;
 import org.ptit.okrs.core.service.impl.ObjectiveServiceImpl;
+import org.ptit.okrs.core.service.impl.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,5 +37,10 @@ public class OkrsCoreConfiguration {
   @Bean
   public KeyResultService keyResultService(KeyResultRepository repository) {
     return new KeyResultServiceImpl(repository);
+  }
+
+  @Bean
+  public UserService userService(UserRepository repository) {
+    return new UserServiceImpl(repository);
   }
 }

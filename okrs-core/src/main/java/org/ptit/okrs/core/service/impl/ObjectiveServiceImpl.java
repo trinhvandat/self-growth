@@ -41,7 +41,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
         timePeriodType,
         userId);
     return ObjectiveResponse.from(
-        repository.save(
+        create(
             Objective.of(
                 title,
                 description,
@@ -79,8 +79,8 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
-  public void validateKeyResultPeriodTime(String id, Integer keyResultStartDate, Integer keyResultEndDate) {
-    var objective = find(id);
-    //TODO: AnhNHS
+  public void validateKeyResultPeriodTime(String id, Integer keyResultStartDate,
+      Integer keyResultEndDate) {
+
   }
 }
