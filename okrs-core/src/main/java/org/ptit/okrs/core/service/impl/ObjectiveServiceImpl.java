@@ -1,6 +1,7 @@
 package org.ptit.okrs.core.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.OkrsTimeType;
 import org.ptit.okrs.core.constant.OkrsType;
@@ -62,7 +63,10 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
 
   @Override
   public List<ObjectiveResponse> list(String userId) {
-    return null;
+    log.info("(list)userId : {}", userId);
+    return repository.find(userId).stream()
+        .map(ObjectiveResponse::from)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -79,8 +83,6 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
-  public void validateKeyResultPeriodTime(String id, Integer keyResultStartDate,
-      Integer keyResultEndDate) {
-
-  }
+  public void validateKeyResultPeriodTime(
+      String id, Integer keyResultStartDate, Integer keyResultEndDate) {}
 }
