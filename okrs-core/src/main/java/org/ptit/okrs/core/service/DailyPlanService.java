@@ -14,7 +14,11 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    * @param keyResultId - the id of the key-result that the task will be linked.
    * @return task of the daily plan
    */
-  DailyPlanResponse create(String title, String description, String userId, String keyResultId);
+  DailyPlanResponse create(
+      String title,
+      String description,
+      String userId,
+      String keyResultId);
 
   /**
    * Delete daily plan
@@ -42,7 +46,14 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    * @param keyResultId - keyResultId of the task
    * @return - information of daily plan after update
    */
-  DailyPlanResponse update(String id, String title, String description, Integer date, String note, String userId, String keyResultId);
+  DailyPlanResponse update(
+      String id,
+      String title,
+      String description,
+      Integer date,
+      String note,
+      String userId,
+      String keyResultId);
 
   /**
    * Update status daily plan
