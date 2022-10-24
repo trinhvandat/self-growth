@@ -12,6 +12,7 @@ import org.ptit.okrs.api.model.request.KeyResultUpdateProgressRequest;
 import org.ptit.okrs.api.model.request.KeyResultUpdateRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
 import org.ptit.okrs.core.service.KeyResultService;
+import org.ptit.okrs.core.service.ObjectiveService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class KeyResultController {
 
   private final KeyResultService service;
+  private final ObjectiveService objectiveService;
 
   @ApiOperation("Create new key result")
   @ApiResponse(code = 201, response = OkrsResponse.class, message = "Successfully response.")
@@ -38,8 +40,11 @@ public class KeyResultController {
   @ResponseStatus(HttpStatus.CREATED)
   public OkrsResponse create(
       @PathVariable("objective_id") String objectiveId,
-      @Validated @RequestBody KeyResultCreateRequest request) {
+      @Validated @RequestBody KeyResultCreateRequest request
+  ) {
     log.info("(create)objectiveId : {}, request : {}", objectiveId, request);
+    request.validate();
+    objectiveService.validateKeyResultPeriodTime(request.getObjectiveId(), request.getStartDate(), request.getEndDate());
     return OkrsResponse.of(
         HttpStatus.CREATED.value(),
         service.create(
@@ -49,7 +54,8 @@ public class KeyResultController {
             request.getStartDate(),
             request.getEndDate(),
             request.getProgress(),
-            "userId"));
+            "userId")
+    );
   }
 
   @ApiOperation("Delete a key result")

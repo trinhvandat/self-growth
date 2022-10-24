@@ -3,6 +3,7 @@ package org.ptit.okrs.core_util;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
@@ -28,5 +29,17 @@ public class DateUtils {
 
   public static Integer getDate(LocalDate localDate) {
     return Integer.parseInt(DATE_INTEGER_FORMATTER.format(localDate));
+  }
+
+  public static Long getEpochTime(Integer integerTime) {
+    return LocalDate.parse(integerTime.toString(), DATE_INTEGER_FORMATTER)
+        .atStartOfDay(ZoneId.of(VI_ZONE))
+        .toEpochSecond();
+  }
+
+  public static Integer getDate(Long epochTime) {
+    return Integer.parseInt(
+        LocalDateTime.ofEpochSecond(epochTime, 0, ZoneOffset.of(VI_ZONE))
+            .format(DATE_INTEGER_FORMATTER));
   }
 }

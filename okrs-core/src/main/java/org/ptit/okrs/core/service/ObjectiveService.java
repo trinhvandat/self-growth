@@ -73,4 +73,12 @@ public interface ObjectiveService extends BaseService<Objective> {
       OkrsType type,
       OkrsTimeType timePeriodType,
       String userId);
+
+  /**
+   *
+   * @param id - the id of the objective
+   * @param keyResultStartDate
+   * @param keyResultEndDate
+   */
+  void validateKeyResultPeriodTime(String id, Integer keyResultStartDate, Integer keyResultEndDate);
 }

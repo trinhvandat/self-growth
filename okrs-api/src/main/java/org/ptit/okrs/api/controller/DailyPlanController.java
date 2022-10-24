@@ -8,9 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.api.model.request.DailyPlanCreateRequest;
 import org.ptit.okrs.api.model.request.DailyPlanUpdateRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
+import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.model.GetDetailDailyPlanResponse;
 import org.ptit.okrs.core.service.DailyPlanService;
+import org.ptit.okrs.core.service.KeyResultService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,7 @@ import static org.ptit.okrs.api.constant.OkrsApiConstant.BaseUrl.DAILY_PLAN_BASE
 @Slf4j
 public class DailyPlanController {
   private final DailyPlanService service;
+  private final KeyResultService keyResultService;
 
   @ApiOperation("Create new task in daily plan")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response")
@@ -32,6 +35,7 @@ public class DailyPlanController {
   @ResponseStatus(HttpStatus.CREATED)
   public OkrsResponse create(@Validated @RequestBody DailyPlanCreateRequest request) {
     log.info("(create)request: {}", request);
+    keyResultService.validateExist(request.getKeyResultId());
     return OkrsResponse.of(
         HttpStatus.CREATED.value(),
         service.create(
@@ -46,7 +50,7 @@ public class DailyPlanController {
   @ApiOperation("Delete task of daily plan by id")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
-  @DeleteMapping(params = "{id}")
+  @DeleteMapping(path = "{id}")
   public void delete(@PathVariable("id") String id) {
     log.info("(delete)id: {}", id);
     service.deleteById(id);
@@ -56,9 +60,13 @@ public class DailyPlanController {
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
   @PatchMapping(path = "/link/{id}")
-  public OkrsResponse linkDailyPlanToKeyResults(@PathVariable("id") String id) {
+  public OkrsResponse linkDailyPlanToKeyResults(
+      @PathVariable("id") String id,
+      @ApiParam(required = true) @RequestParam("keyResultId") String keyResultId
+  ) {
     log.info("(linkDailyPlanToKeyResults)id: {}", id);
-    return OkrsResponse.of(HttpStatus.OK.value(), service.linkDailyPlanToKeyResults(id));
+    keyResultService.validateExist(keyResultId);
+    return OkrsResponse.of(HttpStatus.OK.value(), service.linkDailyPlanToKeyResults(id, keyResultId));
   }
 
   @ApiOperation("Get list task of daily plan by date")
@@ -88,12 +96,14 @@ public class DailyPlanController {
   public OkrsResponse update(@PathVariable("id") String id, @Validated @RequestBody
   DailyPlanUpdateRequest request) {
     log.info("(update)id: {}, title: {}", id, request.getTitle());
+    keyResultService.validateExist(request.getKeyResultId());
     return OkrsResponse.of(HttpStatus.OK.value(),
         service.update(id,
             request.getTitle(),
             request.getDescription(),
             request.getDate(),
             request.getNote(),
+            "Default user id", //TODO: id of the user -> get by auth
             request.getKeyResultId()));
   }
 
@@ -101,8 +111,9 @@ public class DailyPlanController {
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @PatchMapping(path = "/{id}/status")
   @ResponseStatus(HttpStatus.OK)
-  public OkrsResponse updateStatusDailyPlan(@PathVariable("id") String id) {
+  public OkrsResponse updateStatusDailyPlan(@PathVariable("id") String id, @Validated @RequestBody
+  DailyPlanStatus status) {
     log.info("(updateStatusDailyPlan)id: {}", id);
-    return OkrsResponse.of(HttpStatus.OK.value(), service.updateStatusDailyPlan(id));
+    return OkrsResponse.of(HttpStatus.OK.value(), service.updateStatusDailyPlan(id, status));
   }
 }

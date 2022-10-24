@@ -10,6 +10,7 @@ import org.ptit.okrs.core.model.ObjectiveResponse;
 import org.ptit.okrs.core.repository.ObjectiveRepository;
 import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
+import org.ptit.okrs.core_util.DateUtils;
 
 @Slf4j
 public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements ObjectiveService {
@@ -30,7 +31,25 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
       OkrsType type,
       OkrsTimeType timePeriodType,
       String userId) {
-    return null;
+    log.info(
+        "(create)title : {}, description : {}, startDate : {}, endDate : {}, type : {}, timePeriodType : {}, userId : {}",
+        title,
+        description,
+        startDate,
+        endDate,
+        type,
+        timePeriodType,
+        userId);
+    return ObjectiveResponse.from(
+        create(
+            Objective.of(
+                title,
+                description,
+                DateUtils.getEpochTime(startDate),
+                DateUtils.getEpochTime(endDate),
+                type,
+                timePeriodType,
+                userId)));
   }
 
   @Override
@@ -57,5 +76,11 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
       OkrsTimeType timePeriodType,
       String userId) {
     return null;
+  }
+
+  @Override
+  public void validateKeyResultPeriodTime(String id, Integer keyResultStartDate,
+      Integer keyResultEndDate) {
+
   }
 }

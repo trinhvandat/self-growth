@@ -35,6 +35,7 @@ public class ObjectiveController {
   @ResponseStatus(HttpStatus.CREATED)
   public OkrsResponse create(@Validated @RequestBody ObjectiveCreateRequest request) {
     log.info("(create)request : {}", request);
+    request.validate();
     return OkrsResponse.of(
         HttpStatus.CREATED.value(),
         service.create(
