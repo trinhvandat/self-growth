@@ -46,6 +46,7 @@ public interface NotificationService extends BaseService<Notification> {
      * @return the updated notification
      */
     NotificationResponse update(
+            String id,
             String content,
             String userId);
 }
