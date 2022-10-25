@@ -6,6 +6,7 @@ import org.ptit.okrs.core.model.NotificationResponse;
 import org.ptit.okrs.core.repository.NotificationRepository;
 import org.ptit.okrs.core.service.NotificationService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
+import org.ptit.okrs.core_exception.NotFoundException;
 
 import java.util.List;
 
@@ -39,7 +40,13 @@ public class NotificationServiceImpl extends BaseServiceImpl<Notification> imple
     }
 
     @Override
-    public NotificationResponse update(String content, String userId) {
-        return null;
+    public NotificationResponse update(String id,String content, String userId) {
+        var notification = find(id);
+        if(notification == null){
+            throw new NotFoundException(id, Notification.class.getSimpleName());
+        }
+        notification.setContent(content);
+        notification.setUserId(userId);
+        return NotificationResponse.from(update(notification));
     }
 }
