@@ -12,6 +12,7 @@ import org.ptit.okrs.core.service.impl.DailyPlanServiceImpl;
 import org.ptit.okrs.core.service.impl.KeyResultServiceImpl;
 import org.ptit.okrs.core.service.impl.ObjectiveServiceImpl;
 import org.ptit.okrs.core.service.impl.UserServiceImpl;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = {"org.ptit.okrs.core.repository"})
 @ComponentScan(basePackages = {"org.ptit.okrs.core.repository"})
 @EnableJpaAuditing
+@EntityScan(basePackages = "org.ptit.okrs.core.entity")
 public class OkrsCoreConfiguration {
 
   @Bean
