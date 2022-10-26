@@ -32,8 +32,9 @@ public class OkrsCoreConfiguration {
   }
 
   @Bean
-  public ObjectiveService objectiveService(ObjectiveRepository repository) {
-    return new ObjectiveServiceImpl(repository);
+  public ObjectiveService objectiveService(
+      ObjectiveRepository repository, KeyResultService keyResultService) {
+    return new ObjectiveServiceImpl(repository, keyResultService);
   }
 
   @Bean

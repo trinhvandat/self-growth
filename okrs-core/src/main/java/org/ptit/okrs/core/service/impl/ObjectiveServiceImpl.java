@@ -11,6 +11,8 @@ import org.ptit.okrs.core.exception.OkrsDateInvalidException;
 import org.ptit.okrs.core.model.ObjectiveDetailResponse;
 import org.ptit.okrs.core.model.ObjectiveResponse;
 import org.ptit.okrs.core.repository.ObjectiveRepository;
+import org.ptit.okrs.core.repository.projection.ObjectiveProjection;
+import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.NotFoundException;
@@ -20,10 +22,12 @@ import org.ptit.okrs.core_util.DateUtils;
 public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements ObjectiveService {
 
   private final ObjectiveRepository repository;
+  private final KeyResultService keyResultService;
 
-  public ObjectiveServiceImpl(ObjectiveRepository repository) {
+  public ObjectiveServiceImpl(ObjectiveRepository repository, KeyResultService keyResultService) {
     super(repository);
     this.repository = repository;
+    this.keyResultService = keyResultService;
   }
 
   @Override
@@ -61,13 +65,18 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
 
   @Override
   public ObjectiveDetailResponse getById(String id) {
-    return null;
+    log.info("(getById)id : {}", id);
+    ObjectiveProjection objective =
+        repository
+            .find(id)
+            .orElseThrow(() -> new NotFoundException(id, Objective.class.getSimpleName()));
+    return ObjectiveDetailResponse.from(objective, keyResultService.findByObjectiveId(id));
   }
 
   @Override
   public List<ObjectiveResponse> list(String userId) {
     log.info("(list)userId : {}", userId);
-    return repository.find(userId).stream()
+    return repository.findByUserId(userId).stream()
         .map(ObjectiveResponse::from)
         .collect(Collectors.toList());
   }

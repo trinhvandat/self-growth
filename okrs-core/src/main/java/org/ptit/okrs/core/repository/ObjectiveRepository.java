@@ -20,5 +20,16 @@ public interface ObjectiveRepository extends BaseRepository<Objective> {
           + " o.type,"
           + " o.timePeriodType,"
           + " o.userId) from Objective o where o.userId = :userId")
-  List<ObjectiveProjection> find(@Param("userId") String userId);
+  List<ObjectiveProjection> findByUserId(@Param("userId") String userId);
+
+  @Query(
+      "select new org.ptit.okrs.core.repository.projection.ObjectiveProjection(o.id,"
+          + " o.title, "
+          + " o.description,"
+          + " o.startDate,"
+          + " o.endDate,"
+          + " o.type,"
+          + " o.timePeriodType,"
+          + " o.userId) from Objective o where o.id = :id")
+  Optional<ObjectiveProjection> find(@Param("id") String id);
 }
