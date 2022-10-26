@@ -82,6 +82,7 @@ public class ObjectiveController {
   public OkrsResponse update(
       @PathVariable("id") String id, @Validated @RequestBody ObjectiveUpdateRequest request) {
     log.info("(update)id : {}, request : {}", id, request);
+    request.validate();
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         service.update(

@@ -81,4 +81,10 @@ public interface ObjectiveService extends BaseService<Objective> {
    * @param keyResultEndDate
    */
   void validateKeyResultPeriodTime(String id, Integer keyResultStartDate, Integer keyResultEndDate);
+
+  /**
+   * validate objective exist or not by id
+   * @param objectiveId - id of objective need to check
+   */
+  void validateExist(String objectiveId);
 }

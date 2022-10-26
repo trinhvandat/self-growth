@@ -35,7 +35,8 @@ public class OkrsCoreConfiguration {
   }
 
   @Bean
-  public KeyResultService keyResultService(KeyResultRepository repository) {
+  public KeyResultService keyResultService(
+      KeyResultRepository repository) {
     return new KeyResultServiceImpl(repository);
   }
 

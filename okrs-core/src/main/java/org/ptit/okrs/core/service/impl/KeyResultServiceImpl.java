@@ -2,11 +2,14 @@ package org.ptit.okrs.core.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.entity.KeyResult;
+import org.ptit.okrs.core.entity.Objective;
 import org.ptit.okrs.core.model.KeyResultResponse;
 import org.ptit.okrs.core.repository.KeyResultRepository;
 import org.ptit.okrs.core.service.KeyResultService;
+import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.ptit.okrs.core_util.DateUtils;
 
 @Slf4j
 public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements KeyResultService {
@@ -27,7 +30,25 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
       Integer endDate,
       Integer progress,
       String userId) {
-    return null;
+    log.info(
+        "(create)objectiveId : {}, title : {}, description : {}, startDate : {}, endDate : {}, progress : {}, userId : {}",
+        objectiveId,
+        title,
+        description,
+        startDate,
+        endDate,
+        progress,
+        userId);
+    return KeyResultResponse.from(
+        create(
+            KeyResult.of(
+                objectiveId,
+                title,
+                description,
+                DateUtils.getEpochTime(startDate),
+                DateUtils.getEpochTime(endDate),
+                progress,
+                userId)));
   }
 
   @Override
