@@ -1,5 +1,7 @@
 package org.ptit.okrs.core.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.entity.KeyResult;
 import org.ptit.okrs.core.entity.Objective;
@@ -53,6 +55,14 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
 
   @Override
   public void deleteById(String id, String objectiveId) {}
+
+  @Override
+  public List<KeyResultResponse> findByObjectiveId(String objectiveId) {
+    log.info("(findByObjectiveId)objectiveId : {}", objectiveId);
+    return repository.find(objectiveId).stream()
+        .map(KeyResultResponse::from)
+        .collect(Collectors.toList());
+  }
 
   @Override
   public KeyResultResponse update(

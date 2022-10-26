@@ -4,10 +4,27 @@ import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.ptit.okrs.core.repository.projection.ObjectiveProjection;
+import org.ptit.okrs.core_util.DateUtils;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class ObjectiveDetailResponse extends ObjectiveResponse {
+
   private List<KeyResultResponse> keyResults;
+
+  public static ObjectiveDetailResponse from(
+      ObjectiveProjection objective, List<KeyResultResponse> keyResults) {
+    ObjectiveDetailResponse response = new ObjectiveDetailResponse();
+    response.setId(objective.getId());
+    response.setTitle(objective.getTitle());
+    response.setDescription(objective.getDescription());
+    response.setStartDate(DateUtils.getDate(objective.getStartDate()));
+    response.setEndDate(DateUtils.getDate(objective.getEndDate()));
+    response.setType(objective.getType());
+    response.setTimePeriodType(objective.getTimePeriodType());
+    response.setKeyResults(keyResults);
+    return response;
+  }
 }

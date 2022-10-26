@@ -1,5 +1,6 @@
 package org.ptit.okrs.core.service;
 
+import java.util.List;
 import org.ptit.okrs.core.entity.KeyResult;
 import org.ptit.okrs.core.model.KeyResultResponse;
 import org.ptit.okrs.core.service.base.BaseService;
@@ -35,6 +36,12 @@ public interface KeyResultService extends BaseService<KeyResult> {
   void deleteById(String id, String objectiveId);
 
   /**
+   * find key results by objective id
+   * @param objectiveId - id of a objective
+   * @return a list of key results by objective id
+   */
+  List<KeyResultResponse> findByObjectiveId(String objectiveId);
+  /**
    * update a key result
    * @param id - id of a key result
    * @param objectiveId - id of the objective that this key result belongs to
@@ -65,5 +72,9 @@ public interface KeyResultService extends BaseService<KeyResult> {
    */
   KeyResultResponse updateProgress(String id, String objectiveId, Integer progress);
 
+  /**
+   * validate key result exist or not by id
+   * @param keyResultId - id of key result
+   */
   void validateExist(String keyResultId);
 }
