@@ -10,5 +10,8 @@ import javax.validation.constraints.NotBlank;
 public class NotificationRequest {
 
     @NotBlank
+    private String id;
+
+    @NotBlank
     private String content;
 }
