@@ -9,6 +9,7 @@ import org.ptit.okrs.core.entity.Objective;
 import org.ptit.okrs.core.exception.OkrsDateInvalidException;
 import org.ptit.okrs.core.constant.OkrsTimeType;
 import org.ptit.okrs.core.constant.OkrsType;
+import org.ptit.okrs.core.validation.ValidDateInteger;
 import org.ptit.okrs.core_util.ValidationUtils;
 
 @Data
@@ -17,8 +18,8 @@ import org.ptit.okrs.core_util.ValidationUtils;
 public class ObjectiveCreateRequest {
   @NotBlank private String title;
   private String description;
-  @NotNull private Integer startDate;
-  @NotNull private Integer endDate;
+  @NotNull @ValidDateInteger private Integer startDate;
+  @NotNull @ValidDateInteger private Integer endDate;
   private OkrsType type;
   private OkrsTimeType timePeriodType;
 
