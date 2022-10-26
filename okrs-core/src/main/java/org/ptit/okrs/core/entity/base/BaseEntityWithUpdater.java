@@ -11,8 +11,8 @@ import javax.persistence.MappedSuperclass;
 public class BaseEntityWithUpdater extends BaseEntity {
 
   @LastModifiedBy
-  private String lastModifyBy;
+  private String lastUpdatedBy;
 
   @LastModifiedDate
-  private Long lastModifyDate;
+  private Long lastUpdatedAt;
 }

@@ -19,12 +19,14 @@
       <column name="date_of_birth" type="bigint"/>
       <column name="gender" type="varchar(255)"/>
       <column name="account_id" type="varchar(255)">
-        <constraints nullable="false"/>
+        <constraints nullable="false" unique="true" uniqueConstraintName="UQ_account_id_user"/>
       </column>
       <column name="address" type="varchar(255)"/>
       <column name="avatar" type="varchar(255)"/>
       <column name="created_at" type="bigint"/>
-      <column name="updated_at" type="bigint"/>
+      <column name="created_by" type="varchar(255)"/>
+      <column name="last_updated_at" type="bigint"/>
+      <column name="last_updated_by" type="varchar(255)"/>
     </createTable>
   </changeSet>
 
@@ -34,14 +36,16 @@
         <constraints primaryKey="true"/>
       </column>
       <column name="username" type="varchar(255)">
-        <constraints nullable="false"/>
+        <constraints nullable="false" unique="true" uniqueConstraintName="UQ_username_account"/>
       </column>
       <column name="password" type="varchar(255)">
         <constraints nullable="false"/>
       </column>
       <column name="is_activated" type="boolean"/>
       <column name="created_at" type="bigint"/>
-      <column name="updated_at" type="bigint"/>
+      <column name="created_by" type="varchar(255)"/>
+      <column name="last_updated_at" type="bigint"/>
+      <column name="last_updated_by" type="varchar(255)"/>
     </createTable>
     <addForeignKeyConstraint baseTableName="user" baseColumnNames="account_id"
       constraintName="FK_user_account"
@@ -73,7 +77,9 @@
         <constraints nullable="false"/>
       </column>
       <column name="created_at" type="bigint"/>
-      <column name="updated_at" type="bigint"/>
+      <column name="created_by" type="varchar(255)"/>
+      <column name="last_updated_at" type="bigint"/>
+      <column name="last_updated_by" type="varchar(255)"/>
     </createTable>
     <addForeignKeyConstraint baseTableName="objective" baseColumnNames="user_id"
       constraintName="FK_objective_user"
@@ -101,7 +107,9 @@
       <column name="progress" type="tinyint"/>
       <column name="user_id" type="varchar(255)"/>
       <column name="created_at" type="bigint"/>
-      <column name="updated_at" type="bigint"/>
+      <column name="created_by" type="varchar(255)"/>
+      <column name="last_updated_at" type="bigint"/>
+      <column name="last_updated_by" type="varchar(255)"/>
     </createTable>
     <addForeignKeyConstraint baseTableName="key_result" baseColumnNames="user_id"
       constraintName="FK_key_result_user"
@@ -128,7 +136,9 @@
       <column name="note" type="varchar(255)"/>
       <column name="key_result_id" type="varchar(255)"/>
       <column name="created_at" type="bigint"/>
-      <column name="updated_at" type="bigint"/>
+      <column name="created_by" type="varchar(255)"/>
+      <column name="last_updated_at" type="bigint"/>
+      <column name="last_updated_by" type="varchar(255)"/>
     </createTable>
     <addForeignKeyConstraint baseTableName="daily_plan" baseColumnNames="user_id"
       constraintName="FK_daily_plan_user"
@@ -146,7 +156,9 @@
       <column name="content" type="varchar(255)"/>
       <column name="receiver_id" type="varchar(255)"/>
       <column name="created_at" type="bigint"/>
-      <column name="updated_at" type="bigint"/>
+      <column name="created_by" type="varchar(255)"/>
+      <column name="last_updated_at" type="bigint"/>
+      <column name="last_updated_by" type="varchar(255)"/>
     </createTable>
     <addForeignKeyConstraint baseTableName="notification" baseColumnNames="receiver_id"
       constraintName="FK_notification_user"
