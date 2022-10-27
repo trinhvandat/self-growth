@@ -6,7 +6,6 @@ import org.ptit.okrs.core.entity.DailyPlan;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.service.DailyPlanService;
-import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.springframework.dao.DuplicateKeyException;
@@ -38,7 +37,8 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   }
 
   @Override
-  public void deleteById(String id) {
+  public void delete(String id) {
+    super.delete(id);
   }
 
   @Override

@@ -30,7 +30,7 @@ public class DailyPlanController {
   private final KeyResultService keyResultService;
 
   @ApiOperation("Create new task in daily plan")
-  @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response")
+  @ApiResponse(code = 201, response = OkrsResponse.class, message = "Successfully response")
   @PostMapping(consumes = "application/json")
   @ResponseStatus(HttpStatus.CREATED)
   public OkrsResponse create(@Validated @RequestBody DailyPlanCreateRequest request) {
@@ -51,9 +51,10 @@ public class DailyPlanController {
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
   @DeleteMapping(path = "{id}")
-  public void delete(@PathVariable("id") String id) {
+  public OkrsResponse delete(@PathVariable("id") String id) {
     log.info("(delete)id: {}", id);
-    service.deleteById(id);
+    service.delete(id);
+    return OkrsResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("Link task of daily plan to key result")
