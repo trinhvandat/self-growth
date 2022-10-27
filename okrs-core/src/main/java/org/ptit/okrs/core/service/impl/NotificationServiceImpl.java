@@ -22,7 +22,10 @@ public class NotificationServiceImpl extends BaseServiceImpl<Notification> imple
 
     @Override
     public NotificationResponse create(String content, String userId) {
-        return null;
+        log.info("(create)content : {}, userId : {}", content, userId);
+        var notification = Notification.of(content, userId);
+        notification = create(notification);
+        return NotificationResponse.from(notification);
     }
 
     @Override

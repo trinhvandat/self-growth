@@ -21,4 +21,10 @@ public class Notification extends BaseEntityWithUpdater {
     @Column(nullable = false)
     private String userId;
 
+    public static Notification of(String content, String userId) {
+        Notification notification = new Notification();
+        notification.setContent(content);
+        notification.setUserId(userId);
+        return notification;
+    }
 }
