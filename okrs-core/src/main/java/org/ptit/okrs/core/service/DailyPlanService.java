@@ -28,6 +28,13 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
   void delete(String id);
 
   /**
+   * Get daily plan by id
+   * @param keyResultId - id of the key result you want to get daily plan
+   * @return - information of daily plan that you get from id key result
+   */
+  List<DailyPlanResponse> getByKeyResultId(String keyResultId);
+
+  /**
    * Link daily plan to key results
    * @param id - the id of the daily plan
    * @param keyResultId - id of the key results want to link

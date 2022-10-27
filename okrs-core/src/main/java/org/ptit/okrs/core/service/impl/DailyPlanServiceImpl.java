@@ -1,5 +1,7 @@
 package org.ptit.okrs.core.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
@@ -39,6 +41,16 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   @Override
   public void delete(String id) {
     super.delete(id);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<DailyPlanResponse> getByKeyResultId(String keyResultId) {
+    log.info("(getByKeyResultId)keyResultId: {}", keyResultId);
+    return repository.findByKeyResultId(keyResultId)
+        .stream()
+        .map(DailyPlanResponse :: from)
+        .collect(Collectors.toList());
   }
 
   @Override

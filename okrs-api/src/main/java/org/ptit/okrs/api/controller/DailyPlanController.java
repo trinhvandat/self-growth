@@ -57,17 +57,14 @@ public class DailyPlanController {
     return OkrsResponse.of(HttpStatus.OK.value());
   }
 
-  @ApiOperation("Link task of daily plan to key result")
+  @ApiOperation("Get detail task of daily plan by date")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
-  @PatchMapping(path = "/link/{id}")
-  public OkrsResponse linkDailyPlanToKeyResults(
-      @PathVariable("id") String id,
-      @ApiParam(required = true) @RequestParam("keyResultId") String keyResultId
-  ) {
-    log.info("(linkDailyPlanToKeyResults)id: {}", id);
-    keyResultService.validateExist(keyResultId);
-    return OkrsResponse.of(HttpStatus.OK.value(), service.linkDailyPlanToKeyResults(id, keyResultId));
+  @GetMapping(path = "{id}")
+  public OkrsResponse get(@PathVariable("id") String id) {
+    keyResultService.validateExist(id);
+    if (log.isDebugEnabled()) log.debug("(get)id: {}", id);
+    return OkrsResponse.of(HttpStatus.OK.value(), service.getByKeyResultId(id));
   }
 
   @ApiOperation("Get list task of daily plan by date")
@@ -81,13 +78,17 @@ public class DailyPlanController {
     return OkrsResponse.of(HttpStatus.OK.value(), new ArrayList<DailyPlanResponse>());
   }
 
-  @ApiOperation("Get detail task of daily plan by date")
+  @ApiOperation("Link task of daily plan to key result")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping(path = "{id}")
-  public OkrsResponse get(@PathVariable("id") String id) {
-    if (log.isDebugEnabled()) log.debug("(get)id: {}", id);
-    return OkrsResponse.of(HttpStatus.OK.value(), new GetDetailDailyPlanResponse());
+  @PatchMapping(path = "/link/{id}")
+  public OkrsResponse linkDailyPlanToKeyResults(
+      @PathVariable("id") String id,
+      @ApiParam(required = true) @RequestParam("keyResultId") String keyResultId
+  ) {
+    log.info("(linkDailyPlanToKeyResults)id: {}", id);
+    keyResultService.validateExist(keyResultId);
+    return OkrsResponse.of(HttpStatus.OK.value(), service.linkDailyPlanToKeyResults(id, keyResultId));
   }
 
   @ApiOperation("Update task of daily plan")
