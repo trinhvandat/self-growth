@@ -135,7 +135,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   public void validateExist(String objectiveId) {
     log.info("(validateExist)objectiveId : {}", objectiveId);
     if(!isExist(objectiveId)) {
-      log.error("(validateExist)objectiveId : {}", objectiveId);
+      log.error("(validateExist)objectiveId : {} --> NOT FOUND EXCEPTION", objectiveId);
       throw new NotFoundException(objectiveId, Objective.class.getSimpleName());
     }
   }
