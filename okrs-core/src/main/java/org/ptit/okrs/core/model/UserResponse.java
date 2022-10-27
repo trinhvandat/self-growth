@@ -12,16 +12,19 @@ public class UserResponse {
   private String name;
   private Gender gender;
   private String address;
+  private String email;
   private String avatar;
   private Long dateOfBirth;
 
-  public UserResponse from(User user) {
-    this.id = user.getId();
-    this.name = user.getName();
-    this.gender = user.getGender();
-    this.address = user.getAddress();
-    this.avatar = user.getAvatar();
-    this.dateOfBirth = user.getDateOfBirth();
-    return this;
+  public static UserResponse from(User user) {
+    var userResponse = new UserResponse();
+    userResponse.id = user.getId();
+    userResponse.name = user.getName();
+    userResponse.gender = user.getGender();
+    userResponse.email = user.getEmail();
+    userResponse.address = user.getAddress();
+    userResponse.avatar = user.getAvatar();
+    userResponse.dateOfBirth = user.getDateOfBirth();
+    return userResponse;
   }
 }
