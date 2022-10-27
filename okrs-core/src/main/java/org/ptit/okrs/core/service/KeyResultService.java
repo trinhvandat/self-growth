@@ -67,10 +67,11 @@ public interface KeyResultService extends BaseService<KeyResult> {
    * update the progress of a key result by id
    * @param id - id of key result
    * @param objectiveId - id of the objective that this key result belongs to
+   * @param userId - id of user that own this key result
    * @param progress - progress of key result
    * @return the updated key result
    */
-  KeyResultResponse updateProgress(String id, String objectiveId, Integer progress);
+  KeyResultResponse updateProgress(String id, String objectiveId, String userId, Integer progress);
 
   /**
    * validate key result exist or not by id
