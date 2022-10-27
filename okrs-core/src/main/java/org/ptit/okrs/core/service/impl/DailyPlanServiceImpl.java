@@ -26,9 +26,16 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
 
   @Override
   @Transactional(readOnly = true)
-  public DailyPlanResponse create(String title, String description, String userId,
+  public DailyPlanResponse create(
+      String title,
+      String description,
+      String userId,
       String keyResultId) {
-    log.info("(create)title: {}", title);
+    log.info("(create)title: {}, description: {}, userId: {}, keyResultId: {}",
+        title,
+        description,
+        userId,
+        keyResultId);
     try {
       return DailyPlanResponse.from(
           create(DailyPlan.of(title, description, userId, keyResultId)));
@@ -82,9 +89,22 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
 
   @Override
   @Transactional(readOnly = true)
-  public DailyPlanResponse update(String id, String title, String description, Integer date,
-      String note, String userId, String keyResultId) {
-    log.info("(update)id: {}, title: {}", id, title);
+  public DailyPlanResponse update(
+      String id,
+      String title,
+      String description,
+      Integer date,
+      String note,
+      String userId,
+      String keyResultId) {
+    log.info("(update)id: {}, title: {}, description: {}, date: {}, note: {}, userId: {}, keyResultId: {}",
+        id,
+        title,
+        description,
+        date,
+        note,
+        userId,
+        keyResultId);
     DailyPlan dailyPlanCheck =
         repository
             .findById(id)
