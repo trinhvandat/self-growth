@@ -82,6 +82,7 @@ public class KeyResultController {
         objectiveId,
         keyResultId,
         request);
+    objectiveService.validateExist(request.getObjectiveId());
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         service.update(
