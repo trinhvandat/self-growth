@@ -4,11 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.entity.KeyResult;
-import org.ptit.okrs.core.entity.Objective;
 import org.ptit.okrs.core.model.KeyResultResponse;
 import org.ptit.okrs.core.repository.KeyResultRepository;
 import org.ptit.okrs.core.service.KeyResultService;
-import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.ptit.okrs.core_util.DateUtils;
@@ -109,8 +107,25 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   }
 
   @Override
-  public KeyResultResponse updateProgress(String id, String objectiveId, Integer progress) {
-    return null;
+  public KeyResultResponse updateProgress(
+      String id, String objectiveId, String userId, Integer progress) {
+    log.info(
+        "(updateProgress)id : {}, objectiveId : {}, userId : {}, progress : {}",
+        id,
+        objectiveId,
+        userId,
+        progress);
+    var keyResult = find(id);
+    if (keyResult == null) {
+      log.error("(updateProgress)id : {} --> NOT FOUND EXCEPTION", id);
+      throw new NotFoundException(id, KeyResult.class.getSimpleName());
+    }
+    if(!keyResult.getUserId().equals(userId)) {
+      log.error("(updateProgress)userId : {} --> FORBIDDEN EXCEPTION", userId);
+      throw new ForbiddenException(userId);
+    }
+    keyResult.setProgress(progress);
+    return KeyResultResponse.from(update(keyResult));
   }
 
   @Override

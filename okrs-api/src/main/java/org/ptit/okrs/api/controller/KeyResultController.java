@@ -111,8 +111,10 @@ public class KeyResultController {
         objectiveId,
         keyResultId,
         request);
+    objectiveService.validateExist(objectiveId);
     return OkrsResponse.of(
         HttpStatus.OK.value(),
-        service.updateProgress(request.getId(), request.getObjectiveId(), request.getProgress()));
+        service.updateProgress(
+            request.getId(), request.getObjectiveId(), "userId", request.getProgress()));
   }
 }
