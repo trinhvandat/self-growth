@@ -62,11 +62,13 @@ public class KeyResultController {
   @ApiResponse(code = 200, message = "Successfully response.")
   @DeleteMapping(value = "/{objective_id}/" + KEY_RESULT + "/{key_result_id}")
   @ResponseStatus(HttpStatus.OK)
-  public void deleteById(
+  public OkrsResponse deleteById(
       @PathVariable("objective_id") String objectiveId,
       @PathVariable("key_result_id") String keyResultId) {
     log.info("(deleteById)objectiveId : {}, keyResultId : {}", objectiveId, keyResultId);
+    objectiveService.validateExist(objectiveId);
     service.deleteById(keyResultId, objectiveId);
+    return OkrsResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("Update a key result")

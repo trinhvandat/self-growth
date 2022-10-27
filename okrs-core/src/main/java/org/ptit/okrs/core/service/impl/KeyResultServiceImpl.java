@@ -54,7 +54,13 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   }
 
   @Override
-  public void deleteById(String id, String objectiveId) {}
+  public void deleteById(String id, String objectiveId) {
+    if(!isExist(id)) {
+      log.error("(deleteById)id : {} --> NOT FOUND EXCEPTION", id);
+      throw new NotFoundException(id, KeyResult.class.getSimpleName());
+    }
+    delete(id);
+  }
 
   @Override
   public List<KeyResultResponse> findByObjectiveId(String objectiveId) {
