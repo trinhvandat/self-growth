@@ -8,6 +8,7 @@ import org.ptit.okrs.core.model.KeyResultResponse;
 import org.ptit.okrs.core.repository.KeyResultRepository;
 import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
+import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.ptit.okrs.core_util.DateUtils;
 
@@ -49,6 +50,12 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
                 DateUtils.getEpochTime(endDate),
                 progress,
                 userId)));
+  }
+
+  @Override
+  public void deleteAllByObjectiveId(String objectiveId) {
+    log.info("(deleteAllByObjectiveId)objectiveId : {}", objectiveId);
+    repository.deleteAllByObjectiveId(objectiveId);
   }
 
   @Override

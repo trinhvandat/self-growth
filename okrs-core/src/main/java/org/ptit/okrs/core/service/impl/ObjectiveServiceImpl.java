@@ -62,7 +62,13 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
-  public void deleteById(String id) {}
+  public void deleteById(String id) {
+    if(!isExist(id)) {
+      throw new NotFoundException(id, Objective.class.getSimpleName());
+    }
+    keyResultService.deleteAllByObjectiveId(id);
+    delete(id);
+  }
 
   @Override
   public ObjectiveDetailResponse getById(String id) {
