@@ -74,7 +74,32 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
       Integer endDate,
       Integer progress,
       String userId) {
-    return null;
+    log.info(
+        "(update)id : {}, objectiveId : {}, title : {}, description : {}, startDate : {}, endDate : {}, progress : {}, userId : {}",
+        id,
+        objectiveId,
+        title,
+        description,
+        startDate,
+        endDate,
+        progress,
+        userId);
+    var keyResult = find(id);
+    if(keyResult == null) {
+      log.error("(update)id : {} --> NOT FOUND EXCEPTION", id);
+      throw new NotFoundException(id, KeyResult.class.getSimpleName());
+    }
+    if(!keyResult.getUserId().equals(userId)) {
+      log.error("(update)userId : {} --> FORBIDDEN EXCEPTION", userId);
+      throw new ForbiddenException(userId);
+    }
+    keyResult.setObjectiveId(objectiveId);
+    keyResult.setTitle(title);
+    keyResult.setDescription(description);
+    keyResult.setStartDate(DateUtils.getEpochTime(startDate));
+    keyResult.setEndDate(DateUtils.getEpochTime(endDate));
+    keyResult.setProgress(progress);
+    return KeyResultResponse.from(update(keyResult));
   }
 
   @Override
