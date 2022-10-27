@@ -1,12 +1,13 @@
 package org.ptit.okrs.core.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.service.DailyPlanService;
-import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.springframework.dao.DuplicateKeyException;
@@ -39,6 +40,16 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
 
   @Override
   public void deleteById(String id) {
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<DailyPlanResponse> getByKeyResultId(String keyResultId) {
+    log.info("(getByKeyResultId)keyResultId: {}", keyResultId);
+    return repository.findByKeyResultId(keyResultId)
+        .stream()
+        .map(DailyPlanResponse :: from)
+        .collect(Collectors.toList());
   }
 
   @Override
