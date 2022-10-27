@@ -29,6 +29,11 @@ public interface KeyResultService extends BaseService<KeyResult> {
       String userId);
 
   /**
+   * delete all key results of an objective
+   * @param objectiveId - id of an objective
+   */
+  void deleteAllByObjectiveId(String objectiveId);
+  /**
    * Delete key result by id
    * @param id - id of key result
    * @param objectiveId - id of the objective that this key result belongs to
