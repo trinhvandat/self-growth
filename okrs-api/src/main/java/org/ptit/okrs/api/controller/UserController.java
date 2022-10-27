@@ -10,6 +10,7 @@ import org.ptit.okrs.api.model.request.UserCreateRequest;
 import org.ptit.okrs.api.model.request.UserUpdateAvatarRequest;
 import org.ptit.okrs.api.model.request.UserUpdateRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
+import org.ptit.okrs.core.service.AccountService;
 import org.ptit.okrs.core.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class UserController {
   private final UserService service;
+  private final AccountService accountService;
 
   @ApiOperation("Create a new user")
   @ApiResponse(code = 201, response = OkrsResponse.class, message = "Successfully response.")
@@ -35,6 +37,7 @@ public class UserController {
   @ResponseStatus(HttpStatus.CREATED)
   public OkrsResponse create(@RequestBody @Validated UserCreateRequest userCreateRequest) {
     log.info("(create)userCreateRequest: {}", userCreateRequest);
+    accountService.validateAccount(userCreateRequest.getAccountId());
     return OkrsResponse.of(
         HttpStatus.CREATED.value(),
         service.create(
@@ -80,7 +83,7 @@ public class UserController {
     log.info("(updateAvatar)userUpdateAvatarRequest: {}", userUpdateAvatarRequest);
     return OkrsResponse.of(
         HttpStatus.OK.value(),
-        service.changeAvatar("", userUpdateAvatarRequest.getAvatar())); // TODO: userId get by auth
+        service.changeAvatar("userId", userUpdateAvatarRequest.getAvatar())); // TODO: userId get by auth
   }
 
   @ApiOperation("Get a user's avatar")

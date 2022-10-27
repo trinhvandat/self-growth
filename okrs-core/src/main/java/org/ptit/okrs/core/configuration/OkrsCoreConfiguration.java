@@ -1,13 +1,16 @@
 package org.ptit.okrs.core.configuration;
 
+import org.ptit.okrs.core.repository.AccountRepository;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.repository.KeyResultRepository;
 import org.ptit.okrs.core.repository.ObjectiveRepository;
 import org.ptit.okrs.core.repository.UserRepository;
+import org.ptit.okrs.core.service.AccountService;
 import org.ptit.okrs.core.service.DailyPlanService;
 import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.UserService;
+import org.ptit.okrs.core.service.impl.AccountServiceImpl;
 import org.ptit.okrs.core.service.impl.DailyPlanServiceImpl;
 import org.ptit.okrs.core.service.impl.KeyResultServiceImpl;
 import org.ptit.okrs.core.service.impl.ObjectiveServiceImpl;
@@ -46,5 +49,10 @@ public class OkrsCoreConfiguration {
   @Bean
   public UserService userService(UserRepository repository) {
     return new UserServiceImpl(repository);
+  }
+
+  @Bean
+  public AccountService accountService(AccountRepository repository) {
+    return new AccountServiceImpl(repository);
   }
 }
