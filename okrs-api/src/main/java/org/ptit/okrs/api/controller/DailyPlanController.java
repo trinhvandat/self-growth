@@ -75,13 +75,13 @@ public class DailyPlanController {
       @ApiParam(required = true) @RequestParam("date") Integer date
   ) {
     if (log.isDebugEnabled()) log.debug("(list)date: {}", date);
-    return OkrsResponse.of(HttpStatus.OK.value(), new ArrayList<DailyPlanResponse>());
+    return OkrsResponse.of(HttpStatus.OK.value(), service.getByDate(date));
   }
 
   @ApiOperation("Link task of daily plan to key result")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
-  @PatchMapping(path = "/link/{id}")
+  @PatchMapping(path = "/{id}/link-key-result")
   public OkrsResponse linkDailyPlanToKeyResults(
       @PathVariable("id") String id,
       @ApiParam(required = true) @RequestParam("keyResultId") String keyResultId

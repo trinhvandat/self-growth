@@ -55,6 +55,17 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
 
   @Override
   @Transactional(readOnly = true)
+  public List<DailyPlanResponse> getByDate(Integer date) {
+    log.info("(getByDate) date: {}", date);
+    return repository.findByDate(date)
+        .stream()
+        .map(DailyPlanResponse :: from)
+        .collect(Collectors.toList());
+
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId) {
     log.info("(linkDailyPlanToKeyResults)id: {}, keyResultId: {}", id, keyResultId);
     DailyPlan dailyPlanCheck =

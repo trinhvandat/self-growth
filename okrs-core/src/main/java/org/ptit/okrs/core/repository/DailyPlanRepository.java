@@ -7,5 +7,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DailyPlanRepository extends BaseRepository<DailyPlan> {
+
+  List<DailyPlan> findByDate(Integer date);
+
   List<DailyPlan> findByKeyResultId(String keyResultId);
+
 }

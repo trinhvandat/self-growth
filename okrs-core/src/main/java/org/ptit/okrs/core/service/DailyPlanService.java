@@ -35,6 +35,12 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
   List<DailyPlanResponse> getByKeyResultId(String keyResultId);
 
   /**
+   * get all daily plan
+   * @return - all daily plan available in data warehouse
+   */
+  List<DailyPlanResponse> getByDate(Integer date);
+
+  /**
    * Link daily plan to key results
    * @param id - the id of the daily plan
    * @param keyResultId - id of the key results want to link
