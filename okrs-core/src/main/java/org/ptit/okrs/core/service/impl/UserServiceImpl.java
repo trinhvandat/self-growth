@@ -1,19 +1,19 @@
 package org.ptit.okrs.core.service.impl;
 
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.Gender;
 import org.ptit.okrs.core.entity.User;
 import org.ptit.okrs.core.model.UserResponse;
 import org.ptit.okrs.core.repository.UserRepository;
-import org.ptit.okrs.core.service.AccountService;
 import org.ptit.okrs.core.service.UserService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ConflictException;
+import org.ptit.okrs.core_exception.NotFoundException;
 
 @Slf4j
 public class UserServiceImpl extends BaseServiceImpl<User> implements UserService {
   private final UserRepository repository;
+
   public UserServiceImpl(UserRepository repository) {
     super(repository);
     this.repository = repository;
@@ -60,7 +60,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   @Override
   public UserResponse get(String userId) {
     log.info("(get)userId: {}", userId);
-    return null;
+
+    return repository
+        .find(userId)
+        .orElseThrow(
+            () -> {
+              throw new NotFoundException(userId, User.class.getSimpleName());
+            });
   }
 
   @Override
