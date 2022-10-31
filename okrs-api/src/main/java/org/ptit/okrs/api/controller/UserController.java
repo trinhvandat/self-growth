@@ -58,7 +58,6 @@ public class UserController {
             "userId", // TODO: get user id by auth
             userUpdateRequest.getName(),
             userUpdateRequest.getPhone(),
-            userUpdateRequest.getEmail(),
             userUpdateRequest.getDateOfBirth(),
             userUpdateRequest.getGender(),
             userUpdateRequest.getAddress()));
