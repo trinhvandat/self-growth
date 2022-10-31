@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserUpdateAvatarRequest {
   @NotBlank
-  private String avatar;
+  private String pathAvatar;
 }
