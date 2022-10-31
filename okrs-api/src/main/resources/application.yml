@@ -5,9 +5,18 @@ application:
       - classpath:okrs-core/message
       - classpath:okrs-api/message
       - classpath:core-exception/message
+      - classpath:core-upload/message
 
   swagger:
     base_packages: "org.ptit.okrs.api.controller"
+
+#UPLOAD_FILE
+  upload:
+    path:
+      file:
+        storage: ./uploads/images/
+    url:
+      view: /uploads/view/**
 
 spring:
   application:
