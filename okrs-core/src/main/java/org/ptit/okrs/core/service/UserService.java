@@ -10,12 +10,11 @@ public interface UserService extends BaseService<User> {
   /**
    * create new user
    *
-   * @param accountId - the accountId of account is logging
    * @param name - the name of the user
    * @param email - the email of the user, is mail never create account
    * @return - information of the user after created
    */
-  UserResponse create(String accountId, String name, String email);
+  UserResponse create(String name, String email);
 
   /**
    * update user existed

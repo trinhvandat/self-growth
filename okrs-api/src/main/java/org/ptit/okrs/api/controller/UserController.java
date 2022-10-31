@@ -37,11 +37,9 @@ public class UserController {
   @ResponseStatus(HttpStatus.CREATED)
   public OkrsResponse create(@RequestBody @Validated UserCreateRequest userCreateRequest) {
     log.info("(create)userCreateRequest: {}", userCreateRequest);
-    accountService.validateAccount(userCreateRequest.getAccountId());
     return OkrsResponse.of(
         HttpStatus.CREATED.value(),
         service.create(
-            userCreateRequest.getAccountId(),
             userCreateRequest.getName(),
             userCreateRequest.getEmail()));
   }

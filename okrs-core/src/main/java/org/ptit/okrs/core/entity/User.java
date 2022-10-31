@@ -23,13 +23,11 @@ public class User extends BaseEntityWithUpdater {
   private String email;
   private Long dateOfBirth;
   private Gender gender;
-  private String accountId;
   private String address;
   private String avatar;
 
-  public static User of(String accountId, String name, String email) {
+  public static User of(String name, String email) {
     var user = new User();
-    user.setAccountId(accountId);
     user.setName(name);
     user.setEmail(email);
     return user;
