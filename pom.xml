@@ -73,6 +73,11 @@
         <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <artifactId>core-upload</artifactId>
+        <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- MIGRATION -->
       <dependency>

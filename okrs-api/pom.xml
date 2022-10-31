@@ -18,6 +18,10 @@
       <artifactId>okrs-core</artifactId>
       <groupId>org.ptit.okrs</groupId>
     </dependency>
+    <dependency>
+      <artifactId>core-upload</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
 
     <!-- SPRING -->
     <dependency>
