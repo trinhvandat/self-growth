@@ -1,5 +1,6 @@
 package org.ptit.okrs.core.service;
 
+import java.util.List;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
 import org.ptit.okrs.core.model.DailyPlanResponse;
@@ -24,7 +25,20 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    * Delete daily plan
    * @param id - id of the daily plan you want to delete
    */
-  void deleteById(String id);
+  void delete(String id);
+
+  /**
+   * Get all daily plan by key result id
+   * @param keyResultId - id of the key result you want to get daily plan
+   * @return - information of daily plan that you get from id key result
+   */
+  List<DailyPlanResponse> getByKeyResultId(String keyResultId);
+
+  /**
+   * get all daily plan
+   * @return - all daily plan available in data warehouse
+   */
+  List<DailyPlanResponse> getByDate(Integer date);
 
   /**
    * Link daily plan to key results

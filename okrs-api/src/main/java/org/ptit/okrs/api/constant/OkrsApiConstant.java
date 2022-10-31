@@ -3,7 +3,6 @@ package org.ptit.okrs.api.constant;
 import static org.ptit.okrs.api.constant.OkrsApiConstant.ApiConstant.API_PREFIX;
 import static org.ptit.okrs.api.constant.OkrsApiConstant.ApiConstant.API_VERSION;
 import static org.ptit.okrs.api.constant.OkrsApiConstant.ResourceConstant.DAILY_PLAN;
-import static org.ptit.okrs.api.constant.OkrsApiConstant.ResourceConstant.KEY_RESULT;
 import static org.ptit.okrs.api.constant.OkrsApiConstant.ResourceConstant.OBJECTIVE;
 import static org.ptit.okrs.api.constant.OkrsApiConstant.ResourceConstant.USER;
 import static org.ptit.okrs.api.constant.OkrsApiConstant.ResourceConstant.*;
@@ -20,6 +19,7 @@ public class OkrsApiConstant {
     public static final String KEY_RESULT = "/key-results";
     public static final String USER = "/users";
     public static final String NOTIFICATION = "/notifications";
+
   }
 
   public static class BaseUrl {

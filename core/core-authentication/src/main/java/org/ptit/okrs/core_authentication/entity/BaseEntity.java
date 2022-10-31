@@ -25,5 +25,5 @@ public class BaseEntity {
   private String lastUpdatedBy;
 
   @LastModifiedDate
-  private Long lasUpdatedAt;
+  private Long lastUpdatedAt;
 }

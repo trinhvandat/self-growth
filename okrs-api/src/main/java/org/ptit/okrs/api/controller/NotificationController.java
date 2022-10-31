@@ -62,6 +62,7 @@ public class NotificationController {
     public OkrsResponse update(@PathVariable("id") String id, @Validated @RequestBody NotificationRequest request) {
         log.info("(update)id : {}, request : {}", id, request);
         return OkrsResponse.of(HttpStatus.OK.value(), service.update(
+                request.getId(),
                 request.getContent(),
                 "userId"));
     }

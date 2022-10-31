@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserCreateRequest {
   @NotBlank
-  private String accountId;
-  @NotBlank
   private String name;
   @Email
   @NotBlank

@@ -30,7 +30,7 @@ public interface NotificationService extends BaseService<Notification> {
      * @param id - id of notification
      * @return notification by id
      */
-    NotificationResponse getById(String id);
+    List<NotificationResponse> getById(String id);
 
     /**
      * list all notification
@@ -46,6 +46,7 @@ public interface NotificationService extends BaseService<Notification> {
      * @return the updated notification
      */
     NotificationResponse update(
+            String id,
             String content,
             String userId);
 }

@@ -30,7 +30,7 @@
     <lombok.version>1.18.24</lombok.version>
     <h2.version>2.1.214</h2.version>
     <liquibase.version>4.17.0</liquibase.version>
-    <swagger.version>2.4.0</swagger.version>
+    <swagger.version>2.7.0</swagger.version>
     <jwt.version>0.9.1</jwt.version>
     <hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
   </properties>
@@ -70,6 +70,11 @@
       </dependency>
       <dependency>
         <artifactId>okrs-core</artifactId>
+        <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>core-upload</artifactId>
         <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>

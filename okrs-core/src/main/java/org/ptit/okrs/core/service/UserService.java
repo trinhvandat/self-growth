@@ -10,19 +10,17 @@ public interface UserService extends BaseService<User> {
   /**
    * create new user
    *
-   * @param accountId - the accountId of account is logging
    * @param name - the name of the user
    * @param email - the email of the user, is mail never create account
    * @return - information of the user after created
    */
-  UserResponse create(String accountId, String name, String email);
+  UserResponse create(String name, String email);
 
   /**
    * update user existed
    * @param userId - The userId's user is logging
    * @param name - The name's user need update
    * @param phone - The phone's user need update
-   * @param email - The email's user need update
    * @param dateOfBirth - The dateOfBirth's user need update
    * @param gender - The gender's user need update
    * @param address - The address's user need update
@@ -32,7 +30,6 @@ public interface UserService extends BaseService<User> {
       String userId,
       String name,
       String phone,
-      String email,
       Long dateOfBirth,
       Gender gender,
       String address);
@@ -47,15 +44,15 @@ public interface UserService extends BaseService<User> {
   /**
    * update avatar
    * @param userId - the userId of user is logging
-   * @param avatar - the avatar's user need update
-   * @return - The link api get avatar
+   * @param avatar - the avatar is path save avatar from server user need update
+   * @return - The URI api get avatar
    */
-  String changeAvatar(String userId, String avatar);
+  String changePathAvatar(String userId, String avatar);
 
   /**
    * get avatar of user by userid
    * @param userId - the userId of user is logging
    * @return path avatar of user is saved in server
    */
-  String getAvatar(String userId);
+  String getPathAvatar(String userId);
 }

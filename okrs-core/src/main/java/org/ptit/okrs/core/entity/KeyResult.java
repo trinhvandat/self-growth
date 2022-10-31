@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.entity.base.BaseEntityWithUpdater;
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "key_result")
 @NoArgsConstructor
+@AllArgsConstructor(staticName = "of")
 @EntityListeners(AuditingEntityListener.class)
 public class KeyResult extends BaseEntityWithUpdater {
   @Column(nullable = false)

@@ -1,12 +1,36 @@
 application:
 
   i18n:
-    - classpath://okrs-core
-    - classpath://okrs-api
+    resources:
+      - classpath:okrs-core/message
+      - classpath:okrs-api/message
+      - classpath:core-exception/message
+      - classpath:core-upload/message
 
   swagger:
     base_packages: "org.ptit.okrs.api.controller"
 
+#UPLOAD_FILE
+  upload:
+    path:
+      file:
+        storage: ./uploads/images/
+    url:
+      view: /uploads/view/**
+
 spring:
   application:
     name: okrs-service
+#LIQUIBASE
+  liquibase:
+    changelog: classpath:/database.migration/master-changelog.xml
+#DATABASE
+  datasource:
+    url: jdbc:mysql://localhost:3306/okrs
+    username: toanns
+    password: Songtoan0302
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#SWAGGER
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER

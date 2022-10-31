@@ -1,17 +1,9 @@
 package org.ptit.okrs.core.configuration;
 
-import org.ptit.okrs.core.repository.DailyPlanRepository;
-import org.ptit.okrs.core.repository.KeyResultRepository;
-import org.ptit.okrs.core.repository.ObjectiveRepository;
-import org.ptit.okrs.core.repository.UserRepository;
-import org.ptit.okrs.core.service.DailyPlanService;
-import org.ptit.okrs.core.service.KeyResultService;
-import org.ptit.okrs.core.service.ObjectiveService;
-import org.ptit.okrs.core.service.UserService;
-import org.ptit.okrs.core.service.impl.DailyPlanServiceImpl;
-import org.ptit.okrs.core.service.impl.KeyResultServiceImpl;
-import org.ptit.okrs.core.service.impl.ObjectiveServiceImpl;
-import org.ptit.okrs.core.service.impl.UserServiceImpl;
+import org.ptit.okrs.core.repository.*;
+import org.ptit.okrs.core.service.*;
+import org.ptit.okrs.core.service.impl.*;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = {"org.ptit.okrs.core.repository"})
 @ComponentScan(basePackages = {"org.ptit.okrs.core.repository"})
 @EnableJpaAuditing
+@EntityScan(basePackages = "org.ptit.okrs.core.entity")
 public class OkrsCoreConfiguration {
 
   @Bean
@@ -30,17 +23,29 @@ public class OkrsCoreConfiguration {
   }
 
   @Bean
-  public ObjectiveService objectiveService(ObjectiveRepository repository) {
-    return new ObjectiveServiceImpl(repository);
+  public ObjectiveService objectiveService(
+      ObjectiveRepository repository, KeyResultService keyResultService) {
+    return new ObjectiveServiceImpl(repository, keyResultService);
   }
 
   @Bean
-  public KeyResultService keyResultService(KeyResultRepository repository) {
+  public KeyResultService keyResultService(
+      KeyResultRepository repository) {
     return new KeyResultServiceImpl(repository);
   }
 
   @Bean
   public UserService userService(UserRepository repository) {
     return new UserServiceImpl(repository);
+  }
+
+  @Bean
+  public AccountService accountService(AccountRepository repository) {
+    return new AccountServiceImpl(repository);
+  }
+
+  @Bean
+  public NotificationService notificationService(NotificationRepository repository) {
+    return new NotificationServiceImpl(repository);
   }
 }

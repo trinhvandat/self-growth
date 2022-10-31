@@ -52,9 +52,9 @@ public class ObjectiveController {
   @ApiResponse(code = 200, message = "Successfully response.")
   @DeleteMapping(value = "/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public void deleteById(@PathVariable("id") String id) {
+  public OkrsResponse deleteById(@PathVariable("id") String id) {
     log.info("(deleteById)id : {}", id);
-    service.deleteById(id);
+    return OkrsResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("Get a detail objective")
@@ -82,6 +82,7 @@ public class ObjectiveController {
   public OkrsResponse update(
       @PathVariable("id") String id, @Validated @RequestBody ObjectiveUpdateRequest request) {
     log.info("(update)id : {}, request : {}", id, request);
+    request.validate();
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         service.update(

@@ -40,11 +40,12 @@ public class KeyResultController {
   @ResponseStatus(HttpStatus.CREATED)
   public OkrsResponse create(
       @PathVariable("objective_id") String objectiveId,
-      @Validated @RequestBody KeyResultCreateRequest request
-  ) {
+      @Validated @RequestBody KeyResultCreateRequest request) {
     log.info("(create)objectiveId : {}, request : {}", objectiveId, request);
     request.validate();
-    objectiveService.validateKeyResultPeriodTime(request.getObjectiveId(), request.getStartDate(), request.getEndDate());
+    objectiveService.validateExist(request.getObjectiveId());
+    objectiveService.validateKeyResultPeriodTime(
+        request.getObjectiveId(), request.getStartDate(), request.getEndDate());
     return OkrsResponse.of(
         HttpStatus.CREATED.value(),
         service.create(
@@ -54,19 +55,20 @@ public class KeyResultController {
             request.getStartDate(),
             request.getEndDate(),
             request.getProgress(),
-            "userId")
-    );
+            "userId"));
   }
 
   @ApiOperation("Delete a key result")
   @ApiResponse(code = 200, message = "Successfully response.")
   @DeleteMapping(value = "/{objective_id}/" + KEY_RESULT + "/{key_result_id}")
   @ResponseStatus(HttpStatus.OK)
-  public void deleteById(
+  public OkrsResponse deleteById(
       @PathVariable("objective_id") String objectiveId,
       @PathVariable("key_result_id") String keyResultId) {
     log.info("(deleteById)objectiveId : {}, keyResultId : {}", objectiveId, keyResultId);
+    objectiveService.validateExist(objectiveId);
     service.deleteById(keyResultId, objectiveId);
+    return OkrsResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("Update a key result")
@@ -82,6 +84,7 @@ public class KeyResultController {
         objectiveId,
         keyResultId,
         request);
+    objectiveService.validateExist(request.getObjectiveId());
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         service.update(
@@ -108,8 +111,10 @@ public class KeyResultController {
         objectiveId,
         keyResultId,
         request);
+    objectiveService.validateExist(objectiveId);
     return OkrsResponse.of(
         HttpStatus.OK.value(),
-        service.updateProgress(request.getId(), request.getObjectiveId(), request.getProgress()));
+        service.updateProgress(
+            request.getId(), request.getObjectiveId(), "userId", request.getProgress()));
   }
 }
