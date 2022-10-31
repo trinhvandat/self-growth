@@ -12,9 +12,6 @@ public class UserUpdateRequest {
   @NotBlank
   private String name;
   private String phone;
-  @Email
-  @NotBlank
-  private String email;
   private Long dateOfBirth;
   private Gender gender;
   private String address;

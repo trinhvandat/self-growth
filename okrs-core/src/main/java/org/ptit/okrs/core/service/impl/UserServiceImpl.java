@@ -6,9 +6,9 @@ import org.ptit.okrs.core.constant.Gender;
 import org.ptit.okrs.core.entity.User;
 import org.ptit.okrs.core.model.UserResponse;
 import org.ptit.okrs.core.repository.UserRepository;
-import org.ptit.okrs.core.service.AccountService;
 import org.ptit.okrs.core.service.UserService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
+import org.ptit.okrs.core_exception.NotFoundException;
 import org.ptit.okrs.core_exception.ConflictException;
 
 @Slf4j
@@ -38,23 +38,33 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
   @Override
   public UserResponse update(
-      String userId,
+      String id,
       String name,
       String phone,
-      String email,
       Long dateOfBirth,
       Gender gender,
       String address) {
     log.info(
-        "(update)userId: {}, name: {}, phone: {}, email: {}, dateOfBirth: {}, gender: {}, address: {}",
-        userId,
+        "(update)id: {}, name: {}, phone: {}, dateOfBirth: {}, gender: {}, address: {}",
+        id,
         name,
         phone,
-        email,
         dateOfBirth,
         gender,
         address);
-    return null;
+    var userUpdate = find(id);
+    if (Objects.isNull(userUpdate)) {
+      log.info("(update)id: {} not found", id);
+      throw new NotFoundException(id, User.class.getSimpleName());
+    }
+
+    userUpdate.setName(name);
+    userUpdate.setPhone(phone);
+    userUpdate.setDateOfBirth(dateOfBirth);
+    userUpdate.setGender(gender);
+    userUpdate.setAddress(address);
+    return UserResponse.from(update(userUpdate));
+
   }
 
   @Override

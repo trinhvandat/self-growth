@@ -22,7 +22,6 @@ public interface UserService extends BaseService<User> {
    * @param userId - The userId's user is logging
    * @param name - The name's user need update
    * @param phone - The phone's user need update
-   * @param email - The email's user need update
    * @param dateOfBirth - The dateOfBirth's user need update
    * @param gender - The gender's user need update
    * @param address - The address's user need update
@@ -32,7 +31,6 @@ public interface UserService extends BaseService<User> {
       String userId,
       String name,
       String phone,
-      String email,
       Long dateOfBirth,
       Gender gender,
       String address);
