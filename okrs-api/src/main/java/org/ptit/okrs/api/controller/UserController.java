@@ -91,6 +91,6 @@ public class UserController {
   public OkrsResponse getAvatar() {
     log.info("(getAvatar)");
     return OkrsResponse.of(
-        HttpStatus.OK.value(), service.getAvatar("userId")); // TODO: userId get by auth
+        HttpStatus.OK.value(), service.getPathAvatar("userId")); // TODO: userId get by auth
   }
 }

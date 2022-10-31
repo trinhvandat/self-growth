@@ -89,8 +89,11 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
-  public String getAvatar(String userId) {
+  public String getPathAvatar(String userId) {
     log.info("(getAvatar)userId: {}", userId);
-    return null;
+    if(!isExist(userId)) {
+      throw new NotFoundException(userId, User.class.getSimpleName());
+    }
+    return  repository.findAvatar(userId);
   }
 }

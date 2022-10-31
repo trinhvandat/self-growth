@@ -54,5 +54,5 @@ public interface UserService extends BaseService<User> {
    * @param userId - the userId of user is logging
    * @return path avatar of user is saved in server
    */
-  String getAvatar(String userId);
+  String getPathAvatar(String userId);
 }
