@@ -2,6 +2,7 @@ package org.ptit.okrs.core_authentication.filter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +26,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
   private final AuthTokenService authTokenService;
   private final AuthUserService authUserService;
+  private final AuthAccountService authAccountService;
 
   @Override
   protected void doFilterInternal(
@@ -57,9 +59,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     if (Objects.nonNull(userId) && Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
       var user = authUserService.findById(userId);
+      var account = authAccountService.findByUserIdWithThrow(user.getId());
       if (authTokenService.validateAccessToken(jwtToken, userId)) {
-        var usernamePasswordAuthToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
-        usernamePasswordAuthToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        var usernamePasswordAuthToken = new UsernamePasswordAuthenticationToken(account.getUsername(), user.getId(), new ArrayList<>());
+        usernamePasswordAuthToken.setDetails(user);
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthToken);
       }
     }
