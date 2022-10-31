@@ -13,6 +13,7 @@
     <module>core-util</module>
     <module>core-upload</module>
     <module>core-audit</module>
+    <module>core-redis</module>
   </modules>
 
   <modelVersion>4.0.0</modelVersion>
