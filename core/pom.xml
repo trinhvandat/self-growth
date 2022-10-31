@@ -12,6 +12,7 @@
     <module>core-swagger</module>
     <module>core-util</module>
     <module>core-upload</module>
+    <module>core-audit</module>
   </modules>
 
   <modelVersion>4.0.0</modelVersion>
