@@ -83,7 +83,7 @@ public class UserController {
     log.info("(updateAvatar)userUpdateAvatarRequest: {}", userUpdateAvatarRequest);
     return OkrsResponse.of(
         HttpStatus.OK.value(),
-        service.changeAvatar("userId", userUpdateAvatarRequest.getAvatar())); // TODO: userId get by auth
+        service.changePathAvatar("userId", userUpdateAvatarRequest.getPathAvatar())); // TODO: userId get by auth
   }
 
   @ApiOperation("Get a user's avatar")

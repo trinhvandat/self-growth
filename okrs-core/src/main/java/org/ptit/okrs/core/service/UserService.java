@@ -47,10 +47,10 @@ public interface UserService extends BaseService<User> {
   /**
    * update avatar
    * @param userId - the userId of user is logging
-   * @param avatar - the avatar's user need update
-   * @return - The link api get avatar
+   * @param avatar - the avatar is path save avatar from server user need update
+   * @return - The URI api get avatar
    */
-  String changeAvatar(String userId, String avatar);
+  String changePathAvatar(String userId, String avatar);
 
   /**
    * get avatar of user by userid

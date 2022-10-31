@@ -10,6 +10,7 @@ import org.ptit.okrs.core.service.AccountService;
 import org.ptit.okrs.core.service.UserService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ConflictException;
+import org.ptit.okrs.core_exception.NotFoundException;
 
 @Slf4j
 public class UserServiceImpl extends BaseServiceImpl<User> implements UserService {
@@ -64,9 +65,16 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
-  public String changeAvatar(String userId, String avatar) {
-    log.info("(changeAvatar)userId: {}, avatar: {}", userId, avatar);
-    return null;
+  public String changePathAvatar(String userId, String pathAvatar) {
+    log.info("(changeAvatar)userId: {}, avatar: {}", userId, pathAvatar);
+    var user = find(userId);
+    if (Objects.isNull(user)) {
+      throw new NotFoundException(userId, User.class.getSimpleName());
+    }
+
+    user.setAvatar(pathAvatar);
+     user = update(user);
+    return user.getAvatar();
   }
 
   @Override
