@@ -14,4 +14,5 @@ public class AuthAccount extends BaseEntity {
   private String username;
   private String password;
   private Boolean isActivated;
+  private String userId;
 }

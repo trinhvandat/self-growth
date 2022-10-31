@@ -13,5 +13,4 @@ public interface UserRepository extends BaseRepository<User> {
   @Query("select new org.ptit.okrs.core.model.UserResponse(u.id, u.name, u.phone, u.gender, u.address, u.email, avatar, u.dateOfBirth) from User u where u.id = :id ")
   Optional<UserResponse> find(String id);
   boolean existsByEmail(String email);
-  boolean existsByAccountId(String accountId);
 }

@@ -21,20 +21,15 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
-  public UserResponse create(String accountId, String name, String email) {
-    log.info("(create)accountId: {}, name: {}, email: {}", accountId, name, email);
-
-    if (repository.existsByAccountId(accountId)) {
-      log.error("(create)accountId: {} conflict", accountId);
-      throw new ConflictException();
-    }
+  public UserResponse create(String name, String email) {
+    log.info("(create)name: {}, email: {}", name, email);
 
     if (repository.existsByEmail(email)) {
       log.error("(create)email: {} conflict ", email);
       throw new ConflictException();
     }
 
-    return UserResponse.from(create(User.of(name, email, accountId)));
+    return UserResponse.from(create(User.of(name, email)));
   }
 
   @Override
