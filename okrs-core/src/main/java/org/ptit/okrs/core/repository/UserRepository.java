@@ -16,8 +16,6 @@ public interface UserRepository extends BaseRepository<User> {
 
   boolean existsByEmail(String email);
 
-  boolean existsByAccountId(String accountId);
-
   @Query("Select u.avatar from User u where u.id = :userId")
   String findAvatar(@Param("userId") String userId);
 }
