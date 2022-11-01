@@ -12,16 +12,4 @@ public class DailyPlanUpdateRequest extends DailyPlanCreateRequest {
   @NotNull
   private Integer date;
   private String note;
-  private String userId;
-
-  public DailyPlan toDailyPlanm() {
-    DailyPlan dailyPlan = new DailyPlan();
-    dailyPlan.setTitle(this.getTitle());
-    dailyPlan.setDescription(this.getDescription());
-    dailyPlan.setKeyResultId(this.getKeyResultId());
-    dailyPlan.setDate(this.getDate());
-    dailyPlan.setNote(this.getNote());
-    dailyPlan.setUserId(this.getUserId());
-    return dailyPlan;
-  }
 }

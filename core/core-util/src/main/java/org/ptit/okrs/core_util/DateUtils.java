@@ -42,4 +42,8 @@ public class DateUtils {
         LocalDateTime.ofEpochSecond(epochTime, 0, ZoneOffset.of(VI_ZONE))
             .format(DATE_INTEGER_FORMATTER));
   }
+  public static Integer getDateDailyPlan(Integer integer) {
+    return Integer.parseInt(LocalDateTime.ofEpochSecond(integer, 0, ZoneOffset.of(VI_ZONE))
+        .format(DATE_INTEGER_FORMATTER));
+  }
 }

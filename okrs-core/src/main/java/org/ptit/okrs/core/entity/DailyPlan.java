@@ -1,9 +1,12 @@
 package org.ptit.okrs.core.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.base.BaseEntityWithUpdater;
+import org.ptit.okrs.core_util.DateUtils;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -36,6 +39,8 @@ public class DailyPlan extends BaseEntityWithUpdater {
     DailyPlan dailyPlan = new DailyPlan();
     dailyPlan.setTitle(title);
     dailyPlan.setDescription(description);
+    dailyPlan.setStatus(DailyPlanStatus.TODO);
+    dailyPlan.setDate(DateUtils.getCurrentDateInteger());
     dailyPlan.setUserId(userId);
     dailyPlan.setKeyResultId(keyResultId);
     return dailyPlan;
