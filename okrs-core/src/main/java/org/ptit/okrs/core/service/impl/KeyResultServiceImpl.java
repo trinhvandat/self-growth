@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.entity.KeyResult;
+import org.ptit.okrs.core.exception.ExistedKeyResultTitleException;
 import org.ptit.okrs.core.model.KeyResultResponse;
 import org.ptit.okrs.core.repository.KeyResultRepository;
 import org.ptit.okrs.core.service.KeyResultService;
@@ -11,6 +12,7 @@ import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.ptit.okrs.core_util.DateUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements KeyResultService {
@@ -23,6 +25,7 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   }
 
   @Override
+  @Transactional
   public KeyResultResponse create(
       String objectiveId,
       String title,
@@ -40,6 +43,13 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
         endDate,
         progress,
         userId);
+    if (repository.existsByTitleAndObjectiveId(title, objectiveId)) {
+      log.error(
+          "(create)title : {}, objectiveId : {} --> ExistedKeyResultTitleException",
+          title,
+          objectiveId);
+      throw new ExistedKeyResultTitleException(title, objectiveId);
+    }
     return KeyResultResponse.from(
         create(
             KeyResult.of(
@@ -53,14 +63,16 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   }
 
   @Override
+  @Transactional
   public void deleteAllByObjectiveId(String objectiveId) {
     log.info("(deleteAllByObjectiveId)objectiveId : {}", objectiveId);
     repository.deleteAllByObjectiveId(objectiveId);
   }
 
   @Override
+  @Transactional
   public void deleteById(String id, String objectiveId) {
-    if(!isExist(id)) {
+    if (!isExist(id)) {
       log.error("(deleteById)id : {} --> NOT FOUND EXCEPTION", id);
       throw new NotFoundException(id, KeyResult.class.getSimpleName());
     }
@@ -68,6 +80,7 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<KeyResultResponse> findByObjectiveId(String objectiveId) {
     log.info("(findByObjectiveId)objectiveId : {}", objectiveId);
     return repository.find(objectiveId).stream()
@@ -76,6 +89,7 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   }
 
   @Override
+  @Transactional
   public KeyResultResponse update(
       String id,
       String objectiveId,
@@ -96,11 +110,11 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
         progress,
         userId);
     var keyResult = find(id);
-    if(keyResult == null) {
+    if (keyResult == null) {
       log.error("(update)id : {} --> NOT FOUND EXCEPTION", id);
       throw new NotFoundException(id, KeyResult.class.getSimpleName());
     }
-    if(!keyResult.getUserId().equals(userId)) {
+    if (!keyResult.getUserId().equals(userId)) {
       log.error("(update)userId : {} --> FORBIDDEN EXCEPTION", userId);
       throw new ForbiddenException(userId);
     }
@@ -114,28 +128,24 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   }
 
   @Override
-  public KeyResultResponse updateProgress(
-      String id, String objectiveId, String userId, Integer progress) {
-    log.info(
-        "(updateProgress)id : {}, objectiveId : {}, userId : {}, progress : {}",
-        id,
-        objectiveId,
-        userId,
-        progress);
+  @Transactional
+  public void updateProgress(String id, String userId, Integer progress) {
+    log.info("(updateProgress)id : {}, userId : {}, progress : {}", id, userId, progress);
     var keyResult = find(id);
     if (keyResult == null) {
       log.error("(updateProgress)id : {} --> NOT FOUND EXCEPTION", id);
       throw new NotFoundException(id, KeyResult.class.getSimpleName());
     }
-    if(!keyResult.getUserId().equals(userId)) {
+    if (!keyResult.getUserId().equals(userId)) {
       log.error("(updateProgress)userId : {} --> FORBIDDEN EXCEPTION", userId);
       throw new ForbiddenException(userId);
     }
     keyResult.setProgress(progress);
-    return KeyResultResponse.from(update(keyResult));
+    update(keyResult);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public void validateExist(String keyResultId) {
     if (!isExist(keyResultId)) {
       throw new NotFoundException(keyResultId, KeyResult.class.getSimpleName());

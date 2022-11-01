@@ -7,8 +7,9 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.api.exception.OkrsDateInvalidException;
+import org.ptit.okrs.api.exception.PathVariableException;
 import org.ptit.okrs.core.entity.KeyResult;
+import org.ptit.okrs.core.exception.OkrsDateInvalidException;
 import org.ptit.okrs.core.validation.ValidDateInteger;
 import org.ptit.okrs.core_util.ValidationUtils;
 
@@ -27,10 +28,20 @@ public class KeyResultCreateRequest {
   private Integer progress;
 
   public void validate() {
-    if (!ValidationUtils.validateStartDateAndEndDate(startDate, endDate)) {
-      log.error("(validate)startDate : {}, endDate : {}", startDate, endDate);
+    if (ValidationUtils.validateStartDateAndEndDate(startDate, endDate)) {
+      log.error(
+          "(validate)startDate : {}, endDate : {} --> OkrsDateInvalidException",
+          startDate,
+          endDate);
       throw new OkrsDateInvalidException(
           KeyResult.class.getSimpleName(), String.valueOf(startDate), String.valueOf(endDate));
+    }
+  }
+
+  public void validatePathVariable(String objectiveId) {
+    if (!this.objectiveId.equals(objectiveId)) {
+      log.error("(validatePathVariable)objectiveId : {} --> PathVariableException", objectiveId);
+      throw new PathVariableException(this.objectiveId, objectiveId);
     }
   }
 }

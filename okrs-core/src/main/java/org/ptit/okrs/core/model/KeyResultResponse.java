@@ -16,6 +16,7 @@ public class KeyResultResponse {
   private int startDate;
   private int endDate;
   private int progress;
+  private String objectType;
 
   public static KeyResultResponse from(KeyResult keyResult) {
     return getKeyResultResponse(
@@ -55,6 +56,7 @@ public class KeyResultResponse {
     response.setStartDate(DateUtils.getDate(startDate));
     response.setEndDate(DateUtils.getDate(endDate));
     response.setProgress(progress);
+    response.setObjectType(KeyResult.class.getSimpleName());
     return response;
   }
 }
