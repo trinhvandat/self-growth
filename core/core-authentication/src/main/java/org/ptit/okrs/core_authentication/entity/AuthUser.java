@@ -18,4 +18,10 @@ public class AuthUser extends BaseEntity {
   private String gender;
   private String address;
   private String avatar;
+
+  public static AuthUser from(String email) {
+    var user = new AuthUser();
+    user.setEmail(email);
+    return user;
+  }
 }

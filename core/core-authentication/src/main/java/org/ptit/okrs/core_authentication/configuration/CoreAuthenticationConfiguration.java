@@ -1,5 +1,8 @@
 package org.ptit.okrs.core_authentication.configuration;
 
+import org.ptit.okrs.core_authentication.controller.AuthController;
+import org.ptit.okrs.core_authentication.facade.AuthFacadeService;
+import org.ptit.okrs.core_authentication.facade.AuthFacadeServiceImpl;
 import org.ptit.okrs.core_authentication.repository.AuthAccountRepository;
 import org.ptit.okrs.core_authentication.repository.AuthUserRepository;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
@@ -31,6 +34,20 @@ public class CoreAuthenticationConfiguration {
   @Bean
   public AuthAccountService authAccountService(AuthAccountRepository repository) {
     return new AuthAccountServiceImpl(repository);
+  }
+
+  @Bean
+  public AuthController authController(AuthFacadeService authFacadeService) {
+    return new AuthController(authFacadeService);
+  }
+
+  @Bean
+  public AuthFacadeService authFacadeService(
+      AuthAccountService authAccountService,
+      AuthUserService authUserService,
+      AuthTokenService authTokenService
+  ) {
+    return new AuthFacadeServiceImpl(authAccountService, authUserService, authTokenService);
   }
 
   @Bean
