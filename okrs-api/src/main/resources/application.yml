@@ -6,6 +6,7 @@ application:
       - classpath:okrs-api/message
       - classpath:core-exception/message
       - classpath:core-upload/message
+      - classpath:okrs-core-exception/message
       - classpath:core-api-exception/message
 
   swagger:
