@@ -7,10 +7,10 @@
 
   <dependencies>
     <!-- INTERNAL -->
-    <dependency>
-      <artifactId>core-audit</artifactId>
-      <groupId>org.ptit.okrs</groupId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <artifactId>core-audit</artifactId>-->
+<!--      <groupId>org.ptit.okrs</groupId>-->
+<!--    </dependency>-->
     <dependency>
       <artifactId>core-exception</artifactId>
       <groupId>org.ptit.okrs</groupId>
@@ -56,6 +56,11 @@
       <artifactId>hibernate-validator</artifactId>
       <groupId>org.hibernate.validator</groupId>
     </dependency>
+      <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+          <version>2.13.4</version>
+      </dependency>
   </dependencies>
 
   <parent>

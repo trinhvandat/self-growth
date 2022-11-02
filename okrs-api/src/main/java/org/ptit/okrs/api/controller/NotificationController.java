@@ -6,8 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.api.model.request.NotificationRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
+import org.ptit.okrs.core.model.NotificationResponse;
+import org.ptit.okrs.core.paging.PagingReq;
+import org.ptit.okrs.core.paging.PagingRes;
 import org.ptit.okrs.core.service.NotificationService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +38,7 @@ public class NotificationController {
                 HttpStatus.CREATED.value(),
                 service.create(
                         request.getContent(),
-                        "Default user id" //TODO: id of the user -> get by auth
+                        request.getUserId()
                 )
         );
     }
@@ -41,9 +46,10 @@ public class NotificationController {
     @ApiOperation("Get list notification")
     @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping()
-    public OkrsResponse list() {
-        return OkrsResponse.of(HttpStatus.OK.value(), service.list());
+    @GetMapping(params = {"user_id"})
+    public ResponseEntity<PagingRes<NotificationResponse>> list(@RequestParam("user_id") String userId, @Validated() final PagingReq pagingReq){
+        final Page<NotificationResponse> notificationResponses = service.list(userId, pagingReq.makePageable());
+        return new ResponseEntity<>(PagingRes.of(notificationResponses) , HttpStatus.OK);
     }
 
     @ApiOperation("Get notification by id")
@@ -64,7 +70,7 @@ public class NotificationController {
         return OkrsResponse.of(HttpStatus.OK.value(), service.update(
                 request.getId(),
                 request.getContent(),
-                "userId"));
+                request.getUserId()));
     }
 
     @ApiOperation("Delete notification")
