@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.ptit.okrs.core.entity.Objective;
 import org.ptit.okrs.core.repository.projection.ObjectiveProjection;
 import org.ptit.okrs.core_util.DateUtils;
 
@@ -25,6 +26,7 @@ public class ObjectiveDetailResponse extends ObjectiveResponse {
     response.setType(objective.getType());
     response.setTimePeriodType(objective.getTimePeriodType());
     response.setKeyResults(keyResults);
+    response.setObjectType(Objective.class.getSimpleName());
     return response;
   }
 }
