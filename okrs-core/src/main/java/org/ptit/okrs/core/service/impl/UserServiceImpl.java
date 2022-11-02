@@ -4,12 +4,12 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.Gender;
 import org.ptit.okrs.core.entity.User;
+import org.ptit.okrs.core.exception.InputDataInvalidException;
+import org.ptit.okrs.core.exception.ConflictDataException;
 import org.ptit.okrs.core.model.UserResponse;
 import org.ptit.okrs.core.repository.UserRepository;
 import org.ptit.okrs.core.service.UserService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
-import org.ptit.okrs.core_exception.NotFoundException;
-import org.ptit.okrs.core_exception.ConflictException;
 import org.ptit.okrs.core_exception.NotFoundException;
 
 @Slf4j
@@ -25,9 +25,14 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   public UserResponse create(String name, String email) {
     log.info("(create)name: {}, email: {}", name, email);
 
+    if (!email.contains(".")) {
+      log.error("(create)email: {} invalid ", email);
+      throw new InputDataInvalidException("email", User.class.getSimpleName());
+    }
+
     if (repository.existsByEmail(email)) {
-      log.error("(create)email: {} conflict ", email);
-      throw new ConflictException();
+      log.error("(create)email: {} conflict data", email);
+      throw new ConflictDataException(User.class.getSimpleName(), "email");
     }
 
     return UserResponse.from(create(User.of(name, email)));
