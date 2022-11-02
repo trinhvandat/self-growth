@@ -23,7 +23,7 @@ public class CoreSwaggerConfiguration {
     return new Docket(DocumentationType.SWAGGER_2)
         .groupName(environment.getProperty("spring.application.name") + "api")
         .select()
-        .apis(RequestHandlerSelectors.basePackage(environment.getProperty("application.swagger.base_packages")))
+        .apis(RequestHandlerSelectors.any())
         .build();
   }
 }

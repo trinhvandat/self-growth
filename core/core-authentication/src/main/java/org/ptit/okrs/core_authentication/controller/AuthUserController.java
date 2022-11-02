@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/auth/users")
 @RestController
 @Slf4j
-public class AuthController {
+public class AuthUserController {
 
   private final AuthFacadeService authFacadeService;
 
-  public AuthController(AuthFacadeService authFacadeService) {
+  public AuthUserController(AuthFacadeService authFacadeService) {
     this.authFacadeService = authFacadeService;
   }
 
@@ -26,7 +26,7 @@ public class AuthController {
   @ApiResponse(code = 201, message = "Successfully response.")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public AuthUserRegisterResponse createUser(@Valid @RequestBody AuthUserRegisterRequest request) {
+  public AuthUserRegisterResponse register(@Valid @RequestBody AuthUserRegisterRequest request) {
     log.info("(createUser)request: {}", request);
     return authFacadeService.register(request);
   }

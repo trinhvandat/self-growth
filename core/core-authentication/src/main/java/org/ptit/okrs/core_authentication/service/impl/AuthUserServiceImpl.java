@@ -1,7 +1,6 @@
 package org.ptit.okrs.core_authentication.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
 import org.ptit.okrs.core_authentication.entity.AuthUser;
 import org.ptit.okrs.core_authentication.exception.EmailAlreadyExistException;
 import org.ptit.okrs.core_authentication.repository.AuthUserRepository;
@@ -35,6 +34,6 @@ public class AuthUserServiceImpl implements AuthUserService {
       throw new EmailAlreadyExistException(email);
     }
 
-    return repository.save(AuthUser.from(email));
+    return repository.save(AuthUser.from(email, email));
   }
 }

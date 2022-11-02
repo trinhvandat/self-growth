@@ -84,6 +84,11 @@
         <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <artifactId>core-redis</artifactId>
+        <groupId>org.ptit.okrs</groupId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- MIGRATION -->
       <dependency>

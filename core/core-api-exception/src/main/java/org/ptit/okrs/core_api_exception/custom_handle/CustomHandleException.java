@@ -90,13 +90,21 @@ public class CustomHandleException {
   }
 
   private String getMessage(String code, Locale locale, Map<String, String> params) {
-    var message = messageSource.getMessage(code, null, locale);
+    var message = getMessage(code, locale);
     if (params != null && !params.isEmpty()) {
       for (var param : params.entrySet()) {
         message = message.replace(getMessageParamsKey(param.getKey()), param.getValue());
       }
     }
     return message;
+  }
+
+  private String getMessage(String code, Locale locale) {
+    try {
+      return messageSource.getMessage(code, null, locale);
+    } catch (Exception ex) {
+      return code;
+    }
   }
 
   private String getMessageParamsKey(String key) {

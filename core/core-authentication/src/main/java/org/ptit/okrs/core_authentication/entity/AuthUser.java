@@ -19,8 +19,9 @@ public class AuthUser extends BaseEntity {
   private String address;
   private String avatar;
 
-  public static AuthUser from(String email) {
+  public static AuthUser from(String name, String email) {
     var user = new AuthUser();
+    user.setName(name);
     user.setEmail(email);
     return user;
   }

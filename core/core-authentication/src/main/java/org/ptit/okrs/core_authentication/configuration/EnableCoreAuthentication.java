@@ -1,6 +1,6 @@
 package org.ptit.okrs.core_authentication.configuration;
 
-import org.ptit.okrs.core_authentication.controller.AuthController;
+import org.ptit.okrs.core_authentication.controller.AuthUserController;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
     CoreAuthenticationConfiguration.class,
     OkrsWebSecurityConfiguration.class,
     JpaAuthTransactionConfiguration.class,
-    AuthController.class
+    AuthUserController.class
 })
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

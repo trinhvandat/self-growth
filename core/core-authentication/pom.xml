@@ -10,6 +10,10 @@
       <groupId>org.ptit.okrs</groupId>
     </dependency>
     <dependency>
+      <artifactId>core-redis</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
       <artifactId>core-swagger</artifactId>
       <groupId>org.ptit.okrs</groupId>
     </dependency>
