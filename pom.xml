@@ -33,6 +33,7 @@
     <swagger.version>2.7.0</swagger.version>
     <jwt.version>0.9.1</jwt.version>
     <hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
+    <common.lang>2.2</common.lang>
   </properties>
 
   <dependencyManagement>
@@ -137,6 +138,13 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate-validator.version}</version>
+      </dependency>
+
+      <!-- COMMON -->
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>${common.lang}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

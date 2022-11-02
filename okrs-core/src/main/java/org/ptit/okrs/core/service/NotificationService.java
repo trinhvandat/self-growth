@@ -38,6 +38,15 @@ public interface NotificationService extends BaseService<Notification> {
     Page<NotificationResponse> list(String userId, final Pageable pageable);
 
     /**
+     * List notifications that have date less than date with pagination
+     * @param date - the date
+     * @param page - the number of page
+     * @param size - the size of page
+     * @return list notifications
+     */
+    List<Notification> searchByDateLessThan(long date, int page, int size);
+
+    /**
      * update an objective
      * @param content - content of this notification
      * @param userId - id of the user that own this notification

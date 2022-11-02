@@ -1,6 +1,5 @@
 package org.ptit.okrs.core.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.entity.base.BaseEntityWithUpdater;
