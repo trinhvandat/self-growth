@@ -2,6 +2,7 @@ package org.ptit.okrs.core.service;
 
 import org.ptit.okrs.core.constant.Gender;
 import org.ptit.okrs.core.entity.User;
+import org.ptit.okrs.core.model.UserCreateResponse;
 import org.ptit.okrs.core.model.UserResponse;
 import org.ptit.okrs.core.service.base.BaseService;
 
@@ -14,7 +15,7 @@ public interface UserService extends BaseService<User> {
    * @param email - the email of the user, is mail never create account
    * @return - information of the user after created
    */
-  UserResponse create(String name, String email);
+  UserCreateResponse create(String name, String email);
 
   /**
    * update user existed

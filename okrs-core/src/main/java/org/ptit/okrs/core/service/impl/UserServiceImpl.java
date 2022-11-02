@@ -6,6 +6,7 @@ import org.ptit.okrs.core.constant.Gender;
 import org.ptit.okrs.core.entity.User;
 import org.ptit.okrs.core.exception.InputDataInvalidException;
 import org.ptit.okrs.core.exception.ConflictDataException;
+import org.ptit.okrs.core.model.UserCreateResponse;
 import org.ptit.okrs.core.model.UserResponse;
 import org.ptit.okrs.core.repository.UserRepository;
 import org.ptit.okrs.core.service.UserService;
@@ -22,7 +23,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
-  public UserResponse create(String name, String email) {
+  public UserCreateResponse create(String name, String email) {
     log.info("(create)name: {}, email: {}", name, email);
 
     if (!email.contains(".")) {
@@ -35,7 +36,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
       throw new ConflictDataException(User.class.getSimpleName(), "email");
     }
 
-    return UserResponse.from(create(User.of(name, email)));
+    return UserCreateResponse.from(create(User.of(name, email)));
   }
 
   @Override
