@@ -5,9 +5,8 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.OkrsTimeType;
 import org.ptit.okrs.core.constant.OkrsType;
-import org.ptit.okrs.core.entity.KeyResult;
 import org.ptit.okrs.core.entity.Objective;
-import org.ptit.okrs.core.exception.OkrsDateInvalidException;
+import org.ptit.okrs.core.exception.OkrsKeyResultPeriodTimeException;
 import org.ptit.okrs.core.model.ObjectiveDetailResponse;
 import org.ptit.okrs.core.model.ObjectiveResponse;
 import org.ptit.okrs.core.repository.ObjectiveRepository;
@@ -18,6 +17,7 @@ import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.ptit.okrs.core_util.DateUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements ObjectiveService {
@@ -32,6 +32,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
+  @Transactional
   public ObjectiveResponse create(
       String title,
       String description,
@@ -62,8 +63,9 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
+  @Transactional
   public void deleteById(String id) {
-    if(!isExist(id)) {
+    if (!isExist(id)) {
       throw new NotFoundException(id, Objective.class.getSimpleName());
     }
     keyResultService.deleteAllByObjectiveId(id);
@@ -71,6 +73,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ObjectiveDetailResponse getById(String id) {
     log.info("(getById)id : {}", id);
     ObjectiveProjection objective =
@@ -81,6 +84,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<ObjectiveResponse> list(String userId) {
     log.info("(list)userId : {}", userId);
     return repository.findByUserId(userId).stream()
@@ -89,6 +93,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
+  @Transactional
   public ObjectiveResponse update(
       String id,
       String title,
@@ -127,6 +132,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   }
 
   @Override
+  @Transactional(readOnly = true)
   public void validateKeyResultPeriodTime(
       String id, Integer keyResultStartDate, Integer keyResultEndDate) {
     log.info(
@@ -141,32 +147,25 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
     }
     Integer objectiveStartDate = DateUtils.getDate(objective.getStartDate());
     Integer objectiveEndDate = DateUtils.getDate(objective.getEndDate());
-    if (keyResultStartDate < objectiveStartDate || keyResultStartDate > objectiveEndDate) {
+    if (keyResultStartDate < objectiveStartDate
+        || keyResultStartDate > objectiveEndDate
+        || keyResultEndDate < objectiveStartDate
+        || keyResultEndDate > objectiveEndDate) {
       log.error(
-          "(validateKeyResultPeriodTime)keyResultStartDate : {}, keyResultStartDate : {} --> OkrsDateInvalidException",
+          "(validateKeyResultPeriodTime)keyResultStartDate : {}, keyResultStartDate : {}, id : {} --> OkrsKeyResultPeriodTimeException",
           keyResultStartDate,
-          keyResultEndDate);
-      throw new OkrsDateInvalidException(
-          KeyResult.class.getSimpleName(),
-          String.valueOf(keyResultStartDate),
-          String.valueOf(keyResultEndDate));
-    }
-    if (keyResultEndDate < objectiveStartDate || keyResultEndDate > objectiveEndDate) {
-      log.error(
-          "(validateKeyResultPeriodTime)keyResultStartDate : {}, keyResultStartDate : {} --> OkrsDateInvalidException",
-          keyResultStartDate,
-          keyResultEndDate);
-      throw new OkrsDateInvalidException(
-          KeyResult.class.getSimpleName(),
-          String.valueOf(keyResultStartDate),
-          String.valueOf(keyResultEndDate));
+          keyResultEndDate,
+          id);
+      throw new OkrsKeyResultPeriodTimeException(
+          String.valueOf(keyResultStartDate), String.valueOf(keyResultEndDate), id);
     }
   }
 
   @Override
+  @Transactional(readOnly = true)
   public void validateExist(String objectiveId) {
     log.info("(validateExist)objectiveId : {}", objectiveId);
-    if(!isExist(objectiveId)) {
+    if (!isExist(objectiveId)) {
       log.error("(validateExist)objectiveId : {} --> NOT FOUND EXCEPTION", objectiveId);
       throw new NotFoundException(objectiveId, Objective.class.getSimpleName());
     }

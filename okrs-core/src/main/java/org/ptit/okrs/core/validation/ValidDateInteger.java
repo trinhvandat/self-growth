@@ -16,7 +16,7 @@ public @interface ValidDateInteger {
 
   String message() default "Invalid date";
   Class<?>[] groups() default {};
-  Class<? extends Payload>[] payloads() default {};
+  Class<? extends Payload>[] payload() default {};
 
   class DateIntegerValidator implements ConstraintValidator<ValidDateInteger, Integer> {
 

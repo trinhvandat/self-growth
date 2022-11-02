@@ -18,6 +18,6 @@ public class OkrsResponse {
   }
 
   public static OkrsResponse of(int status) {
-    return OkrsResponse.of(status, DateUtils.getCurrentDateTimeStr());
+    return OkrsResponse.of(status, DateUtils.getCurrentDateTimeStr(), null);
   }
 }
