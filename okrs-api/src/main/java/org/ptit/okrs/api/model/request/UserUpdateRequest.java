@@ -1,10 +1,10 @@
 package org.ptit.okrs.api.model.request;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.constant.Gender;
+import org.ptit.okrs.core.validation.ValidDateInteger;
 
 @Data
 @NoArgsConstructor
@@ -12,7 +12,8 @@ public class UserUpdateRequest {
   @NotBlank
   private String name;
   private String phone;
-  private Long dateOfBirth;
+  @ValidDateInteger
+  private Integer dateOfBirth;
   private Gender gender;
   private String address;
 }

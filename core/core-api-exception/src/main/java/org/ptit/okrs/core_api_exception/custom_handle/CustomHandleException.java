@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
@@ -55,6 +58,30 @@ public class CustomHandleException {
             ERROR_CODE_FILE_SIZE_LIMIT_EXCEPTION,
             webRequest.getLocale(),
             params),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleValidationExceptions(
+      MethodArgumentNotValidException exception) {
+    log.info("(handleValidationExceptions)exception: {}", exception.getMessage());
+    Map<String, String> errors = new HashMap<>();
+    exception
+        .getBindingResult()
+        .getAllErrors()
+        .forEach(
+            error -> {
+              String fieldName = ((FieldError) error).getField();
+              String errorMessage = error.getDefaultMessage();
+              errors.put(fieldName, errorMessage);
+            });
+    log.info("(handleValidationExceptions) {}", errors);
+    return new ResponseEntity<>(
+        ErrorResponse.of(
+            HttpStatus.BAD_REQUEST.value(),
+            "org.ptit.okrs.core_api_exception.custom_handle.CustomHandleException",
+            errors),
         HttpStatus.BAD_REQUEST);
   }
 

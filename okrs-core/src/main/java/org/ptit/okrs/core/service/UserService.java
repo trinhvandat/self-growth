@@ -30,7 +30,7 @@ public interface UserService extends BaseService<User> {
       String userId,
       String name,
       String phone,
-      Long dateOfBirth,
+      Integer dateOfBirth,
       Gender gender,
       String address);
 
