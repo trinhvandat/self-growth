@@ -8,6 +8,8 @@ import org.ptit.okrs.core.repository.NotificationRepository;
 import org.ptit.okrs.core.service.NotificationService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,11 +29,13 @@ public class NotificationServiceImpl extends BaseServiceImpl<Notification> imple
         log.info("(create)content : {}, userId : {}", content, userId);
         var notification = Notification.of(content, userId);
         notification = create(notification);
+        String.format("<b>"+content+"</b>");
         return NotificationResponse.from(notification);
     }
 
     @Override
     public void deleteById(String id) {
+        repository.deleteById(id);
     }
 
     @Override
@@ -43,11 +47,9 @@ public class NotificationServiceImpl extends BaseServiceImpl<Notification> imple
 }
 
     @Override
-    public List<NotificationResponse> list(String userId) {
+    public Page<NotificationResponse> list(String userId, final Pageable pageable) {
         log.info("(list)userId : {}", userId);
-        return repository.findByUserId(userId).stream()
-                .map(NotificationResponse::from)
-                .collect(Collectors.toList());
+        return repository.findByUserId(userId, pageable).map(NotificationResponse::from);
     }
 
     @Override

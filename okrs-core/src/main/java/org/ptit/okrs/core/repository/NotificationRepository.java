@@ -2,12 +2,12 @@ package org.ptit.okrs.core.repository;
 
 import org.ptit.okrs.core.entity.Notification;
 import org.ptit.okrs.core.repository.base.BaseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface NotificationRepository extends BaseRepository<Notification> {
 
-    List<Notification> findByUserId(String userId);
+    Page<Notification> findByUserId(String userId, Pageable pageable);
 }

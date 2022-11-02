@@ -1,12 +1,10 @@
 package org.ptit.okrs.core.service;
 
-import org.ptit.okrs.core.constant.OkrsTimeType;
-import org.ptit.okrs.core.constant.OkrsType;
 import org.ptit.okrs.core.entity.Notification;
 import org.ptit.okrs.core.model.NotificationResponse;
-import org.ptit.okrs.core.model.ObjectiveDetailResponse;
-import org.ptit.okrs.core.model.ObjectiveResponse;
 import org.ptit.okrs.core.service.base.BaseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -37,7 +35,7 @@ public interface NotificationService extends BaseService<Notification> {
      * @param userId - id of user is logging
      * @return a list of notification
      */
-    List<NotificationResponse> list(String userId);
+    Page<NotificationResponse> list(String userId, final Pageable pageable);
 
     /**
      * update an objective

@@ -9,9 +9,12 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class NotificationRequest {
 
-    @NotBlank
     private String id;
 
     @NotBlank
     private String content;
+
+    @NotBlank
+    private String userId;
+
 }
