@@ -17,7 +17,7 @@ public class UserResponse {
   private String address;
   private String email;
   private String avatar;
-  private Long dateOfBirth;
+  private Integer dateOfBirth;
 
   public static UserResponse from(User user) {
     var userResponse = new UserResponse();

@@ -43,7 +43,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
       String id,
       String name,
       String phone,
-      Long dateOfBirth,
+      Integer dateOfBirth,
       Gender gender,
       String address) {
     log.info(
@@ -54,7 +54,15 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         dateOfBirth,
         gender,
         address);
-    var userUpdate = find(id);
+
+    var regexPhoneNumber = "(0)(3|5|7|8|9)+([0-9]{8})\\b";
+    if (!phone.matches(regexPhoneNumber)) {
+      log.error("(update)phone: {} invalid ", phone);
+      throw new InputDataInvalidException("phone", User.class.getSimpleName());
+    }
+
+
+      var userUpdate = find(id);
     if (Objects.isNull(userUpdate)) {
       log.info("(update)id: {} not found", id);
       throw new NotFoundException(id, User.class.getSimpleName());

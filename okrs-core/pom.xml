@@ -7,10 +7,10 @@
 
   <dependencies>
     <!-- INTERNAL -->
-<!--    <dependency>-->
-<!--      <artifactId>core-audit</artifactId>-->
-<!--      <groupId>org.ptit.okrs</groupId>-->
-<!--    </dependency>-->
+    <dependency>
+      <artifactId>core-audit</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
     <dependency>
       <artifactId>core-exception</artifactId>
       <groupId>org.ptit.okrs</groupId>
