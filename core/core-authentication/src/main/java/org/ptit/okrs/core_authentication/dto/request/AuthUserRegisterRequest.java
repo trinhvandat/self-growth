@@ -18,6 +18,7 @@ public class AuthUserRegisterRequest {
   @Email
   private String email;
 
+  //TODO: AnhNHS validate not have specific character
   @NotBlank
   private String username;
 

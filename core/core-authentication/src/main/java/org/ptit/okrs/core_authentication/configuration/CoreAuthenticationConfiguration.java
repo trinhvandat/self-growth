@@ -7,9 +7,14 @@ import org.ptit.okrs.core_authentication.repository.AuthUserRepository;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
+import org.ptit.okrs.core_authentication.service.OtpService;
 import org.ptit.okrs.core_authentication.service.impl.AuthAccountServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.AuthTokenServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.AuthUserServiceImpl;
+import org.ptit.okrs.core_authentication.service.impl.OtpServiceImpl;
+import org.ptit.okrs.core_email.configuration.EnableCoreEmail;
+import org.ptit.okrs.core_email.service.EmailService;
+import org.ptit.okrs.core_redis.config.EnableCoreRedis;
 import org.ptit.okrs.core_swagger.EnableCoreSwagger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -17,7 +22,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.concurrent.TimeUnit;
 
 
 @ComponentScan(basePackages = {"org.ptit.okrs.core_authentication.repository"})
@@ -27,8 +35,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
     transactionManagerRef = "jpaAuthTransactionManager"
 )
 @EntityScan(basePackages = {"org.ptit.okrs.core_authentication.entity"})
-//@EnableCoreRedis
+@EnableCoreRedis
 @EnableCoreSwagger
+@EnableCoreEmail
 public class CoreAuthenticationConfiguration {
 
   @Value("${application.authentication.access_token.jwt_secret:xxx}")
@@ -50,9 +59,13 @@ public class CoreAuthenticationConfiguration {
       AuthAccountService authAccountService,
       AuthUserService authUserService,
       AuthTokenService authTokenService,
-      PasswordEncoder passwordEncoder
+      PasswordEncoder passwordEncoder,
+      OtpService otpService,
+      EmailService emailService
   ) {
-    return new AuthFacadeServiceImpl(authAccountService, authUserService, authTokenService, passwordEncoder);
+    return new AuthFacadeServiceImpl(
+        authAccountService, authUserService, authTokenService, passwordEncoder, otpService, emailService
+    );
   }
 
   @Bean
@@ -65,8 +78,8 @@ public class CoreAuthenticationConfiguration {
     return new AuthTokenServiceImpl(accessTokenJwtSecret, accessTokenLifeTime);
   }
 
-//  @Bean
-//  public OtpService otpService(RedisTemplate<String, Object> redisTemplate) {
-//    return new OtpServiceImpl(redisTemplate, redisOtpTimeOut, TimeUnit.MINUTES);
-//  }
+  @Bean
+  public OtpService otpService(RedisTemplate<String, Object> redisTemplate) {
+    return new OtpServiceImpl(redisTemplate, redisOtpTimeOut, TimeUnit.MINUTES);
+  }
 }
