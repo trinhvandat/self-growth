@@ -49,8 +49,8 @@ public class DateUtils {
   public static LocalDate getLocalDate(Integer integerDate) {
     return LocalDate.parse(String.valueOf(integerDate), DATE_INTEGER_FORMATTER);
   }
-  public static Integer getDateDailyPlan(Integer integer) {
-    return Integer.parseInt(LocalDateTime.ofEpochSecond(integer, 0, ZoneOffset.of(VI_ZONE))
-        .format(DATE_INTEGER_FORMATTER));
+  public static Integer getDate(Integer integer) {
+    return LocalDate.parse(integer.toString(), DATE_INTEGER_FORMATTER)
+        .atStartOfDay(ZoneId.of(VI_ZONE)).hashCode();
   }
 }

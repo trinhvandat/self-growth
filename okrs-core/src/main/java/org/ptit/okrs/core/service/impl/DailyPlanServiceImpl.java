@@ -1,6 +1,7 @@
 package org.ptit.okrs.core.service.impl;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -8,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
 import org.ptit.okrs.core.entity.Objective;
+import org.ptit.okrs.core.exception.ConflicDataTitleOnDateDailyPlan;
+import org.ptit.okrs.core.exception.ConflictDataException;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.service.DailyPlanService;
@@ -42,8 +45,8 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
         userId,
         keyResultId);
     if (repository.existsByTitleAndDate(title, DateUtils.getCurrentDateInteger())) {
-      log.info("(create)title: {}, Error: Title on date daily plan is already taken!", title);
-      throw new ConflictException();
+      log.error("(create)title: {}, date:{} --> Error: Title on date daily plan is already taken!", title, DateUtils.getCurrentDateInteger());
+      throw new ConflicDataTitleOnDateDailyPlan(title, DateUtils.getCurrentDateInteger());
     }
     try {
       return DailyPlanResponse.from(
@@ -120,8 +123,8 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
         note,
         keyResultId);
     if (repository.existsByTitleAndDate(title, date)) {
-      log.info("(update)title: {}, Error: Title daily plan is already taken!", title);
-      throw new ConflictException();
+      log.error("(update)title: {}, date: {} --> Error: Title on date daily plan is already taken!", title, date);
+      throw new ConflicDataTitleOnDateDailyPlan(title, DateUtils.getCurrentDateInteger());
     }
     DailyPlan dailyPlanCheck =
         repository
@@ -132,7 +135,7 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
                 });
     dailyPlanCheck.setTitle(title);
     dailyPlanCheck.setDescription(description);
-    dailyPlanCheck.setDate(DateUtils.getCurrentDateInteger());
+    dailyPlanCheck.setDate(DateUtils.getDate(date));
     dailyPlanCheck.setNote(note);
     dailyPlanCheck.setKeyResultId(keyResultId);
     DailyPlan update = update(dailyPlanCheck);

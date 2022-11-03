@@ -48,6 +48,11 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    */
   DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId);
 
+  /**
+   * exist id key result of daily plan
+   * @param keyResultId - id key result by daily plan want to check
+   * @return true or false
+   */
   public Boolean existsById(String keyResultId);
 
   /**
