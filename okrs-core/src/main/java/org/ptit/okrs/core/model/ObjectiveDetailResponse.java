@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.entity.Objective;
-import org.ptit.okrs.core.repository.projection.ObjectiveProjection;
 import org.ptit.okrs.core_util.DateUtils;
 
 @Data
@@ -16,8 +15,8 @@ public class ObjectiveDetailResponse extends ObjectiveResponse {
   private List<KeyResultResponse> keyResults;
 
   public static ObjectiveDetailResponse from(
-      ObjectiveProjection objective, List<KeyResultResponse> keyResults) {
-    ObjectiveDetailResponse response = new ObjectiveDetailResponse();
+      Objective objective, List<KeyResultResponse> keyResults) {
+    var response = new ObjectiveDetailResponse();
     response.setId(objective.getId());
     response.setTitle(objective.getTitle());
     response.setDescription(objective.getDescription());

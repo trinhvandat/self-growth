@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.ptit.orks.core_audit.SecurityService.getUserId;
+
 @RestController
 @RequestMapping(BaseUrl.OBJECTIVE_BASE_URL)
 @RequiredArgsConstructor
@@ -45,7 +47,7 @@ public class ObjectiveController {
             request.getEndDate(),
             request.getType(),
             request.getTimePeriodType(),
-            "e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
+            getUserId()));
   }
 
   @ApiOperation("Delete an objective")
@@ -73,8 +75,8 @@ public class ObjectiveController {
   @ResponseStatus(HttpStatus.OK)
   public OkrsResponse list() {
     log.info("(list)");
-    return OkrsResponse.of(
-        HttpStatus.OK.value(), service.list("e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
+    //TODO get by id and userid: AnhNHS
+    return OkrsResponse.of(HttpStatus.OK.value(), service.list(getUserId()));
   }
 
   @ApiOperation("Update an objective")
@@ -96,6 +98,6 @@ public class ObjectiveController {
             request.getEndDate(),
             request.getType(),
             request.getTimePeriodType(),
-            "e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
+            getUserId()));
   }
 }
