@@ -5,22 +5,15 @@ import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.api.constant.OkrsApiConstant.BaseUrl;
-import org.ptit.okrs.api.model.request.ObjectiveCreateRequest;
-import org.ptit.okrs.api.model.request.ObjectiveUpdateRequest;
+import org.ptit.okrs.api.model.request.*;
 import org.ptit.okrs.api.model.response.OkrsResponse;
+import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.ObjectiveService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import static org.ptit.okrs.api.constant.OkrsApiConstant.ResourceConstant.KEY_RESULT;
 import static org.ptit.orks.core_audit.SecurityService.getUserId;
 
 @RestController
@@ -30,6 +23,7 @@ import static org.ptit.orks.core_audit.SecurityService.getUserId;
 public class ObjectiveController {
 
   private final ObjectiveService service;
+  private final KeyResultService keyResultService;
 
   @ApiOperation("Create new objective")
   @ApiResponse(code = 201, response = OkrsResponse.class, message = "Successfully response.")
@@ -99,5 +93,91 @@ public class ObjectiveController {
             request.getType(),
             request.getTimePeriodType(),
             getUserId()));
+  }
+
+  @ApiOperation("Create new key result")
+  @ApiResponse(code = 201, response = OkrsResponse.class, message = "Successfully response.")
+  @PostMapping(value = "/{objective_id}/" + KEY_RESULT)
+  @ResponseStatus(HttpStatus.CREATED)
+  public OkrsResponse createKeyResult(
+      @PathVariable("objective_id") String objectiveId,
+      @Validated @RequestBody KeyResultCreateRequest request) {
+    log.info("(createKeyResult)objectiveId : {}, request : {}", objectiveId, request);
+    request.validatePathVariable(objectiveId);
+    request.validate();
+    service.validateExist(request.getObjectiveId());
+    service.validateKeyResultPeriodTime(
+        request.getObjectiveId(), request.getStartDate(), request.getEndDate());
+    return OkrsResponse.of(
+        HttpStatus.CREATED.value(),
+        keyResultService.create(
+            request.getObjectiveId(),
+            request.getTitle(),
+            request.getDescription(),
+            request.getStartDate(),
+            request.getEndDate(),
+            request.getProgress(),
+            "e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
+  }
+
+  @ApiOperation("Delete a key result")
+  @ApiResponse(code = 200, message = "Successfully response.")
+  @DeleteMapping(value = "/{objective_id}/" + KEY_RESULT + "/{key_result_id}")
+  @ResponseStatus(HttpStatus.OK)
+  public OkrsResponse deleteKeyResultById(
+      @PathVariable("objective_id") String objectiveId,
+      @PathVariable("key_result_id") String keyResultId
+  ) {
+    log.info("(deleteById)objectiveId : {}, keyResultId : {}", objectiveId, keyResultId);
+    service.validateExist(objectiveId);
+    keyResultService.deleteById(keyResultId, objectiveId);
+    return OkrsResponse.of(HttpStatus.OK.value());
+  }
+
+  @ApiOperation("Update a key result")
+  @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+  @PutMapping(value = "/{objective_id}/" + KEY_RESULT + "/{key_result_id}")
+  @ResponseStatus(HttpStatus.OK)
+  public OkrsResponse updateKeyResult(
+      @PathVariable("objective_id") String objectiveId,
+      @PathVariable("key_result_id") String keyResultId,
+      @Validated @RequestBody KeyResultUpdateRequest request
+  ) {
+    log.info("(update)objectiveId : {}, keyResultId : {}, request : {}",
+        objectiveId, keyResultId, request);
+    request.validatePathVariable(keyResultId, objectiveId);
+    service.validateExist(request.getObjectiveId());
+    service.validateKeyResultPeriodTime(
+        request.getObjectiveId(), request.getStartDate(), request.getEndDate());
+    request.validate();
+    return OkrsResponse.of(
+        HttpStatus.OK.value(),
+        keyResultService.update(
+            request.getId(),
+            request.getObjectiveId(),
+            request.getTitle(),
+            request.getDescription(),
+            request.getStartDate(),
+            request.getEndDate(),
+            request.getProgress(),
+            getUserId()));
+  }
+
+  @ApiOperation("Update the progress of a key result")
+  @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+  @PatchMapping(value = "/{objective_id}/" + KEY_RESULT + "/{key_result_id}")
+  @ResponseStatus(HttpStatus.OK)
+  public OkrsResponse updateKeyResultProgress(
+      @PathVariable("objective_id") String objectiveId,
+      @PathVariable("key_result_id") String keyResultId,
+      @Validated @RequestBody KeyResultUpdateProgressRequest request
+  ) {
+    log.info(
+        "(updateProgress)objectiveId : {}, keyResultId : {}, request : {}",
+        objectiveId, keyResultId, request);
+    service.validateExist(objectiveId);
+    request.validatePathVariable(keyResultId);
+    keyResultService.updateProgress(keyResultId, getUserId(), request.getProgress());
+    return OkrsResponse.of(HttpStatus.OK.value());
   }
 }
