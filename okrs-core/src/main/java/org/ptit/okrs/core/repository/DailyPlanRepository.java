@@ -12,4 +12,6 @@ public interface DailyPlanRepository extends BaseRepository<DailyPlan> {
 
   List<DailyPlan> findByKeyResultId(String keyResultId);
 
+  Boolean existsByTitleAndDate(String title, Integer date);
+
 }

@@ -21,7 +21,7 @@ public class User extends BaseEntityWithUpdater {
   private String phone;
   @Column(nullable = false, unique = true)
   private String email;
-  private Long dateOfBirth;
+  private Integer dateOfBirth;
   private Gender gender;
   private String address;
   private String avatar;

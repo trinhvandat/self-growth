@@ -7,6 +7,10 @@
   <dependencies>
     <!-- INTERNAL -->
     <dependency>
+      <groupId>org.ptit.okrs</groupId>
+      <artifactId>core-authentication</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>core-api-exception</artifactId>
       <groupId>org.ptit.okrs</groupId>
     </dependency>

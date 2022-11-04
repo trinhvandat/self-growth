@@ -45,7 +45,7 @@ public class ObjectiveController {
             request.getEndDate(),
             request.getType(),
             request.getTimePeriodType(),
-            "userId"));
+            "e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
   }
 
   @ApiOperation("Delete an objective")
@@ -54,6 +54,7 @@ public class ObjectiveController {
   @ResponseStatus(HttpStatus.OK)
   public OkrsResponse deleteById(@PathVariable("id") String id) {
     log.info("(deleteById)id : {}", id);
+    service.deleteById(id);
     return OkrsResponse.of(HttpStatus.OK.value());
   }
 
@@ -72,7 +73,8 @@ public class ObjectiveController {
   @ResponseStatus(HttpStatus.OK)
   public OkrsResponse list() {
     log.info("(list)");
-    return OkrsResponse.of(HttpStatus.OK.value(), service.list("userId"));
+    return OkrsResponse.of(
+        HttpStatus.OK.value(), service.list("e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
   }
 
   @ApiOperation("Update an objective")
@@ -83,6 +85,7 @@ public class ObjectiveController {
       @PathVariable("id") String id, @Validated @RequestBody ObjectiveUpdateRequest request) {
     log.info("(update)id : {}, request : {}", id, request);
     request.validate();
+    request.validatePathVariable(id);
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         service.update(
@@ -93,6 +96,6 @@ public class ObjectiveController {
             request.getEndDate(),
             request.getType(),
             request.getTimePeriodType(),
-            "userId"));
+            "e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
   }
 }

@@ -49,6 +49,13 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
   DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId);
 
   /**
+   * exist id key result of daily plan
+   * @param keyResultId - id key result by daily plan want to check
+   * @return true or false
+   */
+  public Boolean existsById(String keyResultId);
+
+  /**
    * Update daily plan
    *
    * @param id          - id of the daily plan want to update
@@ -56,7 +63,6 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    * @param description - description of the task
    * @param date        - date of the task
    * @param note        - note of the task
-   * @param userId      - userId of the task
    * @param keyResultId - keyResultId of the task
    * @return - information of daily plan after update
    */
@@ -66,7 +72,6 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
       String description,
       Integer date,
       String note,
-      String userId,
       String keyResultId);
 
   /**

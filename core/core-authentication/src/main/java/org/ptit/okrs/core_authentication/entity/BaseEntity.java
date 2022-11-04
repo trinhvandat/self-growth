@@ -8,6 +8,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import java.util.Objects;
+import java.util.UUID;
 
 @Data
 @MappedSuperclass
@@ -26,4 +29,9 @@ public class BaseEntity {
 
   @LastModifiedDate
   private Long lastUpdatedAt;
+
+  @PrePersist
+  public void ensureId() {
+    this.id = Objects.isNull(this.id) ? UUID.randomUUID().toString() : this.id;
+  }
 }

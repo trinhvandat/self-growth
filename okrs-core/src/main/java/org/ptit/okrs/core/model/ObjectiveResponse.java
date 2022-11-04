@@ -18,6 +18,7 @@ public class ObjectiveResponse {
   private int endDate;
   private OkrsType type;
   private OkrsTimeType timePeriodType;
+  private String objectType;
 
   public static ObjectiveResponse from(Objective objective) {
     return getObjectiveResponse(objective.getId(), objective.getTitle(), objective.getDescription(),
@@ -41,6 +42,7 @@ public class ObjectiveResponse {
     response.setEndDate(DateUtils.getDate(endDate));
     response.setType(type);
     response.setTimePeriodType(timePeriodType);
+    response.setObjectType(Objective.class.getSimpleName());
     return response;
   }
 }

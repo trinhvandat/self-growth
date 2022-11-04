@@ -42,6 +42,7 @@ public class KeyResultController {
       @PathVariable("objective_id") String objectiveId,
       @Validated @RequestBody KeyResultCreateRequest request) {
     log.info("(create)objectiveId : {}, request : {}", objectiveId, request);
+    request.validatePathVariable(objectiveId);
     request.validate();
     objectiveService.validateExist(request.getObjectiveId());
     objectiveService.validateKeyResultPeriodTime(
@@ -55,7 +56,7 @@ public class KeyResultController {
             request.getStartDate(),
             request.getEndDate(),
             request.getProgress(),
-            "userId"));
+            "e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
   }
 
   @ApiOperation("Delete a key result")
@@ -84,7 +85,11 @@ public class KeyResultController {
         objectiveId,
         keyResultId,
         request);
+    request.validatePathVariable(keyResultId, objectiveId);
     objectiveService.validateExist(request.getObjectiveId());
+    objectiveService.validateKeyResultPeriodTime(
+        request.getObjectiveId(), request.getStartDate(), request.getEndDate());
+    request.validate();
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         service.update(
@@ -95,7 +100,7 @@ public class KeyResultController {
             request.getStartDate(),
             request.getEndDate(),
             request.getProgress(),
-            "userId"));
+            "e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
   }
 
   @ApiOperation("Update the progress of a key result")
@@ -112,9 +117,7 @@ public class KeyResultController {
         keyResultId,
         request);
     objectiveService.validateExist(objectiveId);
-    return OkrsResponse.of(
-        HttpStatus.OK.value(),
-        service.updateProgress(
-            request.getId(), request.getObjectiveId(), "userId", request.getProgress()));
+    request.validatePathVariable(keyResultId);
+    return OkrsResponse.of(HttpStatus.OK.value());
   }
 }

@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -27,11 +29,24 @@ public class OkrsWebSecurityConfiguration {
   private final AuthenticationErrorHandle authenticationErrorHandle;
 
   @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
+
+  @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
         .csrf().disable()
         .authorizeRequests()
         .antMatchers("/api/v1/user/login").permitAll()
+        .antMatchers(
+            "/swagger-ui**",
+            "/v2/api-docs**",
+            "/webjars/**", "/error",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/api/v1/auth/users/**"
+        ).permitAll()
         .anyRequest().authenticated()
         .and()
         .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -14,15 +14,18 @@ public class DailyPlanResponse {
   private DailyPlanStatus status;
   private Integer date;
   private String note;
+  private String userId;
   private String keyResultId;
 
   public static DailyPlanResponse from(DailyPlan dailyPlan) {
     DailyPlanResponse response = new DailyPlanResponse();
+    response.setId(dailyPlan.getId());
     response.setTitle(dailyPlan.getTitle());
     response.setDescription(dailyPlan.getDescription());
     response.setStatus(dailyPlan.getStatus());
     response.setDate(dailyPlan.getDate());
     response.setNote(dailyPlan.getNote());
+    response.setUserId(dailyPlan.getUserId());
     response.setKeyResultId(dailyPlan.getKeyResultId());
     return response;
   }

@@ -6,7 +6,19 @@
 
   <dependencies>
     <dependency>
+      <artifactId>core-email</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
       <artifactId>core-exception</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>core-redis</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>core-swagger</artifactId>
       <groupId>org.ptit.okrs</groupId>
     </dependency>
     <dependency>
@@ -36,6 +48,10 @@
     <dependency>
       <artifactId>jjwt</artifactId>
       <groupId>io.jsonwebtoken</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-validation</artifactId>
+      <groupId>org.springframework.boot</groupId>
     </dependency>
   </dependencies>
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface KeyResultRepository extends BaseRepository<KeyResult> {
 
   void deleteAllByObjectiveId(String objectiveId);
+  Boolean existsByTitleAndObjectiveId(String title, String objectiveId);
   @Query("select new org.ptit.okrs.core.repository.projection.KeyResultProjection(kr.id,"
       + " kr.objectiveId,"
       + " kr.title,"
