@@ -1,21 +1,15 @@
 package org.ptit.okrs.core.service.impl;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
-import org.ptit.okrs.core.entity.Objective;
 import org.ptit.okrs.core.exception.ConflicDataTitleOnDateDailyPlan;
-import org.ptit.okrs.core.exception.ConflictDataException;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.service.DailyPlanService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
-import org.ptit.okrs.core_exception.ConflictException;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.ptit.okrs.core_util.DateUtils;
 import org.springframework.dao.DuplicateKeyException;
@@ -38,12 +32,10 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
       String title,
       String description,
       String userId,
-      String keyResultId) {
+      String keyResultId
+  ) {
     log.info("(create)title: {}, description: {}, userId: {}, keyResultId: {}",
-        title,
-        description,
-        userId,
-        keyResultId);
+        title, description, userId, keyResultId);
     if (repository.existsByTitleAndDate(title, DateUtils.getCurrentDateInteger())) {
       log.error("(create)title: {}, date:{} --> Error: Title on date daily plan is already taken!", title, DateUtils.getCurrentDateInteger());
       throw new ConflicDataTitleOnDateDailyPlan(title, DateUtils.getCurrentDateInteger());
@@ -53,18 +45,15 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
           create(DailyPlan.of(title, description, userId, keyResultId)));
     } catch (DuplicateKeyException er) {
       log.error("(create)exception : {}", er.getClass().getName());
+      //TODO: Build response in message for this exception
       throw new DuplicateKeyException(DUPLICATE_KEY_MESSAGE);
     }
   }
 
   @Override
-  public void delete(String id) {
-    super.delete(id);
-  }
-
-  @Override
   @Transactional(readOnly = true)
   public List<DailyPlanResponse> getByKeyResultId(String keyResultId) {
+    //TODO: Get by key result and userId
     log.info("(getByKeyResultId)keyResultId: {}", keyResultId);
     return repository.findByKeyResultId(keyResultId)
         .stream()
@@ -75,6 +64,7 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   @Override
   @Transactional(readOnly = true)
   public List<DailyPlanResponse> getByDate(Integer date) {
+    //TODO: get by date and userId
     log.info("(getByDate) date: {}", date);
     return repository.findByDate(date)
         .stream()
@@ -86,6 +76,7 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   @Override
   @Transactional
   public DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId) {
+    //TODO: check permission: user only update their daily plan
     log.info("(linkDailyPlanToKeyResults)id: {}, keyResultId: {}", id, keyResultId);
     DailyPlan dailyPlanCheck =
         repository
@@ -114,15 +105,11 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
       String description,
       Integer date,
       String note,
-      String keyResultId) {
-    log.info("(update)id: {}, title: {}, description: {}, date: {}, note: {}, keyResultId: {}",
-        id,
-        title,
-        description,
-        date,
-        note,
-        keyResultId);
+      String keyResultId
+  ) {
+    log.info("(update)id: {}, title: {}", id, title);
     if (repository.existsByTitleAndDate(title, date)) {
+      //TODO: check permission: user only update their daily plan
       log.error("(update)title: {}, date: {} --> Error: Title on date daily plan is already taken!", title, date);
       throw new ConflicDataTitleOnDateDailyPlan(title, DateUtils.getCurrentDateInteger());
     }
@@ -146,15 +133,16 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   @Transactional
   public DailyPlanResponse updateStatusDailyPlan(String id, DailyPlanStatus status) {
     log.info("(updateStatusDailyPlan)id: {}, status: {}", id, status);
-    DailyPlan dailyPlanCheck =
-        repository
-            .findById(id)
-            .orElseThrow(
-                () -> {
-                  throw new NotFoundException(id, DailyPlan.class.getSimpleName());
-                });
-    dailyPlanCheck.setStatus(status);
-    DailyPlan update = update(dailyPlanCheck);
+
+    if(!isExist(id)) {
+      log.error("(updateStatusDailyPlan)id: {} not found", id);
+      throw new NotFoundException(id, DailyPlan.class.getSimpleName());
+    }
+
+    //TODO: write query for update this daily plan. Not update all entity.
+    var dailyPlan = find(id);
+    dailyPlan.setStatus(status);
+    DailyPlan update = update(dailyPlan);
     return DailyPlanResponse.from(update);
   }
 }
