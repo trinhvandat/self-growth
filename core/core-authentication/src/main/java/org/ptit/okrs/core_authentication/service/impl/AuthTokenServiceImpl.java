@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -18,9 +17,19 @@ public class AuthTokenServiceImpl implements AuthTokenService {
   private final String accessTokenJwtSecret;
   private final Long accessTokenLifeTime;
 
-  public AuthTokenServiceImpl(String accessTokenJwtSecret, Long accessTokenLifeTime) {
+  private final String refreshTokenJwtSecret;
+  private final Long refreshTokenLifeTime;
+
+  public AuthTokenServiceImpl(
+      String accessTokenJwtSecret,
+      Long accessTokenLifeTime,
+      String refreshTokenJwtSecret,
+      Long refreshTokenLifeTime
+  ) {
     this.accessTokenJwtSecret = accessTokenJwtSecret;
     this.accessTokenLifeTime = accessTokenLifeTime;
+    this.refreshTokenJwtSecret = refreshTokenJwtSecret;
+    this.refreshTokenLifeTime = refreshTokenLifeTime;
   }
 
   @Override
@@ -42,6 +51,27 @@ public class AuthTokenServiceImpl implements AuthTokenService {
   public boolean validateAccessToken(String accessToken, String userId) {
     log.info("(validateAccessToken)accessToken: {}, userId: {}", accessToken, userId);
     return getSubjectFromAccessToken(accessToken).equals(userId) && !isExpiredToken(accessToken, accessTokenJwtSecret);
+  }
+
+  @Override
+  public String generateRefreshToken(String userId, String email, String username) {
+    log.info("(generateRefreshToken)userId: {}, email: {}, username: {}", userId, email, username);
+    var claims = new HashMap<String, Object>();
+    claims.put("email", email);
+    claims.put("username", username);
+    return generateToken(userId, claims, refreshTokenLifeTime, refreshTokenJwtSecret);
+  }
+
+  @Override
+  public String getSubjectFromRefreshToken(String refreshToken) {
+    log.debug("(getSubjectFromRefreshToken)refreshToken: {}", refreshToken);
+    return getClaim(refreshToken, Claims::getSubject, refreshTokenJwtSecret);
+  }
+
+  @Override
+  public boolean validateRefreshToken(String refreshToken, String userId) {
+    log.info("(validateRefreshToken)refreshToken: {}, userId: {}", refreshToken, userId);
+    return getSubjectFromRefreshToken(refreshToken).equals(userId) && !isExpiredToken(refreshToken, refreshTokenJwtSecret);
   }
 
   private String generateToken(String subject, Map<String, Object> claims, long tokenLifeTime, String jwtSecret) {

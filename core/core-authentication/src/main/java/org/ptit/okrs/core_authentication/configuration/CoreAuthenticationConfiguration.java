@@ -28,6 +28,12 @@ public class CoreAuthenticationConfiguration {
   @Value("${application.authentication.access_token.life_time}")
   private Long accessTokenLifeTime;
 
+  @Value("${application.authentication.refresh_token.jwt_secret:xxx}")
+  private String refreshTokenJwtSecret;
+
+  @Value("${application.authentication.refresh_token.life_time}")
+  private Long refreshTokenLifeTime;
+
   @Bean
   public AuthAccountService authAccountService(AuthAccountRepository repository) {
     return new AuthAccountServiceImpl(repository);
@@ -40,6 +46,11 @@ public class CoreAuthenticationConfiguration {
 
   @Bean
   public AuthTokenService authTokenService() {
-    return new AuthTokenServiceImpl(accessTokenJwtSecret, accessTokenLifeTime);
+    return new AuthTokenServiceImpl(
+        accessTokenJwtSecret,
+        accessTokenLifeTime,
+        refreshTokenJwtSecret,
+        refreshTokenLifeTime
+    );
   }
 }
