@@ -80,14 +80,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
   @Override
   public UserResponse get(String userId) {
-    log.info("(get)userId: {}", userId);
-
-    return repository
-        .find(userId)
-        .orElseThrow(
-            () -> {
-              throw new NotFoundException(userId, User.class.getSimpleName());
-            });
+    log.debug("(get)userId: {}", userId);
+    return UserResponse.from(find(userId));
   }
 
   @Override
