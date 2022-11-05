@@ -26,4 +26,10 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
       throw new NotFoundException(id, Account.class.getSimpleName());
     }
   }
+
+  @Override
+  public boolean existsUserIdAndUsername(String userId, String username) {
+    log.info("(existsUserIdAndUsername)userId: {}, username: {}", userId, username);
+    return repository.existsByUserIdAndUsername(userId, username);
+  }
 }
