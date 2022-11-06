@@ -85,16 +85,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
-  public String changePathAvatar(String userId, String pathAvatar) {
-    log.info("(changeAvatar)userId: {}, avatar: {}", userId, pathAvatar);
-    var user = find(userId);
-    if (Objects.isNull(user)) {
+  public void changePathAvatar(String userId, String pathAvatar) {
+    log.info("(changePathAvatar)userId: {}, pathAvatar: {}", userId, pathAvatar);
+    if (!isExist(userId)) {
+      log.error("(changePathAvatar)userId: {} not found", userId);
       throw new NotFoundException(userId, User.class.getSimpleName());
     }
-
-    user.setAvatar(pathAvatar);
-     user = update(user);
-    return user.getAvatar();
+    repository.updateAvatar(userId, pathAvatar);
   }
 
   @Override
