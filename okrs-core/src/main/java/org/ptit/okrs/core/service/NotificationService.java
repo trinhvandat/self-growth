@@ -56,6 +56,8 @@ public interface NotificationService extends BaseService<Notification> {
             String id,
             String content,
             String userId);
+
+    void deleteAll(List<Notification> notifications);
 }
 
 

@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-
 import static org.apache.commons.lang.exception.ExceptionUtils.getFullStackTrace;
 
 @Component
@@ -34,8 +32,8 @@ public class DeleteOverdueNotificationSchedule {
     try {
       int page = 0;
       while (true) {
-        var notifications = notificationService.searchByDateLessThan(new Date().getTime(), page, size);
-        //TODO: delete notification with async
+        var notifications = notificationService.searchByDateLessThan(System.currentTimeMillis(), page, size);
+        notificationService.deleteAll(notifications);
         if (notifications.size() < size) {
           break;
         }

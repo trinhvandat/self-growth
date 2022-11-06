@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationRepository extends BaseRepository<Notification> {
 
-    Page<Notification> findByUserId(String userId, Pageable pageable);
+  Page<Notification> findByUserId(String userId, Pageable pageable);
+  Page<Notification> findByCreatedAtLessThan(long date, Pageable pageable);
 }
