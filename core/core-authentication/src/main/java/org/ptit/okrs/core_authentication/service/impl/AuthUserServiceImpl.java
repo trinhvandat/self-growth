@@ -2,6 +2,7 @@ package org.ptit.okrs.core_authentication.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_authentication.entity.AuthUser;
+import org.ptit.okrs.core_authentication.exception.AuthUserNotFoundWithEmail;
 import org.ptit.okrs.core_authentication.exception.EmailAlreadyExistException;
 import org.ptit.okrs.core_authentication.repository.AuthUserRepository;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
@@ -35,5 +36,24 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     return repository.save(AuthUser.from(email, email));
+  }
+
+  @Override
+  public AuthUser findByEmail(String email) {
+    log.debug("(findByEmail)email: {}", email);
+    return repository.findByEmail(email)
+        .orElseThrow(() -> {
+          log.error("(findByEmail)email: {} not found", email);
+          throw new AuthUserNotFoundWithEmail(email);
+        });
+  }
+
+  @Override
+  public void validateExistedWithEmail(String email) {
+    log.debug("(validateExistedWithEmail)email: {}", email);
+    if (!repository.existsByEmail(email)) {
+      log.error("(findByEmail)email: {} not found", email);
+      throw new AuthUserNotFoundWithEmail(email);
+    }
   }
 }

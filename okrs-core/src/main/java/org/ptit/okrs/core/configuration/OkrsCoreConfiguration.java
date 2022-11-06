@@ -25,8 +25,8 @@ public class OkrsCoreConfiguration {
   }
 
   @Bean
-  public DailyPlanService dailyPlanService(DailyPlanRepository repository) {
-    return new DailyPlanServiceImpl(repository);
+  public DailyPlanService dailyPlanService(DailyPlanRepository repository, UserService userService) {
+    return new DailyPlanServiceImpl(repository, userService);
   }
 
   @Bean

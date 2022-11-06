@@ -8,12 +8,10 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class AuthUserActiveAccountRequest {
 
-  //TODO: LingTG add validate for email
   @Email
   @NotBlank
   private String email;
 
-  //TODO: LinhTG add validate for otp
   @NotBlank
   private String otp;
 }

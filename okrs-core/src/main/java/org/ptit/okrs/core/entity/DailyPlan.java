@@ -27,7 +27,7 @@ public class DailyPlan extends BaseEntityWithUpdater {
   @Enumerated(EnumType.STRING)
   private DailyPlanStatus status;
 
-  private Integer date;
+  private Long date;
 
   private String userId;
 
@@ -40,7 +40,7 @@ public class DailyPlan extends BaseEntityWithUpdater {
     dailyPlan.setTitle(title);
     dailyPlan.setDescription(description);
     dailyPlan.setStatus(DailyPlanStatus.TODO);
-    dailyPlan.setDate(DateUtils.getCurrentDateInteger());
+    dailyPlan.setDate(DateUtils.getEpochTime(DateUtils.getCurrentDateInteger()));
     dailyPlan.setUserId(userId);
     dailyPlan.setKeyResultId(keyResultId);
     return dailyPlan;

@@ -32,28 +32,22 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    * @param keyResultId - id of the key result you want to get daily plan
    * @return - information of daily plan that you get from id key result
    */
-  List<DailyPlanResponse> getByKeyResultId(String keyResultId);
+  List<DailyPlanResponse> getByKeyResultId(String keyResultId, String userId);
 
   /**
    * get all daily plan
    * @return - all daily plan available in data warehouse
    */
-  List<DailyPlanResponse> getByDate(Integer date);
+  List<DailyPlanResponse> getByDate(Integer date, String userId);
 
   /**
    * Link daily plan to key results
    * @param id - the id of the daily plan
    * @param keyResultId - id of the key results want to link
+   * @param userId - userId of the task check with id for user
    * @return - The information of the daily plan has been linked
    */
-  DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId);
-
-  /**
-   * exist id key result of daily plan
-   * @param keyResultId - id key result by daily plan want to check
-   * @return true or false
-   */
-  public Boolean existsById(String keyResultId);
+  DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId, String userId);
 
   /**
    * Update daily plan
@@ -64,6 +58,7 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    * @param date        - date of the task
    * @param note        - note of the task
    * @param keyResultId - keyResultId of the task
+   * @param userId      - userId of the task check with id for user
    * @return - information of daily plan after update
    */
   DailyPlanResponse update(
@@ -72,14 +67,14 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
       String description,
       Integer date,
       String note,
-      String keyResultId);
+      String keyResultId,
+      String userId);
 
   /**
    * Update status daily plan
    * @param id      - id of the dail plan want to update status
    * @param status  - status of the task
-   * @return - information of daily plan after updating status
    */
-  DailyPlanResponse updateStatusDailyPlan(String id, DailyPlanStatus status);
+  void updateStatusDailyPlan(String id, DailyPlanStatus status);
 
 }

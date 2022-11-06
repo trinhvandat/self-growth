@@ -70,8 +70,7 @@ public class CoreAuthenticationConfiguration {
       EmailService emailService
   ) {
     return new AuthFacadeServiceImpl(
-        authAccountService, authUserService, authTokenService, passwordEncoder, otpService, emailService
-    );
+        authAccountService, authUserService, authTokenService, passwordEncoder, otpService, emailService);
   }
 
   @Bean

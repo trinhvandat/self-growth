@@ -1,10 +1,19 @@
 package org.ptit.okrs.core_authentication.facade;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.core_authentication.dto.request.*;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordResetRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserLoginRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserRegisterRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserResetPasswordRequest;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
+import org.ptit.okrs.core_authentication.exception.OtpNotFoundException;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
@@ -13,8 +22,6 @@ import org.ptit.okrs.core_email.service.EmailService;
 import org.ptit.okrs.core_util.GeneratorUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
 
 @Slf4j
 public class AuthFacadeServiceImpl implements AuthFacadeService {
@@ -45,11 +52,17 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   @Override
   public void activeAccount(AuthUserActiveAccountRequest request) {
     log.info("(activeAccount)request: {}", request);
-    //Step 1: validate email exist? Email have an account is de-active?
-    //Step 2: validate otp
-      // 2.1: otp expired
-      // 2.2: otp invalid
-    //step 3: if request valid, active account -> update isActivated of account = true.
+    authUserService.validateExistedWithEmail(request.getEmail());
+
+    var otpRedis = otpService.get(request.getEmail());
+    if (Objects.isNull(otpRedis)) {
+      throw new OtpNotFoundException(request.getOtp(), "Otp code has expired!");
+    }
+    if (Objects.equals(otpRedis, request.getOtp())) {
+      authAccountService.activeByEmail(request.getEmail());
+    } else {
+      throw new OtpNotFoundException(request.getOtp(), "Invalid Otp code!");
+    }
   }
 
   @Override
@@ -103,7 +116,8 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   }
 
   @Override
-  public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(AuthUserForgotPasswordOtpVerifyRequest request) {
+  public AuthUserForgotPasswordOtpVerifyResponse
+verifyOtpForgotPassword(AuthUserForgotPasswordOtpVerifyRequest request) {
     log.info("(verifyOtpForgotPassword)request: {}", request);
     //chek email exist
     //verify otp

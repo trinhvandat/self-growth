@@ -7,4 +7,6 @@ public interface AuthAccountService {
   AuthAccount findByUserIdWithThrow(String userId);
 
   AuthAccount create(String userId, String username, String password);
+
+  void activeByEmail(String email);
 }

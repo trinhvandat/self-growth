@@ -6,4 +6,8 @@ public interface AuthUserService {
   AuthUser findById(String id);
 
   AuthUser create(String email);
+
+  AuthUser findByEmail(String email);
+
+  void validateExistedWithEmail(String email);
 }

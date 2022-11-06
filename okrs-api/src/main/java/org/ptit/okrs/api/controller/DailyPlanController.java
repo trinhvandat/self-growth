@@ -75,9 +75,9 @@ public class DailyPlanController {
   public OkrsResponse getByKeyResultId(@RequestParam("key_result_id") String keyResultId) {
     keyResultService.validateExist(keyResultId);
     if (log.isDebugEnabled()) {
-      log.debug("(get)id: {}", keyResultId);
+      log.debug("(getByKeyResultId)keyResultId: {}", keyResultId);
     }
-    return OkrsResponse.of(HttpStatus.OK.value(), service.getByKeyResultId(keyResultId));
+    return OkrsResponse.of(HttpStatus.OK.value(), service.getByKeyResultId(keyResultId, getUserId()));
   }
 
   @ApiOperation("Get list task of daily plan by date")
@@ -90,7 +90,7 @@ public class DailyPlanController {
     if (log.isDebugEnabled()) {
       log.debug("(list)date: {}", date);
     }
-    return OkrsResponse.of(HttpStatus.OK.value(), service.getByDate(date));
+    return OkrsResponse.of(HttpStatus.OK.value(), service.getByDate(date, getUserId()));
   }
 
   @ApiOperation("Link task of daily plan to key result")
@@ -103,7 +103,8 @@ public class DailyPlanController {
   ) {
     log.info("(linkDailyPlanToKeyResults)id: {}, keyResultId: {}", id, keyResultId);
     keyResultService.validateExist(keyResultId);
-    return OkrsResponse.of(HttpStatus.OK.value(), service.linkDailyPlanToKeyResults(id, keyResultId));
+    return OkrsResponse.of(HttpStatus.OK.value(),
+        service.linkDailyPlanToKeyResults(id, keyResultId, getUserId()));
   }
 
   @ApiOperation("Update task of daily plan")
@@ -123,7 +124,8 @@ public class DailyPlanController {
             request.getDescription(),
             request.getDate(),
             request.getNote(),
-            request.getKeyResultId()));
+            request.getKeyResultId(),
+            getUserId()));
   }
 
   @ApiOperation("Update status task of daily plan")
@@ -135,6 +137,7 @@ public class DailyPlanController {
       @ApiParam(required = true) @RequestParam("status") DailyPlanStatus status
   ) {
     log.info("(updateStatusDailyPlan)id: {}", id);
-    return OkrsResponse.of(HttpStatus.OK.value(), service.updateStatusDailyPlan(id, status));
+    service.updateStatusDailyPlan(id, status);
+    return OkrsResponse.of(HttpStatus.OK.value());
   }
 }

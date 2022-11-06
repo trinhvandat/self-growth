@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
+import org.ptit.okrs.core_util.DateUtils;
 
 @Data
 @NoArgsConstructor
@@ -12,7 +13,7 @@ public class DailyPlanResponse {
   private String title;
   private String description;
   private DailyPlanStatus status;
-  private Integer date;
+  private int date;
   private String note;
   private String userId;
   private String keyResultId;
@@ -23,7 +24,7 @@ public class DailyPlanResponse {
     response.setTitle(dailyPlan.getTitle());
     response.setDescription(dailyPlan.getDescription());
     response.setStatus(dailyPlan.getStatus());
-    response.setDate(dailyPlan.getDate());
+    response.setDate(DateUtils.getDate(dailyPlan.getDate()));
     response.setNote(dailyPlan.getNote());
     response.setUserId(dailyPlan.getUserId());
     response.setKeyResultId(dailyPlan.getKeyResultId());

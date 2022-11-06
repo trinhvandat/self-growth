@@ -50,4 +50,10 @@ public class AuthAccountServiceImpl implements AuthAccountService {
 
     return repository.save(AuthAccount.of(userId, username, password));
   }
+
+  @Override
+  public void activeByEmail(String email) {
+    log.info("(activeByEmail)email: {}", email);
+    repository.activeAccountByEmail(email);
+  }
 }
