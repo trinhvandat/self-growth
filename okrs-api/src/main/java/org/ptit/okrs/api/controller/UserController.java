@@ -71,14 +71,12 @@ public class UserController {
 
   @ApiOperation("Update a user's avatar")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
-  @PatchMapping
+  @PatchMapping("/self/avatar")
   @ResponseStatus(HttpStatus.OK)
-  public OkrsResponse updateAvatar(
-      @RequestBody @Validated UserUpdateAvatarRequest userUpdateAvatarRequest) {
+  public OkrsResponse updateAvatar(@RequestBody @Validated UserUpdateAvatarRequest userUpdateAvatarRequest) {
     log.info("(updateAvatar)userUpdateAvatarRequest: {}", userUpdateAvatarRequest);
-    return OkrsResponse.of(
-        HttpStatus.OK.value(),
-        service.changePathAvatar("userId", userUpdateAvatarRequest.getPathAvatar())); // TODO: userId get by auth
+    service.changePathAvatar(getUserId(), userUpdateAvatarRequest.getPathAvatar());
+    return OkrsResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("Get a user's avatar")
