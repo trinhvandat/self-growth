@@ -22,7 +22,7 @@ application:
       file:
         storage: ./uploads/images/
     url:
-      view: /uploads/view/**
+      view: ./uploads/images/**
 
 spring:
   application:

@@ -1,17 +1,23 @@
 package org.ptit.okrs.core.service.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Objects;
+
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.Gender;
 import org.ptit.okrs.core.entity.User;
-import org.ptit.okrs.core.exception.InputDataInvalidException;
 import org.ptit.okrs.core.exception.ConflictDataException;
+import org.ptit.okrs.core.exception.InputDataInvalidException;
 import org.ptit.okrs.core.model.UserCreateResponse;
 import org.ptit.okrs.core.model.UserResponse;
 import org.ptit.okrs.core.repository.UserRepository;
 import org.ptit.okrs.core.service.UserService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
+import org.ptit.okrs.core_exception.InternalServerError;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class UserServiceImpl extends BaseServiceImpl<User> implements UserService {
@@ -63,7 +69,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
 
-      var userUpdate = find(id);
+    var userUpdate = find(id);
     if (Objects.isNull(userUpdate)) {
       log.info("(update)id: {} not found", id);
       throw new NotFoundException(id, User.class.getSimpleName());
@@ -95,11 +101,28 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
-  public String getPathAvatar(String userId) {
+  @Transactional(readOnly = true)
+  public InputStreamResource getAvatar(String userId) {
     log.info("(getAvatar)userId: {}", userId);
-    if(!isExist(userId)) {
+
+    if (!isExist(userId)) {
+      log.error("(getAvatar)userId: {} not found", userId);
       throw new NotFoundException(userId, User.class.getSimpleName());
     }
-    return  repository.findAvatar(userId);
+
+    var pathFile = repository.findAvatar(userId);
+    if (Objects.isNull(pathFile)) {
+      log.error("(getAvatar)userId: {} not found", userId);
+      //TODO: Write custom exception not found
+      throw new NotFoundException("file", User.class.getSimpleName());
+    }
+
+    try {
+      var file = new File(pathFile);
+      return new InputStreamResource(new FileInputStream(file));
+    } catch (Exception e) {
+      log.error("(getAvatar)exception: {}", e.getMessage());
+      throw new InternalServerError();
+    }
   }
 }
