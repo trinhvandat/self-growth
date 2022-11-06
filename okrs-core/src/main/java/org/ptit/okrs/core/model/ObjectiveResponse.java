@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.constant.OkrsTimeType;
 import org.ptit.okrs.core.constant.OkrsType;
 import org.ptit.okrs.core.entity.Objective;
-import org.ptit.okrs.core_util.DateUtils;
 
 @AllArgsConstructor(staticName = "of")
 @Data
@@ -26,11 +25,10 @@ public class ObjectiveResponse {
         objective.getId(),
         objective.getTitle(),
         objective.getDescription(),
-        DateUtils.getDate(objective.getStartDate()),
-        DateUtils.getDate(objective.getEndDate()),
+        objective.getStartDate(),
+        objective.getEndDate(),
         objective.getType(),
         objective.getTimePeriodType(),
-        Objective.class.getSimpleName()
-    );
+        Objective.class.getSimpleName());
   }
 }

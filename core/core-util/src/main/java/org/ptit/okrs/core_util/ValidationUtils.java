@@ -8,8 +8,7 @@ public class ValidationUtils {
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.BASIC_ISO_DATE;
 
-  private ValidationUtils() {
-  }
+  private ValidationUtils() {}
 
   /**
    * Function validate int date with date format: yyyyMMdd
@@ -34,7 +33,7 @@ public class ValidationUtils {
    * false - If start-date greater than end-date -> return false
    *
    * @param startDate - input
-   * @param endDate   - input
+   * @param endDate - input
    * @return boolean
    */
   public static boolean validateStartDateAndEndDate(Integer startDate, Integer endDate) {
@@ -48,7 +47,11 @@ public class ValidationUtils {
       if (endDate == null) {
         return validateDate(startDate);
       } else {
-        return validateDate(startDate) && validateDate(endDate) && (startDate > endDate);
+        return validateDate(startDate)
+            && validateDate(endDate)
+            && (startDate > endDate)
+            && (endDate < DateUtils.getCurrentDateInteger())
+            && (startDate < DateUtils.getCurrentDateInteger());
       }
     }
   }

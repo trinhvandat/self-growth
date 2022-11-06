@@ -24,8 +24,8 @@ public class KeyResult extends BaseEntityWithUpdater {
   private String title;
 
   private String description;
-  private Long startDate;
-  private Long endDate;
+  private Integer startDate;
+  private Integer endDate;
   private Integer progress;
 
   @Column(nullable = false)
