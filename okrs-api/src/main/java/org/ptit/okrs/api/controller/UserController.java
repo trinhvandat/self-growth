@@ -12,16 +12,11 @@ import org.ptit.okrs.api.model.request.UserUpdateAvatarRequest;
 import org.ptit.okrs.api.model.request.UserUpdateRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
 import org.ptit.okrs.core.service.UserService;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping(USER_BASE_URL)
 @RequiredArgsConstructor
@@ -82,10 +77,9 @@ public class UserController {
   @ApiOperation("Get a user's avatar")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping("/avatar")
-  public OkrsResponse getAvatar() {
-    log.info("(getAvatar)");
-    return OkrsResponse.of(
-        HttpStatus.OK.value(), service.getPathAvatar("userId")); // TODO: userId get by auth
+  @GetMapping(value = "/self/avatar", produces = MediaType.IMAGE_JPEG_VALUE)
+  public InputStreamResource getAvatar() {
+    log.debug("(getAvatar)userId: {}", getUserId());
+    return service.getAvatar(getUserId());
   }
 }

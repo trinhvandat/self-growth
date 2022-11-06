@@ -5,6 +5,7 @@ import org.ptit.okrs.core.entity.User;
 import org.ptit.okrs.core.model.UserCreateResponse;
 import org.ptit.okrs.core.model.UserResponse;
 import org.ptit.okrs.core.service.base.BaseService;
+import org.springframework.core.io.InputStreamResource;
 
 public interface UserService extends BaseService<User> {
 
@@ -52,7 +53,7 @@ public interface UserService extends BaseService<User> {
   /**
    * get avatar of user by userid
    * @param userId - the userId of user is logging
-   * @return path avatar of user is saved in server
+   * @return avatar of user is saved in server
    */
-  String getPathAvatar(String userId);
+  InputStreamResource getAvatar(String userId);
 }
