@@ -13,8 +13,8 @@ public class KeyResultProjection {
   private String objectiveId;
   private String title;
   private String description;
-  private Long startDate;
-  private Long endDate;
+  private Integer startDate;
+  private Integer endDate;
   private Integer progress;
   private String userId;
 }

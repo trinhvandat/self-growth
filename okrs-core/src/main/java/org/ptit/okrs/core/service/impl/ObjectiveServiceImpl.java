@@ -15,7 +15,6 @@ import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
-import org.ptit.okrs.core_util.DateUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -40,18 +39,15 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
       OkrsType type,
       OkrsTimeType timePeriodType,
       String userId) {
-    log.info("(create)title : {}, type : {}, timePeriodType : {}, userId : {}", title, type, timePeriodType, userId);
+    log.info(
+        "(create)title : {}, type : {}, timePeriodType : {}, userId : {}",
+        title,
+        type,
+        timePeriodType,
+        userId);
 
     return ObjectiveResponse.from(
-        create(
-            Objective.of(
-                title,
-                description,
-                DateUtils.getEpochTime(startDate),
-                DateUtils.getEpochTime(endDate),
-                type,
-                timePeriodType,
-                userId)));
+        create(Objective.of(title, description, startDate, endDate, type, timePeriodType, userId)));
   }
 
   @Override
@@ -68,13 +64,16 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
 
   @Override
   @Transactional(readOnly = true)
-  public ObjectiveDetailResponse getById(String id) {
-    log.debug("(getById)id : {}", id);
-    if (!isExist(id)) {
-      log.error("(getById)id: {} not found", id);
-      throw new NotFoundException(id, Objective.class.getSimpleName());
-    }
-    var objective = find(id);
+  public ObjectiveDetailResponse getByIdAndUserId(String id, String userId) {
+    log.debug("(getById)id : {}, userId : {}", id, userId);
+    var objective =
+        repository
+            .findByIdAndUserId(id, userId)
+            .orElseGet(
+                () -> {
+                  log.error("(getByIdAndUserId)id : {}, userId : {} --> not found", id, userId);
+                  throw new NotFoundException(id, Objective.class.getSimpleName());
+                });
     return ObjectiveDetailResponse.from(objective, keyResultService.findByObjectiveId(id));
   }
 
@@ -97,8 +96,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
       Integer endDate,
       OkrsType type,
       OkrsTimeType timePeriodType,
-      String userId
-  ) {
+      String userId) {
     log.info("(update)id : {}, title : {}, userId : {}", id, title, userId);
 
     if (!isExist(id)) {
@@ -113,8 +111,8 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
     }
     objective.setTitle(title);
     objective.setDescription(description);
-    objective.setStartDate(DateUtils.getEpochTime(startDate));
-    objective.setEndDate(DateUtils.getEpochTime(endDate));
+    objective.setStartDate(startDate);
+    objective.setEndDate(endDate);
     objective.setType(type);
     objective.setTimePeriodType(timePeriodType);
     return ObjectiveResponse.from(update(objective));
@@ -124,8 +122,11 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   @Transactional(readOnly = true)
   public void validateKeyResultPeriodTime(
       String id, Integer keyResultStartDate, Integer keyResultEndDate) {
-    log.info("(validateKeyResultPeriodTime)id : {}, keyResultStartDate : {}, keyResultEndDate : {}",
-        id, keyResultStartDate, keyResultEndDate);
+    log.info(
+        "(validateKeyResultPeriodTime)id : {}, keyResultStartDate : {}, keyResultEndDate : {}",
+        id,
+        keyResultStartDate,
+        keyResultEndDate);
 
     if (!isExist(id)) {
       log.error("(validateKeyResultPeriodTime)objectiveId : {} --> NOT FOUND EXCEPTION", id);
@@ -133,15 +134,18 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
     }
 
     var objective = find(id);
-    var objectiveStartDate = DateUtils.getDate(objective.getStartDate());
-    var objectiveEndDate = DateUtils.getDate(objective.getEndDate());
+    var objectiveStartDate = objective.getStartDate();
+    var objectiveEndDate = objective.getEndDate();
 
     if (keyResultStartDate < objectiveStartDate
         || keyResultStartDate > objectiveEndDate
         || keyResultEndDate < objectiveStartDate
         || keyResultEndDate > objectiveEndDate) {
-      log.error("(validateKeyResultPeriodTime)keyResultStartDate : {}, keyResultStartDate : {}, id : {} --> OkrsKeyResultPeriodTimeException",
-          keyResultStartDate, keyResultEndDate, id);
+      log.error(
+          "(validateKeyResultPeriodTime)keyResultStartDate : {}, keyResultStartDate : {}, id : {} --> OkrsKeyResultPeriodTimeException",
+          keyResultStartDate,
+          keyResultEndDate,
+          id);
       throw new OkrsKeyResultPeriodTimeException(
           String.valueOf(keyResultStartDate), String.valueOf(keyResultEndDate), id);
     }

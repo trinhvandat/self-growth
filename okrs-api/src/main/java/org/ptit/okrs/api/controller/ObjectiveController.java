@@ -60,7 +60,7 @@ public class ObjectiveController {
   @ResponseStatus(HttpStatus.OK)
   public OkrsResponse getById(@PathVariable("id") String id) {
     log.info("(getById)id : {}", id);
-    return OkrsResponse.of(HttpStatus.OK.value(), service.getById(id));
+    return OkrsResponse.of(HttpStatus.OK.value(), service.getByIdAndUserId(id, getUserId()));
   }
 
   @ApiOperation("Get list of all objectives")
@@ -69,7 +69,6 @@ public class ObjectiveController {
   @ResponseStatus(HttpStatus.OK)
   public OkrsResponse list() {
     log.info("(list)");
-    //TODO get by id and userid: AnhNHS
     return OkrsResponse.of(HttpStatus.OK.value(), service.list(getUserId()));
   }
 

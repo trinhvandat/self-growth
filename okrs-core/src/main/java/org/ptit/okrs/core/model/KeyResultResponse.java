@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.entity.KeyResult;
 import org.ptit.okrs.core.repository.projection.KeyResultProjection;
-import org.ptit.okrs.core_util.DateUtils;
 
 @Data
 @NoArgsConstructor
@@ -45,16 +44,16 @@ public class KeyResultResponse {
       String objectiveId,
       String title,
       String description,
-      Long startDate,
-      Long endDate,
+      Integer startDate,
+      Integer endDate,
       Integer progress) {
     KeyResultResponse response = new KeyResultResponse();
     response.setId(id);
     response.setObjectiveId(objectiveId);
     response.setTitle(title);
     response.setDescription(description);
-    response.setStartDate(DateUtils.getDate(startDate));
-    response.setEndDate(DateUtils.getDate(endDate));
+    response.setStartDate(startDate);
+    response.setEndDate(endDate);
     response.setProgress(progress);
     response.setObjectType(KeyResult.class.getSimpleName());
     return response;

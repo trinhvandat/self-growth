@@ -11,7 +11,6 @@ import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
-import org.ptit.okrs.core_util.DateUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -52,14 +51,7 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
     }
     return KeyResultResponse.from(
         create(
-            KeyResult.of(
-                objectiveId,
-                title,
-                description,
-                DateUtils.getEpochTime(startDate),
-                DateUtils.getEpochTime(endDate),
-                progress,
-                userId)));
+            KeyResult.of(objectiveId, title, description, startDate, endDate, progress, userId)));
   }
 
   @Override
@@ -121,8 +113,8 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
     keyResult.setObjectiveId(objectiveId);
     keyResult.setTitle(title);
     keyResult.setDescription(description);
-    keyResult.setStartDate(DateUtils.getEpochTime(startDate));
-    keyResult.setEndDate(DateUtils.getEpochTime(endDate));
+    keyResult.setStartDate(startDate);
+    keyResult.setEndDate(endDate);
     keyResult.setProgress(progress);
     return KeyResultResponse.from(update(keyResult));
   }
@@ -131,17 +123,15 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   @Transactional
   public void updateProgress(String id, String userId, Integer progress) {
     log.info("(updateProgress)id : {}, userId : {}, progress : {}", id, userId, progress);
-    var keyResult = find(id);
-    if (keyResult == null) {
+    if (!isExist(id)) {
       log.error("(updateProgress)id : {} --> NOT FOUND EXCEPTION", id);
       throw new NotFoundException(id, KeyResult.class.getSimpleName());
     }
-    if (!keyResult.getUserId().equals(userId)) {
+    if (!repository.findUserIdById(id).equals(userId)) {
       log.error("(updateProgress)userId : {} --> FORBIDDEN EXCEPTION", userId);
       throw new ForbiddenException(userId);
     }
-    keyResult.setProgress(progress);
-    update(keyResult);
+    repository.updateProgress(id, progress);
   }
 
   @Override

@@ -43,7 +43,7 @@ public interface ObjectiveService extends BaseService<Objective> {
    * @param id - id of an objective
    * @return the objective and all key results of its
    */
-  ObjectiveDetailResponse getById(String id);
+  ObjectiveDetailResponse getByIdAndUserId(String id, String userId);
 
   /**
    * list all objectives of user
@@ -77,8 +77,8 @@ public interface ObjectiveService extends BaseService<Objective> {
   /**
    *
    * @param id - the id of the objective
-   * @param keyResultStartDate
-   * @param keyResultEndDate
+   * @param keyResultStartDate - startDate of key result
+   * @param keyResultEndDate - endDate of key result
    */
   void validateKeyResultPeriodTime(String id, Integer keyResultStartDate, Integer keyResultEndDate);
 

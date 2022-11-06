@@ -28,9 +28,9 @@ public class Objective extends BaseEntityWithUpdater {
   private String description;
 
   @Column(nullable = false)
-  private Long startDate;
+  private Integer startDate;
 
-  private Long endDate;
+  private Integer endDate;
 
   @Enumerated(EnumType.STRING)
   private OkrsType type;
