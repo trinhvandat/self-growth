@@ -23,6 +23,8 @@ import org.ptit.okrs.core_authentication.service.TokenRedisService;
 import org.ptit.okrs.core_authentication.util.CryptUtil;
 import org.ptit.okrs.core_email.service.EmailService;
 import org.ptit.okrs.core_util.GeneratorUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,11 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   private final EmailService emailService;
   private final Long accessTokenLifeTime;
   private final Long refreshTokenLifeTime;
+
+  @Value("${application.mail.template_send_otp.name}")
+  private String template;
+  @Value("${application.authentication.redis.otp_time_out}")
+  private Integer otpTimeLife;
 
   public AuthFacadeServiceImpl(
       AuthAccountService authAccountService,
@@ -124,9 +131,11 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     var otpActiveAccount = GeneratorUtils.generateOtp();
     otpService.set(authUser.getEmail(), otpActiveAccount);
 
-    // Send mail request active account
-    // TODO: ToanNS implement send mail with html
-    emailService.send("subject", "to", "template", new HashMap<>());
+    //Send mail request active account
+    var param = new HashMap<String, Object>();
+    param.put("time_life", otpTimeLife);
+    param.put("otp", otpActiveAccount);
+    emailService.send("OKRS: Register Account!", request.getEmail(), template, param);
 
     return AuthUserRegisterResponse.of(
         authUser.getId(),

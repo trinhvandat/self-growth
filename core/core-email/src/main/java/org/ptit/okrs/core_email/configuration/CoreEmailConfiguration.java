@@ -1,7 +1,7 @@
 package org.ptit.okrs.core_email.configuration;
 
 import org.ptit.okrs.core_email.service.EmailService;
-import org.ptit.okrs.core_email.service.EmailServiceImpl;
+import org.ptit.okrs.core_email.service.impl.EmailServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -10,13 +10,14 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Objects;
+import org.ptit.okrs.core_authentication.validation.ValidateEmail;
 
 @Data
 @NoArgsConstructor
 @Slf4j
 public class AuthUserRegisterRequest {
   @NotBlank
-  @Email
+  @ValidateEmail
   private String email;
 
   @NotBlank

@@ -1,4 +1,4 @@
-package org.ptit.okrs.core_email.service;
+package org.ptit.okrs.core_email.service.impl;
 
 import java.util.Objects;
 import javax.mail.Message;
@@ -7,6 +7,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_email.constant.EmailConstant;
+import org.ptit.okrs.core_email.service.EmailService;
 import org.ptit.okrs.core_exception.InternalServerError;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
