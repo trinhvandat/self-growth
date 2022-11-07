@@ -70,4 +70,10 @@ public class AuthAccountServiceImpl implements AuthAccountService {
     log.info("(activeByEmail)email: {}", email);
     repository.activeAccountByEmail(email);
   }
+
+  @Override
+  public void updatePasswordByEmail(String userId, String password) {
+    log.info("(updatePassword)userId: {}, password: {}", userId, password);
+    repository.updatePasswordByEmail(userId, password);
+  }
 }

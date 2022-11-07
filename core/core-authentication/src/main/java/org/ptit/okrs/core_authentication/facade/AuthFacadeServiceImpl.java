@@ -15,18 +15,21 @@ import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
 import org.ptit.okrs.core_authentication.exception.OtpNotFoundException;
 import org.ptit.okrs.core_authentication.exception.PasswordInvalidException;
+import org.ptit.okrs.core_authentication.exception.PasswordConfirmNotMatchException;
+import org.ptit.okrs.core_authentication.exception.ResetKeyInvalidException;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
 import org.ptit.okrs.core_authentication.service.OtpService;
+import org.ptit.okrs.core_authentication.service.ResetKeyService;
 import org.ptit.okrs.core_authentication.service.TokenRedisService;
 import org.ptit.okrs.core_authentication.util.CryptUtil;
 import org.ptit.okrs.core_email.service.EmailService;
 import org.ptit.okrs.core_util.GeneratorUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -40,11 +43,14 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   private final EmailService emailService;
   private final Long accessTokenLifeTime;
   private final Long refreshTokenLifeTime;
+  private final ResetKeyService resetKeyService;
+  private final PasswordEncoder passwordEncoder;
 
   @Value("${application.mail.template_send_otp.name}")
   private String template;
   @Value("${application.authentication.redis.otp_time_out}")
   private Integer otpTimeLife;
+
 
   public AuthFacadeServiceImpl(
       AuthAccountService authAccountService,
@@ -52,9 +58,12 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
       AuthTokenService authTokenService,
       OtpService otpService,
       TokenRedisService tokenRedisService,
-      EmailService emailService,
       Long accessTokenLifeTime,
-      Long refreshTokenLifeTime) {
+      Long refreshTokenLifeTime,
+      EmailService emailService,
+      ResetKeyService resetKeyService,
+      PasswordEncoder passwordEncoder
+  ) {
     this.authAccountService = authAccountService;
     this.authUserService = authUserService;
     this.authTokenService = authTokenService;
@@ -63,6 +72,8 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     this.emailService = emailService;
     this.accessTokenLifeTime = accessTokenLifeTime;
     this.refreshTokenLifeTime = refreshTokenLifeTime;
+    this.resetKeyService = resetKeyService;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Override
@@ -166,8 +177,23 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   @Override
   public void resetPassword(AuthUserForgotPasswordResetRequest request) {
     log.info("(resetPassword)request: {}", request);
+
+    if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
+      log.error("(resetPassword)newPassword: {}, newPasswordConfirm:{}  don't match", request.getNewPassword(), request.getNewPasswordConfirm());
+      throw new PasswordConfirmNotMatchException();
+    }
+
     // validate email not found
+    authUserService.validateExistedWithEmail(request.getEmail());
+
     // validate resetKey
+    if (!resetKeyService.get(request.getEmail(),"email").equals(request.getResetPasswordKey())) {
+      log.error("(resetPassword)resetKey: {} invalid", request.getResetPasswordKey());
+      throw new ResetKeyInvalidException();
+    }
+
     // update new password
+    authAccountService.updatePasswordByEmail(
+        request.getEmail(), passwordEncoder.encode(request.getNewPassword()));
   }
 }
