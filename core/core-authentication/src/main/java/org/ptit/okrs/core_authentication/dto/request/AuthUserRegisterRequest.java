@@ -1,5 +1,6 @@
 package org.ptit.okrs.core_authentication.dto.request;
 
+import javax.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,8 @@ public class AuthUserRegisterRequest {
   @Email
   private String email;
 
-  //TODO: AnhNHS validate not have specific character
   @NotBlank
+  @Pattern(regexp = "[A-Za-z0-9]")
   private String username;
 
   @NotBlank

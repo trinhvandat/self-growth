@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class CryptUtil {
 
-  private static final BCryptPasswordEncoder B_CRYPT_ENCODER = new BCryptPasswordEncoder(16);
+  private static final BCryptPasswordEncoder B_CRYPT_ENCODER = new BCryptPasswordEncoder();
 
   public static PasswordEncoder getPasswordEncoder() {
     return B_CRYPT_ENCODER;

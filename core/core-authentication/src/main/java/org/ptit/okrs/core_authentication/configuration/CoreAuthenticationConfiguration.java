@@ -1,5 +1,6 @@
 package org.ptit.okrs.core_authentication.configuration;
 
+import java.util.concurrent.TimeUnit;
 import org.ptit.okrs.core_authentication.facade.AuthFacadeService;
 import org.ptit.okrs.core_authentication.facade.AuthFacadeServiceImpl;
 import org.ptit.okrs.core_authentication.repository.AuthAccountRepository;
@@ -8,10 +9,12 @@ import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
 import org.ptit.okrs.core_authentication.service.OtpService;
+import org.ptit.okrs.core_authentication.service.TokenRedisService;
 import org.ptit.okrs.core_authentication.service.impl.AuthAccountServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.AuthTokenServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.AuthUserServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.OtpServiceImpl;
+import org.ptit.okrs.core_authentication.service.impl.TokenRedisServiceImpl;
 import org.ptit.okrs.core_email.configuration.EnableCoreEmail;
 import org.ptit.okrs.core_email.service.EmailService;
 import org.ptit.okrs.core_redis.config.EnableCoreRedis;
@@ -23,17 +26,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.concurrent.TimeUnit;
-
 
 @ComponentScan(basePackages = {"org.ptit.okrs.core_authentication.repository"})
 @Configuration
 @EnableJpaRepositories(
     basePackages = {"org.ptit.okrs.core_authentication.repository"},
-    transactionManagerRef = "jpaAuthTransactionManager"
-)
+    transactionManagerRef = "jpaAuthTransactionManager")
 @EntityScan(basePackages = {"org.ptit.okrs.core_authentication.entity"})
 @EnableCoreRedis
 @EnableCoreSwagger
@@ -65,12 +63,18 @@ public class CoreAuthenticationConfiguration {
       AuthAccountService authAccountService,
       AuthUserService authUserService,
       AuthTokenService authTokenService,
-      PasswordEncoder passwordEncoder,
       OtpService otpService,
-      EmailService emailService
-  ) {
+      TokenRedisService tokenRedisService,
+      EmailService emailService) {
     return new AuthFacadeServiceImpl(
-        authAccountService, authUserService, authTokenService, passwordEncoder, otpService, emailService);
+        authAccountService,
+        authUserService,
+        authTokenService,
+        otpService,
+        tokenRedisService,
+        emailService,
+        accessTokenLifeTime,
+        refreshTokenLifeTime);
   }
 
   @Bean
@@ -81,15 +85,16 @@ public class CoreAuthenticationConfiguration {
   @Bean
   public AuthTokenService authTokenService() {
     return new AuthTokenServiceImpl(
-        accessTokenJwtSecret,
-        accessTokenLifeTime,
-        refreshTokenJwtSecret,
-        refreshTokenLifeTime
-    );
+        accessTokenJwtSecret, accessTokenLifeTime, refreshTokenJwtSecret, refreshTokenLifeTime);
   }
 
   @Bean
   public OtpService otpService(RedisTemplate<String, Object> redisTemplate) {
     return new OtpServiceImpl(redisTemplate, redisOtpTimeOut, TimeUnit.MINUTES);
+  }
+
+  @Bean
+  public TokenRedisService tokenRedisService(RedisTemplate<String, String> redisTemplate) {
+    return new TokenRedisServiceImpl(redisTemplate);
   }
 }

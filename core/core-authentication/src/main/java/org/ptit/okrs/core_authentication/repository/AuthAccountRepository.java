@@ -13,7 +13,13 @@ import java.util.Optional;
 @Repository
 public interface AuthAccountRepository extends JpaRepository<AuthAccount, String> {
   Optional<AuthAccount> findFirstByUserId(String userId);
-
+  @Query("select new org.ptit.okrs.core_authentication.repository.AccountUserProjection("
+      + "a.username, "
+      + "a.password, "
+      + "a.userId, "
+      + "u.email) "
+      + "from Account a inner join User u on a.userId = u.id where a.username = :username")
+  Optional<AccountUserProjection> find(String username);
   boolean existsByUserId(String userId);
   boolean existsByUsername(String username);
 
