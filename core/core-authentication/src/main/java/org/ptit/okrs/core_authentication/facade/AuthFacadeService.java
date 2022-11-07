@@ -13,6 +13,17 @@ public interface AuthFacadeService {
    */
   void activeAccount(AuthUserActiveAccountRequest request);
 
+  /**
+   * authenticate user
+   * @param username - username of account
+   * @param userId - id of user
+   */
+  void authenticate(String username, String userId);
+  /**
+   * validate login request and authenticate user
+   * @param request - login request from client
+   * @return a login response
+   */
   AuthUserLoginResponse login(AuthUserLoginRequest request);
 
   /**

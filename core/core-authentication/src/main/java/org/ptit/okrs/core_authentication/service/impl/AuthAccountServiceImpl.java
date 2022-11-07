@@ -5,9 +5,12 @@ import org.ptit.okrs.core_authentication.entity.AuthAccount;
 import org.ptit.okrs.core_authentication.entity.AuthUser;
 import org.ptit.okrs.core_authentication.exception.UserAlreadyHasAccountException;
 import org.ptit.okrs.core_authentication.exception.UsernameAlreadyExistedException;
+import org.ptit.okrs.core_authentication.exception.UsernameNotFoundException;
+import org.ptit.okrs.core_authentication.repository.AccountUserProjection;
 import org.ptit.okrs.core_authentication.repository.AuthAccountRepository;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class AuthAccountServiceImpl implements AuthAccountService {
@@ -20,18 +23,29 @@ public class AuthAccountServiceImpl implements AuthAccountService {
 
   @Override
   public AuthAccount findById(String id) {
-    if (log.isDebugEnabled())log.debug("(findById)id: {}", id);
+    if (log.isDebugEnabled()) log.debug("(findById)id: {}", id);
     return repository.findById(id).orElse(null);
   }
 
   @Override
   public AuthAccount findByUserIdWithThrow(String userId) {
     log.debug("(findByUserIdWithThrow)userId: {}", userId);
-    return repository.findFirstByUserId(userId)
-        .orElseThrow(() -> {
-          log.error("(findByUserIdWithThrow)userId: {} not found", userId);
-          throw new NotFoundException(userId, AuthUser.class.getSimpleName());
-        });
+    return repository
+        .findFirstByUserId(userId)
+        .orElseThrow(
+            () -> {
+              log.error("(findByUserIdWithThrow)userId: {} not found", userId);
+              throw new NotFoundException(userId, AuthUser.class.getSimpleName());
+            });
+  }
+
+  @Override
+  public AccountUserProjection findByUsername(String username) {
+    log.info("(findByUsername)username : {}", username);
+    return repository.find(username).orElseGet(() -> {
+      log.error("(findByUsername)username : {} --> UsernameNotFoundException", username);
+      throw new UsernameNotFoundException(username);
+    });
   }
 
   @Override
