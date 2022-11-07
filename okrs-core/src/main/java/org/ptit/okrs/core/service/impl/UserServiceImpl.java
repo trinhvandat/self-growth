@@ -7,8 +7,10 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.Gender;
 import org.ptit.okrs.core.entity.User;
-import org.ptit.okrs.core.exception.ConflictDataException;
-import org.ptit.okrs.core.exception.InputDataInvalidException;
+import org.ptit.okrs.core.exception.AvatarNotFoundException;
+import org.ptit.okrs.core.exception.EmailAlreadyExistsException;
+import org.ptit.okrs.core.exception.EmailInvalidException;
+import org.ptit.okrs.core.exception.PhoneNumberInvalidException;
 import org.ptit.okrs.core.model.UserCreateResponse;
 import org.ptit.okrs.core.model.UserResponse;
 import org.ptit.okrs.core.repository.UserRepository;
@@ -34,12 +36,12 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     if (!email.contains(".")) {
       log.error("(create)email: {} invalid ", email);
-      throw new InputDataInvalidException("email", User.class.getSimpleName());
+      throw new EmailInvalidException(email);
     }
 
     if (repository.existsByEmail(email)) {
       log.error("(create)email: {} conflict data", email);
-      throw new ConflictDataException(User.class.getSimpleName(), "email");
+      throw new EmailAlreadyExistsException(email);
     }
 
     return UserCreateResponse.from(create(User.of(name, email)));
@@ -65,7 +67,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     var regexPhoneNumber = "(0)(3|5|7|8|9)+([0-9]{8})\\b";
     if (!phone.matches(regexPhoneNumber)) {
       log.error("(update)phone: {} invalid ", phone);
-      throw new InputDataInvalidException("phone", User.class.getSimpleName());
+      throw new PhoneNumberInvalidException(phone);
     }
 
 
@@ -113,8 +115,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     var pathFile = repository.findAvatar(userId);
     if (Objects.isNull(pathFile)) {
       log.error("(getAvatar)userId: {} not found", userId);
-      //TODO: Write custom exception not found
-      throw new NotFoundException("file", User.class.getSimpleName());
+      throw new AvatarNotFoundException(userId);
     }
 
     try {
