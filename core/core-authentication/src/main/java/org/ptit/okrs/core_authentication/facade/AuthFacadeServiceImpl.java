@@ -164,8 +164,7 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   }
 
   @Override
-  public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(
-      AuthUserForgotPasswordOtpVerifyRequest request) {
+  public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(AuthUserForgotPasswordOtpVerifyRequest request) {
     log.info("(verifyOtpForgotPassword)request: {}", request);
     // chek email exist
     // verify otp
