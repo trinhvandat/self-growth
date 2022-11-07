@@ -9,11 +9,13 @@ import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
 import org.ptit.okrs.core_authentication.service.OtpService;
+import org.ptit.okrs.core_authentication.service.ResetKeyService;
 import org.ptit.okrs.core_authentication.service.TokenRedisService;
 import org.ptit.okrs.core_authentication.service.impl.AuthAccountServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.AuthTokenServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.AuthUserServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.OtpServiceImpl;
+import org.ptit.okrs.core_authentication.service.impl.ResetKeyServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.TokenRedisServiceImpl;
 import org.ptit.okrs.core_email.configuration.EnableCoreEmail;
 import org.ptit.okrs.core_email.service.EmailService;
@@ -26,6 +28,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ComponentScan(basePackages = {"org.ptit.okrs.core_authentication.repository"})
 @Configuration
@@ -65,16 +68,22 @@ public class CoreAuthenticationConfiguration {
       AuthTokenService authTokenService,
       OtpService otpService,
       TokenRedisService tokenRedisService,
-      EmailService emailService) {
+      EmailService emailService,
+      ResetKeyService resetKeyService,
+      PasswordEncoder passwordEncoder
+  ) {
     return new AuthFacadeServiceImpl(
         authAccountService,
         authUserService,
         authTokenService,
         otpService,
         tokenRedisService,
-        emailService,
         accessTokenLifeTime,
-        refreshTokenLifeTime);
+        refreshTokenLifeTime,
+        emailService,
+        resetKeyService,
+        passwordEncoder
+    );
   }
 
   @Bean
@@ -96,5 +105,10 @@ public class CoreAuthenticationConfiguration {
   @Bean
   public TokenRedisService tokenRedisService(RedisTemplate<String, String> redisTemplate) {
     return new TokenRedisServiceImpl(redisTemplate);
+  }
+
+  @Bean
+  public ResetKeyService resetKeyService(RedisTemplate<String, String> redisTemplate) {
+    return new ResetKeyServiceImpl(redisTemplate);
   }
 }

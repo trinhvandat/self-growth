@@ -16,4 +16,11 @@ public interface AuthAccountService {
   AuthAccount create(String userId, String username, String password);
 
   void activeByEmail(String email);
+
+  /**
+   * update new password for account  by email
+   * @param email the id of the user can change password
+   * @param password the new password of the account
+   */
+  void updatePasswordByEmail(String email, String password);
 }

@@ -30,4 +30,12 @@ public interface AuthAccountRepository extends JpaRepository<AuthAccount, String
       nativeQuery = true
   )
   void activeAccountByEmail(@Param("email") String email);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value = "UPDATE account INNER JOIN user ON account.user_id = user.id SET account.password = :password WHERE user.email = :email",
+      nativeQuery = true
+  )
+  void updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
 }
