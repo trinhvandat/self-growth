@@ -27,9 +27,6 @@ application:
     url:
       view: ./uploads/images/**
   #MAIL
-  mail:
-    template_send_otp:
-      name: OTP-template
   email:
     from: nguyensongtoan0302@gmail.com
 

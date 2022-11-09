@@ -35,7 +35,10 @@ public class EmailControllerTest {
   @ResponseStatus(HttpStatus.OK)
   public String sendMailHtml(String subject, String to, String template, Map<String ,Object> properties) {
     log.info("(sendMailText)subject: {}, to: {}, template: {}, properties: {}", subject, to, template, properties);
-    service.send(subject, to, "mail-template", properties);
+    var params = new HashMap<String, Object>();
+    params.put("time_life", 3);
+    params.put("otp", 2222);
+    service.send(subject, to, "OTP-template", params);
     return "send success";
   }
 
