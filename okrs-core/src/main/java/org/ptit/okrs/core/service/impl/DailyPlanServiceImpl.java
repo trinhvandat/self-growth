@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements DailyPlanService {
 
+  public static final String DUPLICATE_KEY_MESSAGE = "Not be able to perform tasks at the same time";
   private final DailyPlanRepository repository;
   private final UserService userService;
 
@@ -103,35 +104,28 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
       String id,
       String title,
       String description,
-      Integer date,
       String note,
       String keyResultId,
       String userId
   ) {
-    log.info("(update)id: {}, title: {}, description: {}, date:{}, note: {}, keyResultId: {}, userId: {}",
+    log.info("(update)id: {}, title: {}, description: {}, note: {}, keyResultId: {}, userId: {}",
         id,
         title,
         description,
-        date,
         note,
         keyResultId,
         userId);
-    if (repository.existsByTitleAndDate(title, date)) {
-      log.error("(update)title: {}, date: {} --> Error: Title on date daily plan is already taken!", title, date);
-      throw new DailyPlanDataConflictException(title, String.valueOf(date));
-    }
     var dailyPlanCheck = find(id);
     if (!dailyPlanCheck.getUserId().equals(userId)) {
       log.error("(update)userId : {} --> FORBIDDEN EXCEPTION", userId);
       throw new ForbiddenException(userId);
     }
-    if (!ValidationUtils.validateDate(date)) {
-      log.error("(validate)date : {} --> INVALID DATE EXCEPTION", date);
-      throw new DailyPlanDateInvalidException(DailyPlan.class.getSimpleName());
+    if (repository.existsByTitleAndDate(title, dailyPlanCheck.getDate())) {
+      log.error("(update)title: {}, date: {} --> Error: Title on date daily plan is already taken!", title, dailyPlanCheck.getDate());
+      throw new DailyPlanDataConflictException(title, String.valueOf(dailyPlanCheck.getDate()));
     }
     dailyPlanCheck.setTitle(title);
     dailyPlanCheck.setDescription(description);
-    dailyPlanCheck.setDate(date);
     dailyPlanCheck.setNote(note);
     dailyPlanCheck.setKeyResultId(keyResultId);
     DailyPlan update = update(dailyPlanCheck);

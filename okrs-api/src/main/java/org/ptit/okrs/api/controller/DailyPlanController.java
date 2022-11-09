@@ -123,7 +123,6 @@ public class DailyPlanController {
             id,
             request.getTitle(),
             request.getDescription(),
-            request.getDate(),
             request.getNote(),
             request.getKeyResultId(),
             getUserId()));

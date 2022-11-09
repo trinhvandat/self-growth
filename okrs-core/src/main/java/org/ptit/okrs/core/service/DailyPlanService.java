@@ -55,7 +55,6 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
    * @param id          - id of the daily plan want to update
    * @param title       - title of the task
    * @param description - description of the task
-   * @param date        - date of the task
    * @param note        - note of the task
    * @param keyResultId - keyResultId of the task
    * @param userId      - userId of the task check with id for user
@@ -65,7 +64,6 @@ public interface DailyPlanService extends BaseService<DailyPlan> {
       String id,
       String title,
       String description,
-      Integer date,
       String note,
       String keyResultId,
       String userId);
