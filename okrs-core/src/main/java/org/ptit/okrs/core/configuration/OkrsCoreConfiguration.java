@@ -2,9 +2,26 @@ package org.ptit.okrs.core.configuration;
 
 import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManagerFactory;
-import org.ptit.okrs.core.repository.*;
-import org.ptit.okrs.core.service.*;
-import org.ptit.okrs.core.service.impl.*;
+import org.ptit.okrs.core.repository.AccountRepository;
+import org.ptit.okrs.core.repository.DailyPlanRepository;
+import org.ptit.okrs.core.repository.KeyResultRepository;
+import org.ptit.okrs.core.repository.NotificationRepository;
+import org.ptit.okrs.core.repository.ObjectiveRepository;
+import org.ptit.okrs.core.repository.UserRepository;
+import org.ptit.okrs.core.service.AccountService;
+import org.ptit.okrs.core.service.CacheObjectiveService;
+import org.ptit.okrs.core.service.DailyPlanService;
+import org.ptit.okrs.core.service.KeyResultService;
+import org.ptit.okrs.core.service.NotificationService;
+import org.ptit.okrs.core.service.ObjectiveService;
+import org.ptit.okrs.core.service.UserService;
+import org.ptit.okrs.core.service.impl.AccountServiceImpl;
+import org.ptit.okrs.core.service.impl.CacheObjectiveServiceImpl;
+import org.ptit.okrs.core.service.impl.DailyPlanServiceImpl;
+import org.ptit.okrs.core.service.impl.KeyResultServiceImpl;
+import org.ptit.okrs.core.service.impl.NotificationServiceImpl;
+import org.ptit.okrs.core.service.impl.ObjectiveServiceImpl;
+import org.ptit.okrs.core.service.impl.UserServiceImpl;
 import org.ptit.okrs.core_redis.config.EnableCoreRedis;
 import org.ptit.orks.core_audit.AuditorAwareImpl;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,24 +51,25 @@ public class OkrsCoreConfiguration {
   private Integer objectiveTimeLife;
 
   @Bean
+  @Primary
   public AuditorAware<String> auditorAware() {
     return new AuditorAwareImpl();
   }
 
   @Bean
-  public DailyPlanService dailyPlanService(DailyPlanRepository repository, UserService userService) {
+  public DailyPlanService dailyPlanService(
+      DailyPlanRepository repository, UserService userService) {
     return new DailyPlanServiceImpl(repository, userService);
   }
 
   @Bean
   public ObjectiveService objectiveService(
-      ObjectiveRepository repository, KeyResultService keyResultService, CacheObjectiveService cacheObjectiveService) {
-    return new ObjectiveServiceImpl(repository, keyResultService, cacheObjectiveService);
+      ObjectiveRepository repository, KeyResultService keyResultService) {
+    return new ObjectiveServiceImpl(repository, keyResultService);
   }
 
   @Bean
-  public KeyResultService keyResultService(
-      KeyResultRepository repository) {
+  public KeyResultService keyResultService(KeyResultRepository repository) {
     return new KeyResultServiceImpl(repository);
   }
 
@@ -77,7 +95,9 @@ public class OkrsCoreConfiguration {
 
   @Bean
   @Primary
-  public JpaTransactionManager transactionManager(EntityManagerFactory managerFactory){
+  public JpaTransactionManager transactionManager(EntityManagerFactory managerFactory) {
+      ObjectiveRepository repository, KeyResultService keyResultService, CacheObjectiveService cacheObjectiveService) {
+    return new ObjectiveServiceImpl(repository, keyResultService, cacheObjectiveService);
     return new JpaTransactionManager(managerFactory);
   }
 }

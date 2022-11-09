@@ -13,4 +13,5 @@ public class AccountUserProjection {
   private String password;
   private String userId;
   private String email;
+  private Boolean isActivated;
 }

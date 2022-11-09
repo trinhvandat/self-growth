@@ -21,11 +21,14 @@ import org.ptit.okrs.core_email.configuration.EnableCoreEmail;
 import org.ptit.okrs.core_email.service.EmailService;
 import org.ptit.okrs.core_redis.config.EnableCoreRedis;
 import org.ptit.okrs.core_swagger.EnableCoreSwagger;
+import org.ptit.orks.core_audit.AuditorAwareImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +42,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableCoreRedis
 @EnableCoreSwagger
 @EnableCoreEmail
+@EnableJpaAuditing
 public class CoreAuthenticationConfiguration {
 
   @Value("${application.authentication.access_token.jwt_secret:xxx}")
@@ -57,6 +61,11 @@ public class CoreAuthenticationConfiguration {
   private Integer redisOtpTimeOut;
 
   @Bean
+  public AuditorAware<String> AuthAuditorAware() {
+    return new AuditorAwareImpl();
+  }
+
+  @Bean
   public AuthAccountService authAccountService(AuthAccountRepository repository) {
     return new AuthAccountServiceImpl(repository);
   }
@@ -70,8 +79,7 @@ public class CoreAuthenticationConfiguration {
       TokenRedisService tokenRedisService,
       EmailService emailService,
       ResetKeyService resetKeyService,
-      PasswordEncoder passwordEncoder
-  ) {
+      PasswordEncoder passwordEncoder) {
     return new AuthFacadeServiceImpl(
         authAccountService,
         authUserService,
@@ -82,8 +90,7 @@ public class CoreAuthenticationConfiguration {
         refreshTokenLifeTime,
         emailService,
         resetKeyService,
-        passwordEncoder
-    );
+        passwordEncoder);
   }
 
   @Bean

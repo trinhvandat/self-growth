@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 public class AuthUserLoginRequest {
 
   @NotBlank
-  @Pattern(regexp = "[A-Za-z0-9]")
+  @Pattern(regexp = "[A-Za-z0-9]+")
   private String username;
 
   @NotBlank
