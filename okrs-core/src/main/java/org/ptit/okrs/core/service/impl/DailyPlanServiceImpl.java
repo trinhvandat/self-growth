@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
+import org.ptit.okrs.core.exception.DailyPlanDataConflictException;
+import org.ptit.okrs.core.exception.DailyPlanDateInvalidException;
 import org.ptit.okrs.core.exception.DuplicateKeyException;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
@@ -15,12 +17,12 @@ import org.ptit.okrs.core_exception.ConflictException;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.ptit.okrs.core_util.DateUtils;
+import org.ptit.okrs.core_util.ValidationUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements DailyPlanService {
 
-  public static final String DUPLICATE_KEY_MESSAGE = "Not be able to perform tasks at the same time";
   private final DailyPlanRepository repository;
   private final UserService userService;
 
@@ -43,16 +45,16 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
         description,
         userId,
         keyResultId);
-    if (repository.existsByTitleAndDate(title, DateUtils.getEpochTime(DateUtils.getCurrentDateInteger()))) {
-      log.error("(create)title: {}, date:{} --> Error: Title on date daily plan is already taken!", title, DateUtils.getEpochTime(DateUtils.getCurrentDateInteger()));
-      throw new ConflictException(title, DateUtils.getEpochTime(DateUtils.getCurrentDateInteger()));
+    if (repository.existsByTitleAndDate(title, DateUtils.getCurrentDateInteger())) {
+      log.error("(create)title: {}, date:{} --> Error: Title on date daily plan is already taken!", title, DateUtils.getCurrentDateInteger());
+      throw new DailyPlanDataConflictException(title, String.valueOf(DateUtils.getCurrentDateInteger()));
     }
     try {
       return DailyPlanResponse.from(
           create(DailyPlan.of(title, description, userId, keyResultId)));
     } catch (DuplicateKeyException er) {
       log.error("(create)exception : {}", er.getClass().getName());
-      throw new DuplicateKeyException(DUPLICATE_KEY_MESSAGE);
+      throw new DuplicateKeyException();
     }
   }
 
@@ -70,7 +72,11 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   @Transactional(readOnly = true)
   public List<DailyPlanResponse> getByDate(Integer date, String userId) {
     log.info("(getByDate) date: {}", date);
-    return repository.findByDateAndUserId(DateUtils.getEpochTime(date), userId)
+    if (!ValidationUtils.validateDate(date)) {
+      log.error("(validate)date : {}", date);
+      throw new DailyPlanDateInvalidException(DailyPlan.class.getSimpleName());
+    }
+    return repository.findByDateAndUserId(date, userId)
         .stream()
         .map(DailyPlanResponse :: from)
         .collect(Collectors.toList());
@@ -110,18 +116,22 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
         note,
         keyResultId,
         userId);
-    if (repository.existsByTitleAndDate(title, DateUtils.getEpochTime(date))) {
+    if (repository.existsByTitleAndDate(title, date)) {
       log.error("(update)title: {}, date: {} --> Error: Title on date daily plan is already taken!", title, date);
-      throw new ConflictException(title, DateUtils.getEpochTime(date));
+      throw new DailyPlanDataConflictException(title, String.valueOf(date));
     }
     var dailyPlanCheck = find(id);
     if (!dailyPlanCheck.getUserId().equals(userId)) {
       log.error("(update)userId : {} --> FORBIDDEN EXCEPTION", userId);
       throw new ForbiddenException(userId);
     }
+    if (!ValidationUtils.validateDate(date)) {
+      log.error("(validate)date : {} --> INVALID DATE EXCEPTION", date);
+      throw new DailyPlanDateInvalidException(DailyPlan.class.getSimpleName());
+    }
     dailyPlanCheck.setTitle(title);
     dailyPlanCheck.setDescription(description);
-    dailyPlanCheck.setDate(DateUtils.getEpochTime(date));
+    dailyPlanCheck.setDate(date);
     dailyPlanCheck.setNote(note);
     dailyPlanCheck.setKeyResultId(keyResultId);
     DailyPlan update = update(dailyPlanCheck);

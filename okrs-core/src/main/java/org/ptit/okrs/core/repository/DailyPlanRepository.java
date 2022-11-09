@@ -12,11 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DailyPlanRepository extends BaseRepository<DailyPlan> {
 
-  List<DailyPlan> findByDateAndUserId(Long date, String userId);
+  List<DailyPlan> findByDateAndUserId(Integer date, String userId);
 
   List<DailyPlan> findByKeyResultIdAndUserId(String keyResultId, String userId);
 
-  Boolean existsByTitleAndDate(String title, Long date);
+  Boolean existsByTitleAndDate(String title, Integer date);
 
   @Query("update DailyPlan d set d.status = :status where d.id = :id")
   @Modifying

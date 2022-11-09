@@ -72,7 +72,8 @@ public class DailyPlanController {
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @ResponseStatus(HttpStatus.OK)
   @GetMapping(params = "key_result_id")
-  public OkrsResponse getByKeyResultId(@RequestParam("key_result_id") String keyResultId) {
+  public OkrsResponse getByKeyResultId(
+      @ApiParam(required = true) @RequestParam("key_result_id") String keyResultId) {
     keyResultService.validateExist(keyResultId);
     if (log.isDebugEnabled()) {
       log.debug("(getByKeyResultId)keyResultId: {}", keyResultId);
