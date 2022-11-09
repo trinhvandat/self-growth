@@ -1,5 +1,6 @@
 package org.ptit.okrs.core.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
@@ -24,7 +25,7 @@ public class DailyPlanResponse {
     response.setTitle(dailyPlan.getTitle());
     response.setDescription(dailyPlan.getDescription());
     response.setStatus(dailyPlan.getStatus());
-    response.setDate(DateUtils.getDate(dailyPlan.getDate()));
+    response.setDate(dailyPlan.getDate());
     response.setNote(dailyPlan.getNote());
     response.setUserId(dailyPlan.getUserId());
     response.setKeyResultId(dailyPlan.getKeyResultId());
