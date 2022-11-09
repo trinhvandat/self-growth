@@ -1,5 +1,6 @@
 package org.ptit.okrs.core_authentication.facade;
 
+import java.util.Base64;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import org.ptit.okrs.core_authentication.dto.request.AuthUserResetPasswordReques
 import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
+import org.ptit.okrs.core_authentication.exception.OTPInvalidException;
 import org.ptit.okrs.core_authentication.exception.OtpNotFoundException;
 import org.ptit.okrs.core_authentication.exception.PasswordInvalidException;
 import org.ptit.okrs.core_authentication.exception.PasswordConfirmNotMatchException;
@@ -51,7 +53,6 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   private String template;
   @Value("${application.authentication.redis.otp_time_out}")
   private Integer otpTimeLife;
-
 
   public AuthFacadeServiceImpl(
       AuthAccountService authAccountService,
@@ -178,11 +179,22 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   @Override
   public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(AuthUserForgotPasswordOtpVerifyRequest request) {
     log.info("(verifyOtpForgotPassword)request: {}", request);
-    // chek email exist
-    // verify otp
 
-    // generate reset password key, push redis(key: email, value: resetKey), return to client
-    return new AuthUserForgotPasswordOtpVerifyResponse();
+    //chek email exist
+    authUserService.validateExistedWithEmail(request.getEmail());
+
+    //verify otp
+    var otpCache = otpService.get(request.getEmail());
+    if (!otpCache.equals(request.getOtp())) {
+      log.error("(verifyOtpForgotPassword)OTP: {} invalid", request.getOtp());
+      throw new OTPInvalidException();
+    }
+
+    //generate reset password key, push redis(key: email, value: resetKey), return to client
+    String resetPasswordKey = Base64.getEncoder().encodeToString(request.getEmail().getBytes());
+    resetKeyService.set(request.getEmail(), "email", resetPasswordKey);
+
+    return new AuthUserForgotPasswordOtpVerifyResponse(resetPasswordKey);
   }
 
   @Override
