@@ -1,6 +1,9 @@
 package org.ptit.okrs.core_authentication.constant;
 
 public class MailConstant {
+  public static class MailResetPassword {
+    public static final String FIELD_KEY_CACHE_OF_EMAIL = "email";
+  }
 
   public static class MailForgotPassword {
     public static final String SUBJECT = "OKRS: Forgot Password!";
