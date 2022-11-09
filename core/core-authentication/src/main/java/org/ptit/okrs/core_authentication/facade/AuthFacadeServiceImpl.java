@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_authentication.constant.MailConstant.MailForgotPassword;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordResetRequest;
@@ -159,8 +160,19 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   @Override
   public void forgotPassword(AuthUserResetPasswordRequest request) {
     log.info("(forgotPassword)request: {}", request);
-    // Step 1: validate exist identifier
-    // Step 2: if identifier found -> generate otp, push redis and send email verify
+    //Step 1: validate exist identifier
+    authUserService.validateExistedWithEmail(request.getEmail());
+
+    //Step 2: if identifier found -> generate otp, push redis and send email verify
+    //generate otp and push it to redis
+    var otpForgotPassword = GeneratorUtils.generateOtp();
+    otpService.set(request.getEmail(), otpForgotPassword);
+
+    //send mail verify
+    var params = new HashMap<String, Object>();
+    params.put(MailForgotPassword.KEY_PARAM_OTP_TIME_LIFE, otpTimeLife);
+    params.put(MailForgotPassword.KEY_PARAM_OTP, otpForgotPassword);
+    emailService.send(MailForgotPassword.SUBJECT, request.getEmail(), MailForgotPassword.TEMPLATE_NAME, params);
   }
 
   @Override
