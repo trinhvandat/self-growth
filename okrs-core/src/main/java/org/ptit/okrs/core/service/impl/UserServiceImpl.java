@@ -31,6 +31,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
+  @Transactional
   public UserCreateResponse create(String name, String email) {
     log.info("(create)name: {}, email: {}", name, email);
 
@@ -48,6 +49,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
+  @Transactional
   public UserResponse update(
       String id,
       String name,
@@ -87,12 +89,14 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   }
 
   @Override
+  @Transactional(readOnly = true)
   public UserResponse get(String userId) {
     log.debug("(get)userId: {}", userId);
     return UserResponse.from(find(userId));
   }
 
   @Override
+  @Transactional
   public void changePathAvatar(String userId, String pathAvatar) {
     log.info("(changePathAvatar)userId: {}, pathAvatar: {}", userId, pathAvatar);
     if (!isExist(userId)) {
