@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_authentication.constant.MailConstant.MailResetPassword;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailForgotPassword;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
@@ -210,7 +211,7 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     authUserService.validateExistedWithEmail(request.getEmail());
 
     // validate resetKey
-    if (!resetKeyService.get(request.getEmail(),"email").equals(request.getResetPasswordKey())) {
+    if (!resetKeyService.get(request.getEmail(), MailResetPassword.FIELD_KEY_CACHE_OF_EMAIL).equals(request.getResetPasswordKey())) {
       log.error("(resetPassword)resetKey: {} invalid", request.getResetPasswordKey());
       throw new ResetKeyInvalidException();
     }
