@@ -1,10 +1,13 @@
 package org.ptit.okrs.core.configuration;
 
+import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManagerFactory;
 import org.ptit.okrs.core.repository.*;
 import org.ptit.okrs.core.service.*;
 import org.ptit.okrs.core.service.impl.*;
+import org.ptit.okrs.core_redis.config.EnableCoreRedis;
 import org.ptit.orks.core_audit.AuditorAwareImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +16,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 
 @Configuration
@@ -20,7 +24,11 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 @ComponentScan(basePackages = {"org.ptit.okrs.core.repository"})
 @EnableJpaAuditing
 @EntityScan(basePackages = "org.ptit.okrs.core.entity")
+@EnableCoreRedis
 public class OkrsCoreConfiguration {
+
+  @Value("${application.authentication.redis.objective_time_out:3}")
+  private Integer objectiveTimeLife;
 
   @Bean
   public AuditorAware<String> auditorAware() {
@@ -34,8 +42,8 @@ public class OkrsCoreConfiguration {
 
   @Bean
   public ObjectiveService objectiveService(
-      ObjectiveRepository repository, KeyResultService keyResultService) {
-    return new ObjectiveServiceImpl(repository, keyResultService);
+      ObjectiveRepository repository, KeyResultService keyResultService, CacheObjectiveService cacheObjectiveService) {
+    return new ObjectiveServiceImpl(repository, keyResultService, cacheObjectiveService);
   }
 
   @Bean
@@ -57,5 +65,16 @@ public class OkrsCoreConfiguration {
   @Bean
   public NotificationService notificationService(NotificationRepository repository) {
     return new NotificationServiceImpl(repository);
+  }
+
+  @Bean
+  public CacheObjectiveService cacheObjectiveService(RedisTemplate<String, Object> redisTemplate) {
+    return new CacheObjectiveServiceImpl(redisTemplate, objectiveTimeLife, TimeUnit.MINUTES);
+  }
+
+  @Bean
+  @Primary
+  public JpaTransactionManager transactionManager(EntityManagerFactory managerFactory){
+    return new JpaTransactionManager(managerFactory);
   }
 }
