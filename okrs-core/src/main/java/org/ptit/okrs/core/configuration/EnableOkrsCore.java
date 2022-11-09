@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Import({OkrsCoreConfiguration.class})
+@Import({OkrsCoreConfiguration.class, JpaOkrsTransactionConfiguration.class})
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface EnableOkrsCore {

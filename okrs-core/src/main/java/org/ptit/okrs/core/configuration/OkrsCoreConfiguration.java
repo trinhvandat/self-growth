@@ -20,7 +20,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"org.ptit.okrs.core.repository"})
+@EnableJpaRepositories(
+    basePackages = {"org.ptit.okrs.core.repository"},
+    transactionManagerRef = "jpaOkrsTransactionConfiguration"
+)
 @ComponentScan(basePackages = {"org.ptit.okrs.core.repository"})
 @EnableJpaAuditing
 @EntityScan(basePackages = "org.ptit.okrs.core.entity")
