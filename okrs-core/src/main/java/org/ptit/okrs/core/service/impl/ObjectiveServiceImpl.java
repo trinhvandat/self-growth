@@ -1,6 +1,7 @@
 package org.ptit.okrs.core.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.OkrsTimeType;
@@ -10,6 +11,7 @@ import org.ptit.okrs.core.exception.OkrsKeyResultPeriodTimeException;
 import org.ptit.okrs.core.model.ObjectiveDetailResponse;
 import org.ptit.okrs.core.model.ObjectiveResponse;
 import org.ptit.okrs.core.repository.ObjectiveRepository;
+import org.ptit.okrs.core.service.CacheObjectiveService;
 import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
@@ -22,11 +24,14 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
 
   private final ObjectiveRepository repository;
   private final KeyResultService keyResultService;
+  private final CacheObjectiveService cacheObjectiveService;
 
-  public ObjectiveServiceImpl(ObjectiveRepository repository, KeyResultService keyResultService) {
+  public ObjectiveServiceImpl(ObjectiveRepository repository, KeyResultService keyResultService,
+      CacheObjectiveService cacheObjectiveService) {
     super(repository);
     this.repository = repository;
     this.keyResultService = keyResultService;
+    this.cacheObjectiveService = cacheObjectiveService;
   }
 
   @Override
@@ -60,6 +65,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
     }
     keyResultService.deleteAllByObjectiveId(id);
     delete(id);
+    cacheObjectiveService.delete(id);
   }
 
   @Override
@@ -74,6 +80,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
                   log.error("(getByIdAndUserId)id : {}, userId : {} --> not found", id, userId);
                   throw new NotFoundException(id, Objective.class.getSimpleName());
                 });
+    cacheObjectiveService.set(id, objective);
     return ObjectiveDetailResponse.from(objective, keyResultService.findByObjectiveId(id));
   }
 
@@ -115,6 +122,11 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
     objective.setEndDate(endDate);
     objective.setType(type);
     objective.setTimePeriodType(timePeriodType);
+
+    var objectiveCache = cacheObjectiveService.get(id);
+    if (Objects.nonNull(objectiveCache)) {
+        cacheObjectiveService.set(id, objective);
+    }
     return ObjectiveResponse.from(update(objective));
   }
 
