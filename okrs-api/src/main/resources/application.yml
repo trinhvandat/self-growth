@@ -3,8 +3,11 @@ application:
   ### AUTHENTICATION
   authentication:
     access_token:
-      jwt_secret: "Z8GJ64eimY"
-      life_time: "3600000" # milliseconds
+      jwt_secret: Z8GJ64eimY
+      life_time: 3600000 # milliseconds
+    refresh_token:
+      jwt_secret: Z8GJ64eimY
+      life_time: 3600000
 
     #REDIS(cache)
     redis:
@@ -28,9 +31,11 @@ application:
       view: ./uploads/images/**
   #MAIL
   email:
-    from: nguyensongtoan0302@gmail.com
+    from:
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: okrs-service
   #LIQUIBASE
@@ -39,8 +44,8 @@ spring:
   #DATABASE
   #  datasource:
   #    url: jdbc:mysql://localhost:3306/okrs
-  #    username: toanns
-  #    password: Songtoan0302
+  #    username:
+  #    password:
   #    driver-class-name: com.mysql.cj.jdbc.Driver
   #SWAGGER
   mvc:

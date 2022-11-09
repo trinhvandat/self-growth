@@ -3,13 +3,12 @@ package org.ptit.okrs.core_authentication.service.impl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.core_authentication.service.AuthTokenService;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_authentication.service.AuthTokenService;
 
 @Slf4j
 public class AuthTokenServiceImpl implements AuthTokenService {
@@ -24,8 +23,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
       String accessTokenJwtSecret,
       Long accessTokenLifeTime,
       String refreshTokenJwtSecret,
-      Long refreshTokenLifeTime
-  ) {
+      Long refreshTokenLifeTime) {
     this.accessTokenJwtSecret = accessTokenJwtSecret;
     this.accessTokenLifeTime = accessTokenLifeTime;
     this.refreshTokenJwtSecret = refreshTokenJwtSecret;
@@ -49,8 +47,9 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
   @Override
   public boolean validateAccessToken(String accessToken, String userId) {
-    log.info("(validateAccessToken)accessToken: {}, userId: {}", accessToken, userId);
-    return getSubjectFromAccessToken(accessToken).equals(userId) && !isExpiredToken(accessToken, accessTokenJwtSecret);
+    log.debug("(validateAccessToken)accessToken: {}, userId: {}", accessToken, userId);
+    return getSubjectFromAccessToken(accessToken).equals(userId)
+        && !isExpiredToken(accessToken, accessTokenJwtSecret);
   }
 
   @Override
@@ -71,13 +70,21 @@ public class AuthTokenServiceImpl implements AuthTokenService {
   @Override
   public boolean validateRefreshToken(String refreshToken, String userId) {
     log.info("(validateRefreshToken)refreshToken: {}, userId: {}", refreshToken, userId);
-    return getSubjectFromRefreshToken(refreshToken).equals(userId) && !isExpiredToken(refreshToken, refreshTokenJwtSecret);
+    return getSubjectFromRefreshToken(refreshToken).equals(userId)
+        && !isExpiredToken(refreshToken, refreshTokenJwtSecret);
   }
 
-  private String generateToken(String subject, Map<String, Object> claims, long tokenLifeTime, String jwtSecret) {
+  private String generateToken(
+      String subject, Map<String, Object> claims, long tokenLifeTime, String jwtSecret) {
+    log.info(
+        "(generateToken)subject : {}, claims : {}, tokenLifeTime : {}, jwtSecret : {}",
+        subject,
+        claims,
+        tokenLifeTime,
+        jwtSecret);
     return Jwts.builder()
-        .setSubject(subject)
         .setClaims(claims)
+        .setSubject(subject)
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + tokenLifeTime))
         .signWith(SignatureAlgorithm.HS256, jwtSecret)
@@ -89,10 +96,12 @@ public class AuthTokenServiceImpl implements AuthTokenService {
   }
 
   private <T> T getClaim(String token, Function<Claims, T> claimsResolve, String secretKey) {
+    log.info("(getClaim)token : {}, claimsResolve : {}, secretKey : {}", token, claimsResolve, secretKey);
     return claimsResolve.apply(getClaims(token, secretKey));
   }
 
   private Claims getClaims(String token, String secretKey) {
+    log.info("(getClaims)token : {}, secretKey : {}", token, secretKey);
     return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
   }
 }

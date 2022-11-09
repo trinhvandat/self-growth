@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.core_authentication.constant.MailConstant.MailResetPassword;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailForgotPassword;
+import org.ptit.okrs.core_authentication.constant.MailConstant.MailResetPassword;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordResetRequest;
@@ -18,9 +18,10 @@ import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
 import org.ptit.okrs.core_authentication.exception.OTPInvalidException;
 import org.ptit.okrs.core_authentication.exception.OtpNotFoundException;
-import org.ptit.okrs.core_authentication.exception.PasswordInvalidException;
 import org.ptit.okrs.core_authentication.exception.PasswordConfirmNotMatchException;
+import org.ptit.okrs.core_authentication.exception.PasswordInvalidException;
 import org.ptit.okrs.core_authentication.exception.ResetKeyInvalidException;
+import org.ptit.okrs.core_authentication.exception.UnactiveAccountException;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
@@ -52,6 +53,7 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
 
   @Value("${application.mail.template_send_otp.name}")
   private String template;
+
   @Value("${application.authentication.redis.otp_time_out}")
   private Integer otpTimeLife;
 
@@ -65,8 +67,7 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
       Long refreshTokenLifeTime,
       EmailService emailService,
       ResetKeyService resetKeyService,
-      PasswordEncoder passwordEncoder
-  ) {
+      PasswordEncoder passwordEncoder) {
     this.authAccountService = authAccountService;
     this.authUserService = authUserService;
     this.authTokenService = authTokenService;
@@ -109,6 +110,9 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   public AuthUserLoginResponse login(AuthUserLoginRequest request) {
     log.info("(login)request: {}", request);
     var accountUser = authAccountService.findByUsername(request.getUsername());
+    if (!accountUser.getIsActivated()) {
+      throw new UnactiveAccountException(accountUser.getUserId());
+    }
     if (!CryptUtil.getPasswordEncoder().matches(request.getPassword(), accountUser.getPassword())) {
       log.error("(login)password : {} --> PasswordInvalidException", request.getPassword());
       throw new PasswordInvalidException();
@@ -145,7 +149,7 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     var otpActiveAccount = GeneratorUtils.generateOtp();
     otpService.set(authUser.getEmail(), otpActiveAccount);
 
-    //Send mail request active account
+    // Send mail request active account
     var param = new HashMap<String, Object>();
     param.put("time_life", otpTimeLife);
     param.put("otp", otpActiveAccount);
@@ -162,36 +166,38 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   @Override
   public void forgotPassword(AuthUserResetPasswordRequest request) {
     log.info("(forgotPassword)request: {}", request);
-    //Step 1: validate exist identifier
+    // Step 1: validate exist identifier
     authUserService.validateExistedWithEmail(request.getEmail());
 
-    //Step 2: if identifier found -> generate otp, push redis and send email verify
-    //generate otp and push it to redis
+    // Step 2: if identifier found -> generate otp, push redis and send email verify
+    // generate otp and push it to redis
     var otpForgotPassword = GeneratorUtils.generateOtp();
     otpService.set(request.getEmail(), otpForgotPassword);
 
-    //send mail verify
+    // send mail verify
     var params = new HashMap<String, Object>();
     params.put(MailForgotPassword.KEY_PARAM_OTP_TIME_LIFE, otpTimeLife);
     params.put(MailForgotPassword.KEY_PARAM_OTP, otpForgotPassword);
-    emailService.send(MailForgotPassword.SUBJECT, request.getEmail(), MailForgotPassword.TEMPLATE_NAME, params);
+    emailService.send(
+        MailForgotPassword.SUBJECT, request.getEmail(), MailForgotPassword.TEMPLATE_NAME, params);
   }
 
   @Override
-  public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(AuthUserForgotPasswordOtpVerifyRequest request) {
+  public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(
+      AuthUserForgotPasswordOtpVerifyRequest request) {
     log.info("(verifyOtpForgotPassword)request: {}", request);
 
-    //chek email exist
+    // chek email exist
     authUserService.validateExistedWithEmail(request.getEmail());
 
-    //verify otp
+    // verify otp
     var otpCache = otpService.get(request.getEmail());
     if (!otpCache.equals(request.getOtp())) {
       log.error("(verifyOtpForgotPassword)OTP: {} invalid", request.getOtp());
       throw new OTPInvalidException();
     }
 
-    //generate reset password key, push redis(key: email, value: resetKey), return to client
+    // generate reset password key, push redis(key: email, value: resetKey), return to client
     String resetPasswordKey = Base64.getEncoder().encodeToString(request.getEmail().getBytes());
     resetKeyService.set(request.getEmail(), "email", resetPasswordKey);
 
@@ -203,7 +209,10 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     log.info("(resetPassword)request: {}", request);
 
     if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
-      log.error("(resetPassword)newPassword: {}, newPasswordConfirm:{}  don't match", request.getNewPassword(), request.getNewPasswordConfirm());
+      log.error(
+          "(resetPassword)newPassword: {}, newPasswordConfirm:{}  don't match",
+          request.getNewPassword(),
+          request.getNewPasswordConfirm());
       throw new PasswordConfirmNotMatchException();
     }
 
@@ -211,7 +220,9 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     authUserService.validateExistedWithEmail(request.getEmail());
 
     // validate resetKey
-    if (!resetKeyService.get(request.getEmail(), MailResetPassword.FIELD_KEY_CACHE_OF_EMAIL).equals(request.getResetPasswordKey())) {
+    if (!resetKeyService
+        .get(request.getEmail(), MailResetPassword.FIELD_KEY_CACHE_OF_EMAIL)
+        .equals(request.getResetPasswordKey())) {
       log.error("(resetPassword)resetKey: {} invalid", request.getResetPasswordKey());
       throw new ResetKeyInvalidException();
     }

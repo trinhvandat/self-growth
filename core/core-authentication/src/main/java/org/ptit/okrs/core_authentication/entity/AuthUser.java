@@ -1,15 +1,17 @@
 package org.ptit.okrs.core_authentication.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
 @Entity(name = "AuthUser")
 @NoArgsConstructor
 @Table(name = "user")
+@EntityListeners(AuditingEntityListener.class)
 public class AuthUser extends BaseEntity {
   private String name;
   private String phone;
