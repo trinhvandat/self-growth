@@ -1,6 +1,8 @@
 package org.ptit.okrs.core_authentication.service.impl;
 
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_authentication.exception.OTPInvalidException;
 import org.ptit.okrs.core_authentication.service.OtpService;
 import org.ptit.okrs.core_redis.BaseRedisServiceImpl;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,5 +19,15 @@ public class OtpServiceImpl extends BaseRedisServiceImpl<String> implements OtpS
   @Override
   protected boolean isSavePersistent() {
     return false;
+  }
+
+  @Override
+  public void validateOtp(String email, String otpRequest) {
+    log.info("(validateOtp)email: {}, otpRequest: {}", email, otpRequest);
+    var otpCache = get(email);
+    if (!Objects.equals(otpCache, otpRequest)) {
+      log.error("(verifyOtpForgotPassword)OTP: {} invalid", otpRequest);
+      throw new OTPInvalidException();
+    }
   }
 }

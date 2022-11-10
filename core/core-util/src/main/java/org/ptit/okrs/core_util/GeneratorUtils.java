@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 public class GeneratorUtils {
-  private static final String FOUR_DIGITS_STRING = "0000";
+  private static final String FOUR_DIGITS_STRING = "000000";
   private static final Integer FOUR_DIGITS_UPPER_BOUND = 10000;
 
   public static String generateOtp() {

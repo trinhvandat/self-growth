@@ -31,7 +31,7 @@ application:
       view: ./uploads/images/**
   #MAIL
   email:
-    from:
+    from: ${SPRING_EMAIL_FROM:}
 
 spring:
   main:
@@ -42,11 +42,11 @@ spring:
   liquibase:
     changelog: classpath:/database.migration/master-changelog.xml
   #DATABASE
-  #  datasource:
-  #    url: jdbc:mysql://localhost:3306/okrs
-  #    username:
-  #    password:
-  #    driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:}
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   #SWAGGER
   mvc:
     pathmatch:
@@ -67,8 +67,8 @@ spring:
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com
-    username:
-    password:
+    username: ${SPRING_EMAIL_USERNAME:}
+    password: ${SPRING_EMAIL_PASSWORD:}
     port: 587
     properties:
       mail:
