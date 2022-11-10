@@ -64,8 +64,8 @@ public class OkrsCoreConfiguration {
 
   @Bean
   public ObjectiveService objectiveService(
-      ObjectiveRepository repository, KeyResultService keyResultService) {
-    return new ObjectiveServiceImpl(repository, keyResultService);
+      ObjectiveRepository repository, KeyResultService keyResultService, CacheObjectiveService cacheObjectiveService) {
+    return new ObjectiveServiceImpl(repository, keyResultService, cacheObjectiveService);
   }
 
   @Bean
@@ -96,8 +96,6 @@ public class OkrsCoreConfiguration {
   @Bean
   @Primary
   public JpaTransactionManager transactionManager(EntityManagerFactory managerFactory) {
-      ObjectiveRepository repository, KeyResultService keyResultService, CacheObjectiveService cacheObjectiveService) {
-    return new ObjectiveServiceImpl(repository, keyResultService, cacheObjectiveService);
     return new JpaTransactionManager(managerFactory);
   }
 }

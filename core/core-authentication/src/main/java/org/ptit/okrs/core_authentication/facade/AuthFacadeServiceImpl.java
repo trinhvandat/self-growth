@@ -1,11 +1,15 @@
 package org.ptit.okrs.core_authentication.facade;
 
-import java.util.Base64;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_authentication.constant.CacheConstant.CacheResetPassword;
+import org.ptit.okrs.core_authentication.constant.CacheConstant.CacheVerifyOtpForgotPassword;
+import org.ptit.okrs.core_authentication.constant.MailConstant;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailForgotPassword;
+import org.ptit.okrs.core_authentication.constant.MailConstant.MailRegister;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailResetPassword;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
@@ -50,9 +54,6 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   private final Long refreshTokenLifeTime;
   private final ResetKeyService resetKeyService;
   private final PasswordEncoder passwordEncoder;
-
-  @Value("${application.mail.template_send_otp.name}")
-  private String template;
 
   @Value("${application.authentication.redis.otp_time_out}")
   private Integer otpTimeLife;
@@ -150,10 +151,12 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     otpService.set(authUser.getEmail(), otpActiveAccount);
 
     // Send mail request active account
-    var param = new HashMap<String, Object>();
-    param.put("time_life", otpTimeLife);
-    param.put("otp", otpActiveAccount);
-    emailService.send("OKRS: Register Account!", request.getEmail(), template, param);
+    sendMailOTPTemplate(
+        request.getEmail(),
+        otpActiveAccount,
+        MailRegister.KEY_PARAM_OTP_TIME_LIFE,
+        MailRegister.KEY_PARAM_OTP,
+        MailRegister.SUBJECT);
 
     return AuthUserRegisterResponse.of(
         authUser.getId(),
@@ -175,11 +178,12 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     otpService.set(request.getEmail(), otpForgotPassword);
 
     // send mail verify
-    var params = new HashMap<String, Object>();
-    params.put(MailForgotPassword.KEY_PARAM_OTP_TIME_LIFE, otpTimeLife);
-    params.put(MailForgotPassword.KEY_PARAM_OTP, otpForgotPassword);
-    emailService.send(
-        MailForgotPassword.SUBJECT, request.getEmail(), MailForgotPassword.TEMPLATE_NAME, params);
+    sendMailOTPTemplate(
+        request.getEmail(),
+        otpForgotPassword,
+        MailForgotPassword.KEY_PARAM_OTP_TIME_LIFE,
+        MailForgotPassword.KEY_PARAM_OTP,
+        MailForgotPassword.SUBJECT);
   }
 
   @Override
@@ -191,44 +195,63 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     authUserService.validateExistedWithEmail(request.getEmail());
 
     // verify otp
-    var otpCache = otpService.get(request.getEmail());
-    if (!otpCache.equals(request.getOtp())) {
-      log.error("(verifyOtpForgotPassword)OTP: {} invalid", request.getOtp());
-      throw new OTPInvalidException();
-    }
+    otpService.validateOtp(request.getEmail(), request.getOtp());
 
     // generate reset password key, push redis(key: email, value: resetKey), return to client
-    String resetPasswordKey = Base64.getEncoder().encodeToString(request.getEmail().getBytes());
-    resetKeyService.set(request.getEmail(), "email", resetPasswordKey);
+    var resetPasswordKey = CryptUtil.generateResetKey(request.getEmail());
+    resetKeyService.set(CacheVerifyOtpForgotPassword.KEY_CACHE_RESET_PASSWORD, request.getEmail() ,resetPasswordKey);
 
-    return new AuthUserForgotPasswordOtpVerifyResponse(resetPasswordKey);
+    return AuthUserForgotPasswordOtpVerifyResponse.of(resetPasswordKey);
   }
 
   @Override
   public void resetPassword(AuthUserForgotPasswordResetRequest request) {
     log.info("(resetPassword)request: {}", request);
 
-    if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
-      log.error(
-          "(resetPassword)newPassword: {}, newPasswordConfirm:{}  don't match",
-          request.getNewPassword(),
-          request.getNewPasswordConfirm());
-      throw new PasswordConfirmNotMatchException();
-    }
+    validatePassword(request.getNewPassword(), request.getNewPasswordConfirm());
 
     // validate email not found
     authUserService.validateExistedWithEmail(request.getEmail());
 
     // validate resetKey
-    if (!resetKeyService
-        .get(request.getEmail(), MailResetPassword.FIELD_KEY_CACHE_OF_EMAIL)
-        .equals(request.getResetPasswordKey())) {
-      log.error("(resetPassword)resetKey: {} invalid", request.getResetPasswordKey());
-      throw new ResetKeyInvalidException();
-    }
+    validateResetKey(request);
 
     // update new password
     authAccountService.updatePasswordByEmail(
         request.getEmail(), passwordEncoder.encode(request.getNewPassword()));
+  }
+
+  private void sendMailOTPTemplate(
+      String email, String otp, String keyParamTimeLife, String keyParamOtp, String subject) {
+    log.info(
+        "(sendMailOTPTemplate)email: {}, otp: {}, keyParamTimeLife: {}, keyParamOtp: {}, subject: {}",
+        email,
+        otp,
+        keyParamTimeLife,
+        keyParamOtp,
+        subject);
+    var params = new HashMap<String, Object>();
+    params.put(keyParamTimeLife, otpTimeLife);
+    params.put(keyParamOtp, otp);
+    emailService.send(subject, email, MailConstant.OTP_TEMPLATE_NAME, params);
+  }
+
+  private void validateResetKey(AuthUserForgotPasswordResetRequest request) {
+    if (!Objects.equals(
+        resetKeyService.get(CacheResetPassword.KEY_CACHE_RESET_PASSWORD, request.getEmail()),
+        request.getResetPasswordKey())) {
+      log.error("(resetPassword)resetKey: {} invalid", request.getResetPasswordKey());
+      throw new ResetKeyInvalidException();
+    }
+  }
+
+  private void validatePassword(String newPassword, String newPasswordConfirm) {
+    if (!Objects.equals(newPassword, newPasswordConfirm)) {
+      log.error(
+          "(resetPassword)newPassword: {}, newPasswordConfirm:{}  don't match",
+          newPassword,
+          newPasswordConfirm);
+      throw new PasswordConfirmNotMatchException();
+    }
   }
 }
