@@ -29,6 +29,26 @@ public interface KeyResultService extends BaseService<KeyResult> {
       String userId);
 
   /**
+   * count KRs of an objective
+   * @param objectiveId - id of an objective
+   * @return quantity of all KRs of an objective
+   */
+  Integer countAllByObjectiveId(String objectiveId);
+
+  /**
+   * count incomplete KRs of an objective
+   * @param objectiveId - id of an objective
+   * @return quantity of incomplete KRs of an objective
+   */
+  Integer countIncompleteByObjectiveId(String objectiveId);
+
+  /**
+   * find average KRs progress of an objective
+   * @param objectiveId - id of an objective
+   * @return average progress of KRs of an objective
+   */
+  Float findAvgProgressByObjectiveId(String objectiveId);
+  /**
    * delete all key results of an objective
    * @param objectiveId - id of an objective
    */
