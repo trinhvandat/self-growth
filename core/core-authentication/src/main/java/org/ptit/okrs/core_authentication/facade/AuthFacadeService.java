@@ -1,5 +1,6 @@
 package org.ptit.okrs.core_authentication.facade;
 
+import java.util.Locale;
 import org.ptit.okrs.core_authentication.dto.request.*;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
@@ -22,9 +23,10 @@ public interface AuthFacadeService {
   /**
    * validate login request and authenticate user
    * @param request - login request from client
+   * @param locale - locale to return inactive account message
    * @return a login response
    */
-  AuthUserLoginResponse login(AuthUserLoginRequest request);
+  AuthUserLoginResponse login(AuthUserLoginRequest request, Locale locale);
 
   /**
    * register account user
