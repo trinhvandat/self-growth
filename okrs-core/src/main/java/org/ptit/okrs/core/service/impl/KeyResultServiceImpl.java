@@ -3,6 +3,7 @@ package org.ptit.okrs.core.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core.constant.OkrsConstant;
 import org.ptit.okrs.core.entity.KeyResult;
 import org.ptit.okrs.core.exception.ExistedKeyResultTitleException;
 import org.ptit.okrs.core.model.KeyResultResponse;
@@ -52,6 +53,31 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
     return KeyResultResponse.from(
         create(
             KeyResult.of(objectiveId, title, description, startDate, endDate, progress, userId)));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Integer countAllByObjectiveId(String objectiveId) {
+    log.info("(countKeyResultsByObjectiveId)objectiveId : {}", objectiveId);
+    return repository
+        .countAllKeyResults(objectiveId)
+        .orElse(Integer.valueOf(OkrsConstant.ZERO_VALUE));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Integer countIncompleteByObjectiveId(String objectiveId) {
+    log.info("(countIncompleteKeyResultsByObjectiveId)objectiveId : {}", objectiveId);
+    return repository
+        .countIncompleteKeyResults(objectiveId)
+        .orElse(Integer.valueOf(OkrsConstant.ZERO_VALUE));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Float findAvgProgressByObjectiveId(String objectiveId) {
+    log.info("(countAvgProgressByObjectiveId)objectiveId : {}", objectiveId);
+    return repository.findAvgProgress(objectiveId).orElse(Float.valueOf(OkrsConstant.ZERO_VALUE));
   }
 
   @Override

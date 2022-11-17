@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.api.constant.OkrsApiConstant.BaseUrl;
 import org.ptit.okrs.api.model.request.*;
 import org.ptit.okrs.api.model.response.OkrsResponse;
+import org.ptit.okrs.core.facade.OkrsFacadeService;
 import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.ObjectiveService;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class ObjectiveController {
 
   private final ObjectiveService service;
   private final KeyResultService keyResultService;
+  private final OkrsFacadeService okrsFacadeService;
 
   @ApiOperation("Create new objective")
   @ApiResponse(code = 201, response = OkrsResponse.class, message = "Successfully response.")
@@ -72,6 +74,15 @@ public class ObjectiveController {
     return OkrsResponse.of(HttpStatus.OK.value(), service.list(getUserId()));
   }
 
+  @ApiOperation("Get stats of an objective by id")
+  @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
+  @GetMapping("/{id}/stats")
+  @ResponseStatus(HttpStatus.OK)
+  public OkrsResponse statistic(@PathVariable("id")String id) {
+    log.info("(statistic)");
+    return OkrsResponse.of(HttpStatus.OK.value(), okrsFacadeService.statistic(id));
+  }
+
   @ApiOperation("Update an objective")
   @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
   @PutMapping(value = "/{id}")
@@ -116,7 +127,7 @@ public class ObjectiveController {
             request.getStartDate(),
             request.getEndDate(),
             request.getProgress(),
-            "e2e46eca-8e51-405a-b813-771dbbb5ef6e"));
+            getUserId()));
   }
 
   @ApiOperation("Delete a key result")

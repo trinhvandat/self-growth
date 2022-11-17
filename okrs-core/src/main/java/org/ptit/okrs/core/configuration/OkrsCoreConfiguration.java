@@ -2,6 +2,8 @@ package org.ptit.okrs.core.configuration;
 
 import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManagerFactory;
+import org.ptit.okrs.core.facade.OkrsFacadeService;
+import org.ptit.okrs.core.facade.impl.OkrsFacadeServiceImpl;
 import org.ptit.okrs.core.repository.AccountRepository;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.repository.KeyResultRepository;
@@ -39,8 +41,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 @Configuration
 @EnableJpaRepositories(
     basePackages = {"org.ptit.okrs.core.repository"},
-    transactionManagerRef = "jpaOkrsTransactionConfiguration"
-)
+    transactionManagerRef = "jpaOkrsTransactionConfiguration")
 @ComponentScan(basePackages = {"org.ptit.okrs.core.repository"})
 @EnableJpaAuditing
 @EntityScan(basePackages = "org.ptit.okrs.core.entity")
@@ -64,8 +65,16 @@ public class OkrsCoreConfiguration {
 
   @Bean
   public ObjectiveService objectiveService(
-      ObjectiveRepository repository, KeyResultService keyResultService, CacheObjectiveService cacheObjectiveService) {
+      ObjectiveRepository repository,
+      KeyResultService keyResultService,
+      CacheObjectiveService cacheObjectiveService) {
     return new ObjectiveServiceImpl(repository, keyResultService, cacheObjectiveService);
+  }
+
+  @Bean
+  public OkrsFacadeService okrsFacadeService(
+      ObjectiveService objectiveService, KeyResultService keyResultService) {
+    return new OkrsFacadeServiceImpl(objectiveService, keyResultService);
   }
 
   @Bean
