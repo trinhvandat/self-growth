@@ -2,16 +2,26 @@ package org.ptit.okrs.core_authentication.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import java.util.Locale;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.core_authentication.dto.request.*;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordResetRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserLoginRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserRegisterRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserResetPasswordRequest;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
 import org.ptit.okrs.core_authentication.facade.AuthFacadeService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1/auth/users")
 @RestController
@@ -46,9 +56,11 @@ public class AuthUserController {
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/login")
   @ResponseStatus(HttpStatus.OK)
-  public AuthUserLoginResponse login(@Valid @RequestBody AuthUserLoginRequest request) {
-    log.info("(login)request: {}", request);
-    return authFacadeService.login(request);
+  public AuthUserLoginResponse login(
+      @Valid @RequestBody AuthUserLoginRequest request,
+      @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
+    log.info("(login)request: {}, locale : {}", request, locale);
+    return authFacadeService.login(request, locale);
   }
 
   @ApiOperation("User request forgot password")
@@ -64,7 +76,8 @@ public class AuthUserController {
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/forgot-password/otp-verify")
   @ResponseStatus(HttpStatus.OK)
-  public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(@Valid @RequestBody AuthUserForgotPasswordOtpVerifyRequest request) {
+  public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(
+      @Valid @RequestBody AuthUserForgotPasswordOtpVerifyRequest request) {
     log.info("(verifyOtpForgotPassword)request: {}", request);
     return authFacadeService.verifyOtpForgotPassword(request);
   }

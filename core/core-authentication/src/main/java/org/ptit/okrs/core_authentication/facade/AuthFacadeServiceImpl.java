@@ -1,8 +1,12 @@
 package org.ptit.okrs.core_authentication.facade;
 
+import static org.ptit.okrs.core_authentication.constant.CacheConstant.CacheToken.KEY_CACHE_ACCESS_TOKEN;
+import static org.ptit.okrs.core_authentication.constant.CacheConstant.CacheToken.KEY_CACHE_REFRESH_TOKEN;
+import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.INACTIVE_ACCOUNT_MESSAGE_CODE;
+
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_authentication.constant.CacheConstant.CacheResetPassword;
@@ -10,22 +14,21 @@ import org.ptit.okrs.core_authentication.constant.CacheConstant.CacheVerifyOtpFo
 import org.ptit.okrs.core_authentication.constant.MailConstant;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailForgotPassword;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailRegister;
-import org.ptit.okrs.core_authentication.constant.MailConstant.MailResetPassword;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordResetRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserLoginRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserRegisterRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserResetPasswordRequest;
+import org.ptit.okrs.core_authentication.dto.response.AuthActiveUserResponse;
+import org.ptit.okrs.core_authentication.dto.response.AuthInactiveUserResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
-import org.ptit.okrs.core_authentication.exception.OTPInvalidException;
 import org.ptit.okrs.core_authentication.exception.OtpNotFoundException;
 import org.ptit.okrs.core_authentication.exception.PasswordConfirmNotMatchException;
 import org.ptit.okrs.core_authentication.exception.PasswordInvalidException;
 import org.ptit.okrs.core_authentication.exception.ResetKeyInvalidException;
-import org.ptit.okrs.core_authentication.exception.UnactiveAccountException;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
@@ -36,6 +39,7 @@ import org.ptit.okrs.core_authentication.util.CryptUtil;
 import org.ptit.okrs.core_email.service.EmailService;
 import org.ptit.okrs.core_util.GeneratorUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,6 +58,7 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   private final Long refreshTokenLifeTime;
   private final ResetKeyService resetKeyService;
   private final PasswordEncoder passwordEncoder;
+  private final MessageSource messageSource;
 
   @Value("${application.authentication.redis.otp_time_out}")
   private Integer otpTimeLife;
@@ -68,7 +73,8 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
       Long refreshTokenLifeTime,
       EmailService emailService,
       ResetKeyService resetKeyService,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder,
+      MessageSource messageSource) {
     this.authAccountService = authAccountService;
     this.authUserService = authUserService;
     this.authTokenService = authTokenService;
@@ -79,6 +85,7 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     this.refreshTokenLifeTime = refreshTokenLifeTime;
     this.resetKeyService = resetKeyService;
     this.passwordEncoder = passwordEncoder;
+    this.messageSource = messageSource;
   }
 
   @Override
@@ -108,11 +115,12 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
 
   @Override
   @Transactional
-  public AuthUserLoginResponse login(AuthUserLoginRequest request) {
-    log.info("(login)request: {}", request);
+  public AuthUserLoginResponse login(AuthUserLoginRequest request, Locale locale) {
+    log.info("(login)request: {}, locale : {}", request, locale);
     var accountUser = authAccountService.findByUsername(request.getUsername());
     if (!accountUser.getIsActivated()) {
-      throw new UnactiveAccountException(accountUser.getUserId());
+      return AuthInactiveUserResponse.from(
+          messageSource.getMessage(INACTIVE_ACCOUNT_MESSAGE_CODE, null, locale));
     }
     if (!CryptUtil.getPasswordEncoder().matches(request.getPassword(), accountUser.getPassword())) {
       log.error("(login)password : {} --> PasswordInvalidException", request.getPassword());
@@ -124,10 +132,10 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     String refreshToken =
         authTokenService.generateRefreshToken(
             accountUser.getUserId(), accountUser.getEmail(), accountUser.getUsername());
-    tokenRedisService.set(accountUser.getUserId(), "accessToken", accessToken);
-    tokenRedisService.set(accountUser.getUserId(), "refreshToken", refreshToken);
+    tokenRedisService.set(KEY_CACHE_ACCESS_TOKEN, accountUser.getUserId(), accessToken);
+    tokenRedisService.set(KEY_CACHE_REFRESH_TOKEN, accountUser.getUserId(), refreshToken);
     authenticate(accountUser.getUsername(), accountUser.getUserId());
-    return AuthUserLoginResponse.from(
+    return AuthActiveUserResponse.from(
         accessToken, refreshToken, accessTokenLifeTime, refreshTokenLifeTime);
   }
 
@@ -199,7 +207,10 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
 
     // generate reset password key, push redis(key: email, value: resetKey), return to client
     var resetPasswordKey = CryptUtil.generateResetKey(request.getEmail());
-    resetKeyService.set(CacheVerifyOtpForgotPassword.KEY_CACHE_RESET_PASSWORD, request.getEmail() ,resetPasswordKey);
+    resetKeyService.set(
+        CacheVerifyOtpForgotPassword.KEY_CACHE_RESET_PASSWORD,
+        request.getEmail(),
+        resetPasswordKey);
 
     return AuthUserForgotPasswordOtpVerifyResponse.of(resetPasswordKey);
   }

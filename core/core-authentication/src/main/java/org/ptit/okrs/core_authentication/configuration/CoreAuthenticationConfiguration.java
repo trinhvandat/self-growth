@@ -24,6 +24,7 @@ import org.ptit.okrs.core_swagger.EnableCoreSwagger;
 import org.ptit.orks.core_audit.AuditorAwareImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -79,7 +80,8 @@ public class CoreAuthenticationConfiguration {
       TokenRedisService tokenRedisService,
       EmailService emailService,
       ResetKeyService resetKeyService,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder,
+      MessageSource messageSource) {
     return new AuthFacadeServiceImpl(
         authAccountService,
         authUserService,
@@ -90,7 +92,8 @@ public class CoreAuthenticationConfiguration {
         refreshTokenLifeTime,
         emailService,
         resetKeyService,
-        passwordEncoder);
+        passwordEncoder,
+        messageSource);
   }
 
   @Bean
