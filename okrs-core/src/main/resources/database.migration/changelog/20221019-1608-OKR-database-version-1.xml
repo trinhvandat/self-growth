@@ -5,7 +5,7 @@
    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
   <changeSet id="20221019-2349-user-table" author="Son Anh">
-    <createTable tableName="user">
+    <createTable tableName="user_okrs">
       <column name="id" type="varchar(255)">
         <constraints primaryKey="true"/>
       </column>
@@ -49,7 +49,7 @@
     </createTable>
     <addForeignKeyConstraint baseTableName="account" baseColumnNames="user_id"
       constraintName="FK_account_user"
-      referencedTableName="user" referencedColumnNames="id"/>
+      referencedTableName="user_okrs" referencedColumnNames="id"/>
   </changeSet>
 
   <changeSet id="20221019-2349-objective-table" author="Son Anh">
@@ -83,7 +83,7 @@
     </createTable>
     <addForeignKeyConstraint baseTableName="objective" baseColumnNames="user_id"
       constraintName="FK_objective_user"
-      referencedTableName="user" referencedColumnNames="id"/>
+      referencedTableName="user_okrs" referencedColumnNames="id"/>
   </changeSet>
 
   <changeSet id="20221019-2349-key-result-table" author="Son Anh">
@@ -113,7 +113,7 @@
     </createTable>
     <addForeignKeyConstraint baseTableName="key_result" baseColumnNames="user_id"
       constraintName="FK_key_result_user"
-      referencedTableName="user" referencedColumnNames="id"/>
+      referencedTableName="user_okrs" referencedColumnNames="id"/>
     <addForeignKeyConstraint baseTableName="key_result" baseColumnNames="objective_id"
       constraintName="FK_key_result_objective"
       referencedTableName="objective" referencedColumnNames="id"/>
@@ -142,7 +142,7 @@
     </createTable>
     <addForeignKeyConstraint baseTableName="daily_plan" baseColumnNames="user_id"
       constraintName="FK_daily_plan_user"
-      referencedTableName="user" referencedColumnNames="id"/>
+      referencedTableName="user_okrs" referencedColumnNames="id"/>
     <addForeignKeyConstraint baseTableName="daily_plan" baseColumnNames="key_result_id"
       constraintName="FK_daily_plan_key_result"
       referencedTableName="key_result" referencedColumnNames="id"/>
@@ -162,7 +162,7 @@
     </createTable>
     <addForeignKeyConstraint baseTableName="notification" baseColumnNames="user_id"
       constraintName="FK_notification_user"
-      referencedTableName="user" referencedColumnNames="id"/>
+      referencedTableName="user_okrs" referencedColumnNames="id"/>
   </changeSet>
 
 </databaseChangeLog>

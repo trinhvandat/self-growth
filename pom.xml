@@ -34,6 +34,7 @@
     <jwt.version>0.9.1</jwt.version>
     <hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
     <common.lang>2.2</common.lang>
+    <postgresql.version>42.5.0</postgresql.version>
   </properties>
 
   <dependencyManagement>
@@ -89,32 +90,37 @@
         <groupId>org.ptit.okrs</groupId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <artifactId>postgresql</artifactId>
+        <groupId>org.postgresql</groupId>
+        <version>${postgresql.version}</version>
+      </dependency>
 
       <!-- MIGRATION -->
       <dependency>
-        <groupId>org.liquibase</groupId>
-        <artifactId>liquibase-core</artifactId>
-        <version>${liquibase.version}</version>
+        <artifactId>h2</artifactId>
+        <groupId>com.h2database</groupId>
+        <scope>runtime</scope>
+        <version>${h2.version}</version>
       </dependency>
 
       <!-- DATABASE -->
       <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <scope>runtime</scope>
-        <version>${h2.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
+        <groupId>mysql</groupId>
         <scope>runtime</scope>
         <version>${mysql.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>liquibase-core</artifactId>
+        <groupId>org.liquibase</groupId>
+        <version>${liquibase.version}</version>
       </dependency>
 
       <!-- LOMBOK -->
       <dependency>
-        <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
+        <groupId>org.projectlombok</groupId>
         <optional>true</optional>
         <version>${lombok.version}</version>
       </dependency>
@@ -133,23 +139,35 @@
       </dependency>
       <!-- JSON WEB TOKEN -->
       <dependency>
-        <groupId>io.jsonwebtoken</groupId>
         <artifactId>jjwt</artifactId>
+        <groupId>io.jsonwebtoken</groupId>
         <version>${jwt.version}</version>
       </dependency>
 
       <!-- VALIDATION -->
       <dependency>
-        <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
+        <groupId>org.hibernate</groupId>
         <version>${hibernate-validator.version}</version>
       </dependency>
 
       <!-- COMMON -->
       <dependency>
-        <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
+        <groupId>commons-lang</groupId>
         <version>${common.lang}</version>
+      </dependency>
+      <!--  RATE_LIMIT -->
+      <dependency>
+        <artifactId>bucket4j-spring-boot-starter</artifactId>
+        <groupId>com.giffing.bucket4j.spring.boot.starter</groupId>
+        <version>${bucket4j-spring-boot-starter.version}</version>
+      </dependency>
+      <!--  REDISSON    -->
+      <dependency>
+        <artifactId>redisson-spring-boot-starter</artifactId>
+        <groupId>org.redisson</groupId>
+        <version>${redisson-spring-boot-starter.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
