@@ -18,12 +18,12 @@
       <groupId>org.ptit.okrs</groupId>
     </dependency>
     <dependency>
-      <groupId>org.ptit.okrs</groupId>
       <artifactId>core-util</artifactId>
+      <groupId>org.ptit.okrs</groupId>
     </dependency>
     <dependency>
-      <groupId>org.ptit.okrs</groupId>
       <artifactId>core-swagger</artifactId>
+      <groupId>org.ptit.okrs</groupId>
     </dependency>
   </dependencies>
 

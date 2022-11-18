@@ -57,6 +57,10 @@
       <artifactId>spring-boot-starter-validation</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
+    <dependency>
+      <artifactId>postgresql</artifactId>
+      <groupId>org.postgresql</groupId>
+    </dependency>
   </dependencies>
 
   <modelVersion>4.0.0</modelVersion>

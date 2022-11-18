@@ -46,12 +46,13 @@ spring:
     url: ${SPRING_DATASOURCE_URL:}
     username: ${SPRING_DATASOURCE_USERNAME:}
     password: ${SPRING_DATASOURCE_PASSWORD:}
-    driver-class-name: com.mysql.cj.jdbc.Driver
   #SWAGGER
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-
+  #JPA
+  jpa:
+    show-sql: true
   #FILE(Specify the size of the file in MB)
   servlet:
     multipart:

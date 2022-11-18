@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_exception.InternalServerError;
 import org.ptit.okrs.core_upload.exception.FileNameInvalidException;
@@ -34,19 +35,19 @@ public class CoreUploadServiceImpl implements CoreUploadService {
     log.info("(uploadFile)fileName: {}", file.getOriginalFilename());
     var fileName = file.getOriginalFilename();
 
-    try {
-      if (!fileName.contains(".")) {
-        log.error("(uploadFile)fileName: {} invalid", fileName);
-        throw new FileNameInvalidException(fileName);
-      }
+    if (!fileName.contains(".")) {
+      log.error("(uploadFile)fileName: {} invalid", fileName);
+      throw new FileNameInvalidException(fileName);
+    }
 
-      fileName = new Date().getTime() + "." + getFileExtension(file.getOriginalFilename());
+    try {
+      fileName = UUID.randomUUID() + "_" + new Date().getTime() + "." + getFileExtension(file.getOriginalFilename());
       Path targetLocation = fileStorageLocation.resolve(fileName);
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
       return subUriViewFile.replace("/**", "/") + fileName;
     } catch (Exception ex) {
-      log.error("(uploadFile)exception: {}", ex.getMessage());
+      log.error("(uploadFile)exception: {}", ex.toString());
       throw new InternalServerError(
           "Could not upload file " + file.getOriginalFilename() + ". Please try again!");
     }

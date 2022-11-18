@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Data
-@Table(name = "user")
+@Table(name = "user_okrs")
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class User extends BaseEntityWithUpdater {
