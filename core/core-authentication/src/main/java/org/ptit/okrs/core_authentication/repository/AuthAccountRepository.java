@@ -15,11 +15,13 @@ public interface AuthAccountRepository extends JpaRepository<AuthAccount, String
 
   @Query(
       "select new org.ptit.okrs.core_authentication.repository.AccountUserProjection("
+          + "a.id, "
           + "a.username, "
           + "a.password, "
           + "a.userId, "
           + "u.email, "
-          + "a.isActivated)"
+          + "a.isActivated,"
+          + "a.isLockPermanent)"
           + "from AuthAccount a inner join AuthUser u on a.userId = u.id where a.username = :username")
   Optional<AccountUserProjection> find(String username);
 
@@ -31,15 +33,25 @@ public interface AuthAccountRepository extends JpaRepository<AuthAccount, String
   @Modifying
   @Query(
       value =
-          "UPDATE account INNER JOIN user ON account.user_id = user.id SET account.is_activated = true WHERE user.email = :email",
+          "UPDATE account SET is_activated = true FROM account a INNER JOIN user_okrs u ON a.user_id = u.id WHERE u.email = :email",
       nativeQuery = true)
   void activeAccountByEmail(@Param("email") String email);
 
   @Transactional
   @Modifying
+  @Query(nativeQuery = true, value = "UPDATE account a SET is_lock_permanent = false WHERE a.id= :id")
+  void disableLockPermanent(@Param("id") String id);
+
+  @Transactional
+  @Modifying
+  @Query(nativeQuery = true, value = "UPDATE account a SET is_lock_permanent = true WHERE a.id = :id")
+  void enableLockPermanent(@Param("id") String id);
+
+  @Transactional
+  @Modifying
   @Query(
       value =
-          "UPDATE account INNER JOIN user ON account.user_id = user.id SET account.password = :password WHERE user.email = :email",
+          "UPDATE account SET password = :password FROM account a INNER JOIN user_okrs u ON a.user_id = u.id WHERE u.email = :email",
       nativeQuery = true)
   void updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
 }

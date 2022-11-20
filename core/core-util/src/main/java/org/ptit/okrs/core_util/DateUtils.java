@@ -21,6 +21,10 @@ public class DateUtils {
     return getDate(getCurrentDate());
   }
 
+  public static Long getCurrentEpoch() {
+    return LocalDateTime.now(ZoneId.of(VI_ZONE)).toEpochSecond(ZoneOffset.UTC);
+  }
+
   public static LocalDateTime getCurrentDateTime() {
     return LocalDateTime.now(ZoneId.of(VI_ZONE));
   }

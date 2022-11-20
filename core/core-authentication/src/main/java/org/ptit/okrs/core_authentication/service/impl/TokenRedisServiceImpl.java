@@ -8,7 +8,7 @@ public class TokenRedisServiceImpl extends BaseRedisHashServiceImpl<String> impl
     TokenRedisService {
 
   public TokenRedisServiceImpl(
-      RedisTemplate<String, String> redisTemplate) {
+      RedisTemplate<String, Object> redisTemplate) {
     super(redisTemplate);
   }
 }

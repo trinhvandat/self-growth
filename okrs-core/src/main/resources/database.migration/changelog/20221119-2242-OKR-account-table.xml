@@ -4,8 +4,10 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-  <include file="/changelog/20221019-1608-OKR-database-version-1.xml"
-    relativeToChangelogFile="true"/>
-  <include file="/changelog/20221119-2242-OKR-account-table.xml" relativeToChangelogFile="true"/>
+  <changeSet id="20221119-2242-OKR-account-table" author="Son Anh">
+    <addColumn tableName="account">
+      <column type="boolean" name="is_lock_permanent"/>
+    </addColumn>
+  </changeSet>
 
 </databaseChangeLog>

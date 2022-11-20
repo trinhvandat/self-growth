@@ -49,6 +49,7 @@ public class AuthAccountServiceImpl implements AuthAccountService {
   }
 
   @Override
+  @Transactional
   public AuthAccount create(String userId, String username, String password) {
     log.info("(create)userId: {}, username: {}", userId, username);
 
@@ -69,6 +70,18 @@ public class AuthAccountServiceImpl implements AuthAccountService {
   public void activeByEmail(String email) {
     log.info("(activeByEmail)email: {}", email);
     repository.activeAccountByEmail(email);
+  }
+
+  @Override
+  public void disableLockPermanent(String id) {
+    log.info("(disableLockPermanent)id : {}", id);
+    repository.disableLockPermanent(id);
+  }
+
+  @Override
+  public void enableLockPermanent(String id) {
+    log.info("(enableLockPermanent)id : {}", id);
+    repository.enableLockPermanent(id);
   }
 
   @Override

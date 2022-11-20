@@ -3,6 +3,8 @@ package org.ptit.okrs.core_authentication.facade;
 import static org.ptit.okrs.core_authentication.constant.CacheConstant.CacheToken.KEY_CACHE_ACCESS_TOKEN;
 import static org.ptit.okrs.core_authentication.constant.CacheConstant.CacheToken.KEY_CACHE_REFRESH_TOKEN;
 import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.INACTIVE_ACCOUNT_MESSAGE_CODE;
+import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.PERMANENT_LOCK_ACCOUNT_CODE;
+import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.TEMPORARY_LOCK_ACCOUNT_CODE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +24,8 @@ import org.ptit.okrs.core_authentication.dto.request.AuthUserRegisterRequest;
 import org.ptit.okrs.core_authentication.dto.request.AuthUserResetPasswordRequest;
 import org.ptit.okrs.core_authentication.dto.response.AuthActiveUserResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthInactiveUserResponse;
+import org.ptit.okrs.core_authentication.dto.response.AuthPermanentLockUserResponse;
+import org.ptit.okrs.core_authentication.dto.response.AuthTemporaryLockUserResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
@@ -32,6 +36,8 @@ import org.ptit.okrs.core_authentication.exception.ResetKeyInvalidException;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
+import org.ptit.okrs.core_authentication.service.LoginFailService;
+import org.ptit.okrs.core_authentication.service.MessageService;
 import org.ptit.okrs.core_authentication.service.OtpService;
 import org.ptit.okrs.core_authentication.service.ResetKeyService;
 import org.ptit.okrs.core_authentication.service.TokenRedisService;
@@ -39,11 +45,9 @@ import org.ptit.okrs.core_authentication.util.CryptUtil;
 import org.ptit.okrs.core_email.service.EmailService;
 import org.ptit.okrs.core_util.GeneratorUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class AuthFacadeServiceImpl implements AuthFacadeService {
@@ -58,7 +62,9 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   private final Long refreshTokenLifeTime;
   private final ResetKeyService resetKeyService;
   private final PasswordEncoder passwordEncoder;
-  private final MessageSource messageSource;
+  private final MessageService messageService;
+
+  private final LoginFailService loginFailService;
 
   @Value("${application.authentication.redis.otp_time_out}")
   private Integer otpTimeLife;
@@ -74,7 +80,8 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
       EmailService emailService,
       ResetKeyService resetKeyService,
       PasswordEncoder passwordEncoder,
-      MessageSource messageSource) {
+      MessageService messageService,
+      LoginFailService loginFailService) {
     this.authAccountService = authAccountService;
     this.authUserService = authUserService;
     this.authTokenService = authTokenService;
@@ -85,7 +92,8 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     this.refreshTokenLifeTime = refreshTokenLifeTime;
     this.resetKeyService = resetKeyService;
     this.passwordEncoder = passwordEncoder;
-    this.messageSource = messageSource;
+    this.messageService = messageService;
+    this.loginFailService = loginFailService;
   }
 
   @Override
@@ -114,18 +122,34 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   }
 
   @Override
-  @Transactional
   public AuthUserLoginResponse login(AuthUserLoginRequest request, Locale locale) {
     log.info("(login)request: {}, locale : {}", request, locale);
     var accountUser = authAccountService.findByUsername(request.getUsername());
     if (!accountUser.getIsActivated()) {
       return AuthInactiveUserResponse.from(
-          messageSource.getMessage(INACTIVE_ACCOUNT_MESSAGE_CODE, null, locale));
+          messageService.getI18nMessage(INACTIVE_ACCOUNT_MESSAGE_CODE, locale, null));
+    }
+    if (accountUser.getIsLockPermanent()) {
+      return AuthPermanentLockUserResponse.from(
+          messageService.getI18nMessage(
+              PERMANENT_LOCK_ACCOUNT_CODE,
+              locale,
+              loginFailService.returnParamMaps(accountUser.getAccountId())));
+    }
+    if (loginFailService.isTemporaryLock(accountUser.getAccountId())) {
+      return AuthTemporaryLockUserResponse.from(
+          messageService.getI18nMessage(
+              TEMPORARY_LOCK_ACCOUNT_CODE,
+              locale,
+              loginFailService.returnParamMaps(accountUser.getAccountId())));
     }
     if (!CryptUtil.getPasswordEncoder().matches(request.getPassword(), accountUser.getPassword())) {
       log.error("(login)password : {} --> PasswordInvalidException", request.getPassword());
+      loginFailService.increaseFailAttempts(accountUser.getAccountId());
+      loginFailService.setLock(accountUser.getAccountId());
       throw new PasswordInvalidException();
     }
+    loginFailService.resetFailAttempts(accountUser.getAccountId());
     String accessToken =
         authTokenService.generateAccessToken(
             accountUser.getUserId(), accountUser.getEmail(), accountUser.getUsername());
@@ -140,7 +164,6 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   }
 
   @Override
-  @Transactional
   public AuthUserRegisterResponse register(AuthUserRegisterRequest request) {
     log.info("(register)request: {}", request);
 
@@ -157,7 +180,6 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     // generate otp and push it to redis
     var otpActiveAccount = GeneratorUtils.generateOtp();
     otpService.set(authUser.getEmail(), otpActiveAccount);
-
     // Send mail request active account
     sendMailOTPTemplate(
         request.getEmail(),
@@ -184,7 +206,6 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     // generate otp and push it to redis
     var otpForgotPassword = GeneratorUtils.generateOtp();
     otpService.set(request.getEmail(), otpForgotPassword);
-
     // send mail verify
     sendMailOTPTemplate(
         request.getEmail(),

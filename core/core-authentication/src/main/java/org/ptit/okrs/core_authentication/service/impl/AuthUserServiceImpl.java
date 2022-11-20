@@ -7,6 +7,7 @@ import org.ptit.okrs.core_authentication.exception.EmailAlreadyExistException;
 import org.ptit.okrs.core_authentication.repository.AuthUserRepository;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 public class AuthUserServiceImpl implements AuthUserService {
@@ -27,6 +28,7 @@ public class AuthUserServiceImpl implements AuthUserService {
   }
 
   @Override
+  @Transactional
   public AuthUser create(String email) {
     log.info("(create)email: {}", email);
 

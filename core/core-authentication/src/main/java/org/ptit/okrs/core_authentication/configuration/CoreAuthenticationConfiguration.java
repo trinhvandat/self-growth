@@ -8,12 +8,16 @@ import org.ptit.okrs.core_authentication.repository.AuthUserRepository;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
+import org.ptit.okrs.core_authentication.service.LoginFailService;
+import org.ptit.okrs.core_authentication.service.MessageService;
 import org.ptit.okrs.core_authentication.service.OtpService;
 import org.ptit.okrs.core_authentication.service.ResetKeyService;
 import org.ptit.okrs.core_authentication.service.TokenRedisService;
 import org.ptit.okrs.core_authentication.service.impl.AuthAccountServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.AuthTokenServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.AuthUserServiceImpl;
+import org.ptit.okrs.core_authentication.service.impl.LoginFailServiceImpl;
+import org.ptit.okrs.core_authentication.service.impl.MessageServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.OtpServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.ResetKeyServiceImpl;
 import org.ptit.okrs.core_authentication.service.impl.TokenRedisServiceImpl;
@@ -81,7 +85,8 @@ public class CoreAuthenticationConfiguration {
       EmailService emailService,
       ResetKeyService resetKeyService,
       PasswordEncoder passwordEncoder,
-      MessageSource messageSource) {
+      MessageService messageService,
+      LoginFailService loginFailService) {
     return new AuthFacadeServiceImpl(
         authAccountService,
         authUserService,
@@ -93,7 +98,8 @@ public class CoreAuthenticationConfiguration {
         emailService,
         resetKeyService,
         passwordEncoder,
-        messageSource);
+        messageService,
+        loginFailService);
   }
 
   @Bean
@@ -108,17 +114,28 @@ public class CoreAuthenticationConfiguration {
   }
 
   @Bean
+  public LoginFailService loginFailService(
+      RedisTemplate<String, Object> redisTemplate, AuthAccountService authAccountService) {
+    return new LoginFailServiceImpl(redisTemplate, authAccountService);
+  }
+
+  @Bean
+  public MessageService messageService(MessageSource messageSource) {
+    return new MessageServiceImpl(messageSource);
+  }
+
+  @Bean
   public OtpService otpService(RedisTemplate<String, Object> redisTemplate) {
     return new OtpServiceImpl(redisTemplate, redisOtpTimeOut, TimeUnit.MINUTES);
   }
 
   @Bean
-  public TokenRedisService tokenRedisService(RedisTemplate<String, String> redisTemplate) {
+  public TokenRedisService tokenRedisService(RedisTemplate<String, Object> redisTemplate) {
     return new TokenRedisServiceImpl(redisTemplate);
   }
 
   @Bean
-  public ResetKeyService resetKeyService(RedisTemplate<String, String> redisTemplate) {
+  public ResetKeyService resetKeyService(RedisTemplate<String, Object> redisTemplate) {
     return new ResetKeyServiceImpl(redisTemplate);
   }
 }

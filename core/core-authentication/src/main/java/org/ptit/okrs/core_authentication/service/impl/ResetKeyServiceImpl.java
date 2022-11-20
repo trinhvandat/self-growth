@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 public class ResetKeyServiceImpl extends BaseRedisHashServiceImpl<String>
     implements ResetKeyService {
 
-  public ResetKeyServiceImpl(RedisTemplate<String, String> redisTemplate) {
+  public ResetKeyServiceImpl(RedisTemplate<String, Object> redisTemplate) {
     super(redisTemplate);
   }
 }

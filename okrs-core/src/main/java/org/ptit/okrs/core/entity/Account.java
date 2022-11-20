@@ -19,6 +19,7 @@ public class Account extends BaseEntityWithUpdater {
   private String username;
   @Column(nullable = false)
   private String password;
-  private Boolean isActive;
+  private Boolean isActivated = false;
+  private Boolean isLockPermanent = false;
   private String userId;
 }

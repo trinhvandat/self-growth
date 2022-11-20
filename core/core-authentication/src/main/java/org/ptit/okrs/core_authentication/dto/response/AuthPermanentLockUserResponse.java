@@ -5,4 +5,5 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public abstract class AuthUserLoginResponse {}
+public class AuthPermanentLockUserResponse extends AuthTemporaryLockUserResponse {
+}
