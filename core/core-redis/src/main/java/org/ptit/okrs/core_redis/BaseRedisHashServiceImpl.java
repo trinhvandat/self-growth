@@ -10,7 +10,7 @@ public class BaseRedisHashServiceImpl<T> implements BaseRedisHashService<T> {
 
   private final HashOperations<String, String, Object> hashOperations;
 
-  public BaseRedisHashServiceImpl(RedisTemplate<String, String> redisTemplate) {
+  public BaseRedisHashServiceImpl(RedisTemplate<String, Object> redisTemplate) {
     this.hashOperations = redisTemplate.opsForHash();
   }
 

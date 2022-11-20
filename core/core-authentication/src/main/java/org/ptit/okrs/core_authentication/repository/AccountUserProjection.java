@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AccountUserProjection {
 
+  private String accountId;
   private String username;
   private String password;
   private String userId;
   private String email;
   private Boolean isActivated;
+  private Boolean isLockPermanent;
 }

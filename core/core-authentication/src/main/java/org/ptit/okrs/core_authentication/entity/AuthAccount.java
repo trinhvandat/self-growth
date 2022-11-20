@@ -18,9 +18,10 @@ public class AuthAccount extends BaseEntity {
   private String username;
   private String password;
   private Boolean isActivated = false;
+  private Boolean isLockPermanent = false;
   private String userId;
 
   public static AuthAccount of(String userId, String username, String password) {
-    return AuthAccount.of(username, password, false, userId);
+    return AuthAccount.of(username, password, false, false, userId);
   }
 }
