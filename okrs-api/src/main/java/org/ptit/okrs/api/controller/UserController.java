@@ -47,7 +47,7 @@ public class UserController {
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         service.update(
-            "userId", // TODO: get user id by auth
+            getUserId(),
             userUpdateRequest.getName(),
             userUpdateRequest.getPhone(),
             userUpdateRequest.getDateOfBirth(),
