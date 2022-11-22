@@ -12,6 +12,7 @@ import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -166,5 +167,11 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
     if (!isExist(keyResultId)) {
       throw new NotFoundException(keyResultId, KeyResult.class.getSimpleName());
     }
+  }
+
+  @Override
+  public List<KeyResult> searchByEndDate(Integer date, int page, int size) {
+    log.debug("(searchByEndDate)date: {}, page: {}, size: {}", date, page, size);
+    return repository.findByEndDate(date, PageRequest.of(page, size)).getContent();
   }
 }

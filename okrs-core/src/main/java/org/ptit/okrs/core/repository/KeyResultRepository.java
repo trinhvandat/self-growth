@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.ptit.okrs.core.entity.KeyResult;
 import org.ptit.okrs.core.repository.base.BaseRepository;
 import org.ptit.okrs.core.repository.projection.KeyResultProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +19,7 @@ public interface KeyResultRepository extends BaseRepository<KeyResult> {
   Optional<Integer> countAllKeyResults(String objectiveId);
 
   @Query(
-      "select count(kr) from KeyResult kr where kr.objectiveId = :objectiveId and kr.progress < 100")
+          "select count(kr) from KeyResult kr where kr.objectiveId = :objectiveId and kr.progress < 100")
   Optional<Integer> countIncompleteKeyResults(String objectiveId);
 
   @Query("select avg(kr.progress) from KeyResult kr where kr.objectiveId = :objectiveId")
@@ -44,4 +46,7 @@ public interface KeyResultRepository extends BaseRepository<KeyResult> {
   @Modifying
   @Query("update KeyResult kr set kr.progress = :progress where kr.id = :id")
   void updateProgress(String id, Integer progress);
+
+  @Query("select k from KeyResult k where :date - k.endDate >= 0")
+  Page<KeyResult> findByEndDate(Integer date, Pageable pageable);
 }

@@ -17,6 +17,7 @@ import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -171,5 +172,11 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
       log.error("(validateExist)objectiveId : {} --> NOT FOUND EXCEPTION", objectiveId);
       throw new NotFoundException(objectiveId, Objective.class.getSimpleName());
     }
+  }
+
+  @Override
+  public List<Objective> searchByEndDate(Integer date, int page, int size) {
+    log.debug("(searchByEndDate)date: {}, page: {}, size: {}", date, page, size);
+    return repository.findByEndDate(date, PageRequest.of(page, size)).getContent();
   }
 }
