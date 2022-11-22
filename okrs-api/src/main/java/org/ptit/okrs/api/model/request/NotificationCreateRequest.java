@@ -7,9 +7,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
-public class NotificationRequest {
-
-    private String id;
+public class NotificationCreateRequest {
 
     @NotBlank
     private String content;
