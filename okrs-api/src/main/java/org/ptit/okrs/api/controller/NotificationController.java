@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.api.model.request.NotificationRequest;
+import org.ptit.okrs.api.model.request.NotificationCreateRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
 import org.ptit.okrs.core.model.NotificationResponse;
 import org.ptit.okrs.core.paging.PagingReq;
@@ -31,7 +31,7 @@ public class NotificationController {
     @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public OkrsResponse create(@Validated @RequestBody NotificationRequest request) {
+    public OkrsResponse create(@Validated @RequestBody NotificationCreateRequest request) {
         log.info("(create)request: {}", request);
         return OkrsResponse.of(
                 HttpStatus.CREATED.value(),
@@ -64,10 +64,10 @@ public class NotificationController {
     @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(path = "{id}")
-    public OkrsResponse update(@PathVariable("id") String id, @Validated @RequestBody NotificationRequest request) {
+    public OkrsResponse update(@PathVariable("id") String id, @Validated @RequestBody NotificationCreateRequest request) {
         log.info("(update)id : {}, request : {}", id, request);
         return OkrsResponse.of(HttpStatus.OK.value(), service.update(
-                request.getId(),
+                id,
                 request.getContent(),
                 getUserId()));
     }
