@@ -101,4 +101,6 @@ public interface KeyResultService extends BaseService<KeyResult> {
    * @param keyResultId - id of key result
    */
   void validateExist(String keyResultId);
+
+  List<KeyResult> searchByEndDate(Integer date, int page, int size);
 }

@@ -2,6 +2,7 @@ package org.ptit.okrs.core.configuration;
 
 import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManagerFactory;
+
 import org.ptit.okrs.core.facade.OkrsFacadeService;
 import org.ptit.okrs.core.facade.impl.OkrsFacadeServiceImpl;
 import org.ptit.okrs.core.repository.AccountRepository;
@@ -73,8 +74,8 @@ public class OkrsCoreConfiguration {
 
   @Bean
   public OkrsFacadeService okrsFacadeService(
-      ObjectiveService objectiveService, KeyResultService keyResultService) {
-    return new OkrsFacadeServiceImpl(objectiveService, keyResultService);
+      ObjectiveService objectiveService, KeyResultService keyResultService, DailyPlanService dailyPlanService, NotificationService notificationService) {
+    return new OkrsFacadeServiceImpl(objectiveService, keyResultService, dailyPlanService, notificationService);
   }
 
   @Bean

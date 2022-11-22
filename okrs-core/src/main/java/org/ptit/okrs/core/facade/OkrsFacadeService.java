@@ -1,5 +1,6 @@
 package org.ptit.okrs.core.facade;
 
+import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.model.ObjectiveStatsResponse;
 
 public interface OkrsFacadeService {
@@ -10,4 +11,9 @@ public interface OkrsFacadeService {
    * @return stats of an objective
    */
   ObjectiveStatsResponse statistic(String objectiveId);
+
+  void updateStatusDailyPlan(
+          String dailyPlanId,
+          DailyPlanStatus status
+  );
 }

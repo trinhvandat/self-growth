@@ -87,4 +87,7 @@ public interface ObjectiveService extends BaseService<Objective> {
    * @param objectiveId - id of objective need to check
    */
   void validateExist(String objectiveId);
+
+  List<Objective> searchByEndDate(Integer date, int page, int size);
+
 }

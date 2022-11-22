@@ -13,6 +13,7 @@ import org.ptit.okrs.api.model.request.DailyPlanCreateRequest;
 import org.ptit.okrs.api.model.request.DailyPlanUpdateRequest;
 import org.ptit.okrs.api.model.response.OkrsResponse;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
+import org.ptit.okrs.core.facade.OkrsFacadeService;
 import org.ptit.okrs.core.service.DailyPlanService;
 import org.ptit.okrs.core.service.KeyResultService;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,8 @@ public class DailyPlanController {
 
   private final DailyPlanService service;
   private final KeyResultService keyResultService;
+
+  private final OkrsFacadeService okrsFacadeService;
 
   @ApiOperation("Create new task in daily plan")
   @ApiResponse(code = 201, response = OkrsResponse.class, message = "Successfully response")
@@ -137,7 +140,7 @@ public class DailyPlanController {
       @ApiParam(required = true) @RequestParam("status") DailyPlanStatus status
   ) {
     log.info("(updateStatusDailyPlan)id: {}", id);
-    service.updateStatusDailyPlan(id, status);
+    okrsFacadeService.updateStatusDailyPlan(id, status);
     return OkrsResponse.of(HttpStatus.OK.value());
   }
 }

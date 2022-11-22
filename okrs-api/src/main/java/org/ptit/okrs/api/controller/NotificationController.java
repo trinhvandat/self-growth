@@ -15,8 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
+import static org.ptit.orks.core_audit.SecurityService.getUserId;
 
 import static org.ptit.okrs.api.constant.OkrsApiConstant.BaseUrl.NOTIFICATION_BASE_URL;
 
@@ -38,7 +37,7 @@ public class NotificationController {
                 HttpStatus.CREATED.value(),
                 service.create(
                         request.getContent(),
-                        request.getUserId()
+                        getUserId()
                 )
         );
     }
@@ -70,7 +69,7 @@ public class NotificationController {
         return OkrsResponse.of(HttpStatus.OK.value(), service.update(
                 request.getId(),
                 request.getContent(),
-                request.getUserId()));
+                getUserId()));
     }
 
     @ApiOperation("Delete notification")

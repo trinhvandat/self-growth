@@ -14,7 +14,4 @@ public class NotificationRequest {
     @NotBlank
     private String content;
 
-    @NotBlank
-    private String userId;
-
 }
