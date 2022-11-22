@@ -18,4 +18,10 @@ public class MailConstant {
     public static final String KEY_PARAM_OTP_TIME_LIFE = "time_life";
     public static final String KEY_PARAM_OTP = "otp";
   }
+
+  public static class MailUnlockAccount {
+    public static final String SUBJECT = "OKRS: Unlock Account!";
+    public static final String KEY_PARAM_OTP_TIME_LIFE = "time_life";
+    public static final String KEY_PARAM_OTP = "otp";
+  }
 }
