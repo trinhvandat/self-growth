@@ -31,20 +31,20 @@ public class LoginFailServiceImpl extends BaseRedisHashServiceImpl<Long>
     this.authAccountService = authAccountService;
   }
   @Override
-  public void increaseFailAttempts(String accountId) {
-    log.info("(increaseFailAttempts)accountId : {}", accountId);
-    Long failAttempts = (Long) get(KEY_CACHE_FAIL_ATTEMPTS, accountId);
+  public void increaseFailAttempts(String email) {
+    log.info("(increaseFailAttempts)email : {}", email);
+    Long failAttempts = (Long) get(KEY_CACHE_FAIL_ATTEMPTS, email);
     if (failAttempts == null) {
       failAttempts = INIT_FAIL_ATTEMPTS;
     }
     failAttempts++;
-    set(KEY_CACHE_FAIL_ATTEMPTS, accountId, failAttempts);
+    set(KEY_CACHE_FAIL_ATTEMPTS, email, failAttempts);
   }
 
   @Override
-  public Boolean isTemporaryLock(String accountId) {
-    log.info("(isAccountLock)accountId : {}", accountId);
-    Long unlockTime = (Long) get(KEY_CACHE_UNLOCK_TIME, accountId);
+  public Boolean isTemporaryLock(String email) {
+    log.info("(isAccountLock)email : {}", email);
+    Long unlockTime = (Long) get(KEY_CACHE_UNLOCK_TIME, email);
     if (unlockTime == null) {
       return false;
     }
@@ -52,17 +52,17 @@ public class LoginFailServiceImpl extends BaseRedisHashServiceImpl<Long>
   }
 
   @Override
-  public void resetFailAttempts(String accountId) {
-    log.info("(resetFailAttempts)accountId : {}", accountId);
-    delete(KEY_CACHE_FAIL_ATTEMPTS, accountId);
-    delete(KEY_CACHE_UNLOCK_TIME, accountId);
+  public void resetFailAttempts(String email) {
+    log.info("(resetFailAttempts)email : {}", email);
+    delete(KEY_CACHE_FAIL_ATTEMPTS, email);
+    delete(KEY_CACHE_UNLOCK_TIME, email);
   }
 
   @Override
-  public Map<String, String> returnParamMaps(String accountId) {
-    log.info("(returnParamMaps)accountId : {}", accountId);
+  public Map<String, String> returnParamMaps(String email) {
+    log.info("(returnParamMaps)email : {}", email);
     Map<String, String> params = new HashMap<>();
-    Long failAttempts = (Long) get(KEY_CACHE_FAIL_ATTEMPTS, accountId);
+    Long failAttempts = (Long) get(KEY_CACHE_FAIL_ATTEMPTS, email);
     log.info("(returnParamMaps)failAttempts : {}", failAttempts);
     if (failAttempts == null) {
       return null;
@@ -83,18 +83,18 @@ public class LoginFailServiceImpl extends BaseRedisHashServiceImpl<Long>
 
   @Override
   @Transactional
-  public void setLock(String accountId) {
-    log.info("(setLockAccount)accountId : {}", accountId);
-    Long failAttempts = (Long) get(KEY_CACHE_FAIL_ATTEMPTS, accountId);
+  public void setLock(String email) {
+    log.info("(setLockAccount)email : {}", email);
+    Long failAttempts = (Long) get(KEY_CACHE_FAIL_ATTEMPTS, email);
     log.info("(setLockAccount)failAttempts : {}", failAttempts);
     if (failAttempts.equals(THIRD_LOCK_LIMIT)) {
-      authAccountService.enableLockPermanent(accountId);
+      authAccountService.enableLockPermanent(email);
     }
     if (failAttempts.equals(SECOND_LOCK_LIMIT)) {
-      set(KEY_CACHE_UNLOCK_TIME, accountId, DateUtils.getCurrentEpoch() + SECOND_LOCK_TIME);
+      set(KEY_CACHE_UNLOCK_TIME, email, DateUtils.getCurrentEpoch() + SECOND_LOCK_TIME);
     }
     if (failAttempts.equals(FIRST_LOCK_LIMIT)) {
-      set(KEY_CACHE_UNLOCK_TIME, accountId, DateUtils.getCurrentEpoch() + FIRST_LOCK_TIME);
+      set(KEY_CACHE_UNLOCK_TIME, email, DateUtils.getCurrentEpoch() + FIRST_LOCK_TIME);
     }
   }
 }

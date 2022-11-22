@@ -7,33 +7,33 @@ public interface LoginFailService extends BaseRedisHashService<Long> {
 
   /**
    * increase after login fail
-   * @param accountId - account id of user account
+   * @param email - email of user account
    */
-  void increaseFailAttempts(String accountId);
+  void increaseFailAttempts(String email);
 
   /**
    * check account lock or not
-   * @param accountId - account id of user account
+   * @param email - email of user account
    * @return boolean
    */
-  Boolean isTemporaryLock(String accountId);
+  Boolean isTemporaryLock(String email);
 
   /**
    * reset fail attempt and unlock after login success
-   * @param accountId - account id of user account
+   * @param email - email of user account
    */
-  void resetFailAttempts(String accountId);
+  void resetFailAttempts(String email);
 
   /**
    * return param map for i18n message
-   * @param accountId  - id of account user
+   * @param email  - id of account user
    * @return param map
    */
-  Map<String, String> returnParamMaps(String accountId);
+  Map<String, String> returnParamMaps(String email);
 
   /**
    * lock account when login fail reach to limit
-   * @param accountId - account id of user account
+   * @param email - email of user account
    */
-  void setLock(String accountId);
+  void setLock(String email);
 }
