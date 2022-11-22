@@ -134,22 +134,22 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
           messageService.getI18nMessage(
               PERMANENT_LOCK_ACCOUNT_CODE,
               locale,
-              loginFailService.returnParamMaps(accountUser.getAccountId())));
+              loginFailService.returnParamMaps(accountUser.getEmail())));
     }
-    if (loginFailService.isTemporaryLock(accountUser.getAccountId())) {
+    if (loginFailService.isTemporaryLock(accountUser.getEmail())) {
       return AuthTemporaryLockUserResponse.from(
           messageService.getI18nMessage(
               TEMPORARY_LOCK_ACCOUNT_CODE,
               locale,
-              loginFailService.returnParamMaps(accountUser.getAccountId())));
+              loginFailService.returnParamMaps(accountUser.getEmail())));
     }
     if (!CryptUtil.getPasswordEncoder().matches(request.getPassword(), accountUser.getPassword())) {
       log.error("(login)password : {} --> PasswordInvalidException", request.getPassword());
-      loginFailService.increaseFailAttempts(accountUser.getAccountId());
-      loginFailService.setLock(accountUser.getAccountId());
+      loginFailService.increaseFailAttempts(accountUser.getEmail());
+      loginFailService.setLock(accountUser.getEmail());
       throw new PasswordInvalidException();
     }
-    loginFailService.resetFailAttempts(accountUser.getAccountId());
+    loginFailService.resetFailAttempts(accountUser.getEmail());
     String accessToken =
         authTokenService.generateAccessToken(
             accountUser.getUserId(), accountUser.getEmail(), accountUser.getUsername());
