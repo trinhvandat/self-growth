@@ -39,13 +39,13 @@ public interface AuthAccountRepository extends JpaRepository<AuthAccount, String
 
   @Transactional
   @Modifying
-  @Query(nativeQuery = true, value = "UPDATE account a SET is_lock_permanent = false WHERE a.id= :id")
-  void disableLockPermanent(@Param("id") String id);
+  @Query(nativeQuery = true, value = "UPDATE account SET is_lock_permanent = false FROM account a INNER JOIN user_okrs u ON a.user_id = u.id WHERE u.email = :email")
+  void disableLockPermanent(@Param("email") String email);
 
   @Transactional
   @Modifying
-  @Query(nativeQuery = true, value = "UPDATE account a SET is_lock_permanent = true WHERE a.id = :id")
-  void enableLockPermanent(@Param("id") String id);
+  @Query(nativeQuery = true, value = "UPDATE account SET is_lock_permanent = true FROM account a INNER JOIN user_okrs u ON a.user_id = u.id WHERE u.email = :email")
+  void enableLockPermanent(@Param("email") String email);
 
   @Transactional
   @Modifying
