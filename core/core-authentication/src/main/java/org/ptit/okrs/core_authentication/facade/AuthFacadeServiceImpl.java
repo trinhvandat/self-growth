@@ -2,9 +2,7 @@ package org.ptit.okrs.core_authentication.facade;
 
 import static org.ptit.okrs.core_authentication.constant.CacheConstant.CacheToken.KEY_CACHE_ACCESS_TOKEN;
 import static org.ptit.okrs.core_authentication.constant.CacheConstant.CacheToken.KEY_CACHE_REFRESH_TOKEN;
-import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.INACTIVE_ACCOUNT_MESSAGE_CODE;
-import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.PERMANENT_LOCK_ACCOUNT_CODE;
-import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.TEMPORARY_LOCK_ACCOUNT_CODE;
+import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,21 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_authentication.constant.CacheConstant.CacheResetPassword;
 import org.ptit.okrs.core_authentication.constant.CacheConstant.CacheVerifyOtpForgotPassword;
 import org.ptit.okrs.core_authentication.constant.MailConstant;
+import org.ptit.okrs.core_authentication.constant.MailConstant.MailUnlockAccount;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailForgotPassword;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailRegister;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordResetRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserLoginRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserRegisterRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserResetPasswordRequest;
-import org.ptit.okrs.core_authentication.dto.response.AuthActiveUserResponse;
-import org.ptit.okrs.core_authentication.dto.response.AuthInactiveUserResponse;
-import org.ptit.okrs.core_authentication.dto.response.AuthPermanentLockUserResponse;
-import org.ptit.okrs.core_authentication.dto.response.AuthTemporaryLockUserResponse;
-import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
-import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
-import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
+import org.ptit.okrs.core_authentication.dto.request.*;
+import org.ptit.okrs.core_authentication.dto.response.*;
+import org.ptit.okrs.core_authentication.entity.AuthAccount;
 import org.ptit.okrs.core_authentication.exception.OtpNotFoundException;
 import org.ptit.okrs.core_authentication.exception.PasswordConfirmNotMatchException;
 import org.ptit.okrs.core_authentication.exception.PasswordInvalidException;
@@ -266,6 +255,33 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     params.put(keyParamTimeLife, otpTimeLife);
     params.put(keyParamOtp, otp);
     emailService.send(subject, email, MailConstant.OTP_TEMPLATE_NAME, params);
+  }
+
+  @Override
+  public void unlockAccount(AuthUserSentOtpToMail request) {
+    log.info("(sentOtpToMailUnlockAccount)request: {}", request);
+    authUserService.validateExistedWithEmail(request.getEmail());
+
+    var otpUnlockAccount = GeneratorUtils.generateOtp();
+    otpService.set(request.getEmail(), otpUnlockAccount);
+    sendMailOTPTemplate(
+            request.getEmail(),
+            otpUnlockAccount,
+            MailUnlockAccount.KEY_PARAM_OTP_TIME_LIFE,
+            MailUnlockAccount.KEY_PARAM_OTP,
+            MailUnlockAccount.SUBJECT);
+  }
+
+  @Override
+  public void verifyOtpUnlockAccount(AuthUnlockAccountRequest request) {
+    log.info("(verifyOtpUnlockAccount)request: {}", request);
+
+    authUserService.validateExistedWithEmail(request.getEmail());
+
+    otpService.validateOtp(request.getEmail(), request.getOtp());
+
+    authAccountService.disableLockPermanent(request.getEmail());
+    loginFailService.resetFailAttempts(request.getEmail());
   }
 
   private void validateResetKey(AuthUserForgotPasswordResetRequest request) {

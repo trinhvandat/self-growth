@@ -53,4 +53,16 @@ public interface AuthFacadeService {
    * @param request - User information to change password
    */
   void resetPassword(AuthUserForgotPasswordResetRequest request);
+
+  /**
+   * send otp to mail
+   * @param request - email to send the otp code to the user
+   */
+  void unlockAccount(AuthUserSentOtpToMail request);
+
+  /**
+   * unlock account
+   * @param request - email want to unlock account
+   */
+  void verifyOtpUnlockAccount(AuthUnlockAccountRequest request);
 }

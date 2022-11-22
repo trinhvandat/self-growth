@@ -5,12 +5,7 @@ import io.swagger.annotations.ApiResponse;
 import java.util.Locale;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordResetRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserLoginRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserRegisterRequest;
-import org.ptit.okrs.core_authentication.dto.request.AuthUserResetPasswordRequest;
+import org.ptit.okrs.core_authentication.dto.request.*;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
@@ -89,5 +84,23 @@ public class AuthUserController {
   public void resetPassword(@Valid @RequestBody AuthUserForgotPasswordResetRequest request) {
     log.info("(resetPassword)request: {}", request);
     authFacadeService.resetPassword(request);
+  }
+
+  @ApiOperation("Send otp to mail unlock account")
+  @ApiResponse(code = 200, message = "Successfully response.")
+  @PostMapping("/unlock-account")
+  @ResponseStatus(HttpStatus.OK)
+  public void unlockAccount(@Valid @RequestBody AuthUserSentOtpToMail request) {
+    log.info("(sendOTPToMailUnlockAccount)request: {}", request);
+    authFacadeService.unlockAccount(request);
+  }
+
+  @ApiOperation("User unlock account")
+  @ApiResponse(code = 200, message = "Successfully response.")
+  @PostMapping("/unlock-account/otp-verify")
+  @ResponseStatus(HttpStatus.OK)
+  public void verifyOtpUnlockAccount(@Valid @RequestBody AuthUnlockAccountRequest request) {
+    log.info("(verifyOtpUnlockAccount)request: {}", request);
+    authFacadeService.verifyOtpUnlockAccount(request);
   }
 }
