@@ -19,15 +19,15 @@ public interface AuthAccountService {
 
   /**
    * disable lock permanent of account
-   * @param id - id of account
+   * @param email - email of user
    */
-  void disableLockPermanent(String id);
+  void disableLockPermanent(String email);
 
   /**
    * enable lock permanent of account
-   * @param id - id of account
+   * @param email - email of user
    */
-  void enableLockPermanent(String id);
+  void enableLockPermanent(String email);
 
   /**
    * update new password for account  by email

@@ -73,15 +73,15 @@ public class AuthAccountServiceImpl implements AuthAccountService {
   }
 
   @Override
-  public void disableLockPermanent(String id) {
-    log.info("(disableLockPermanent)id : {}", id);
-    repository.disableLockPermanent(id);
+  public void disableLockPermanent(String email) {
+    log.info("(disableLockPermanent)email : {}", email);
+    repository.disableLockPermanent(email);
   }
 
   @Override
-  public void enableLockPermanent(String id) {
-    log.info("(enableLockPermanent)id : {}", id);
-    repository.enableLockPermanent(id);
+  public void enableLockPermanent(String email) {
+    log.info("(enableLockPermanent)email : {}", email);
+    repository.enableLockPermanent(email);
   }
 
   @Override
