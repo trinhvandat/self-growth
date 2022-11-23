@@ -45,9 +45,9 @@ public class NotificationController {
     @ApiOperation("Get list notification")
     @ApiResponse(code = 200, response = OkrsResponse.class, message = "Successfully response.")
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(params = {"user_id"})
-    public ResponseEntity<PagingRes<NotificationResponse>> list(@RequestParam("user_id") String userId, @Validated() final PagingReq pagingReq){
-        final Page<NotificationResponse> notificationResponses = service.list(userId, pagingReq.makePageable());
+    @GetMapping
+    public ResponseEntity<PagingRes<NotificationResponse>> list(@Validated() final PagingReq pagingReq){
+        final Page<NotificationResponse> notificationResponses = service.list(getUserId(), pagingReq.makePageable());
         return new ResponseEntity<>(PagingRes.of(notificationResponses) , HttpStatus.OK);
     }
 

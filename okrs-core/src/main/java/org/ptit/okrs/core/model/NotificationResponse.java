@@ -12,13 +12,11 @@ public class NotificationResponse {
 
     private String content;
 
-    private String userId;
 
     public static NotificationResponse from(Notification notification) {
         NotificationResponse response = new NotificationResponse();
         response.setId(notification.getId());
         response.setContent(notification.getContent());
-        response.setUserId(notification.getUserId());
         return response;
     }
 }
