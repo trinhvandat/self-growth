@@ -36,6 +36,7 @@ public class NotificationServiceImpl extends BaseServiceImpl<Notification> imple
 
   @Override
   public void deleteById(String id) {
+    log.info("(deleteById)id: {}", id);
     repository.deleteById(id);
   }
 
@@ -62,13 +63,16 @@ public class NotificationServiceImpl extends BaseServiceImpl<Notification> imple
   @Override
   @Async
   public void deleteAll(List<Notification> notifications) {
+    log.info("(deleteAll)");
     repository.deleteAll(notifications);
   }
 
   @Override
   public NotificationResponse update(String id, String content, String userId) {
+    log.info("(update)id: {}, content: {}, userId: {}", id, content, userId);
     var notification = find(id);
     if (notification == null) {
+      log.error("(update)id: {} not found", id);
       throw new NotFoundException(id, Notification.class.getSimpleName());
     }
     notification.setContent(content);
