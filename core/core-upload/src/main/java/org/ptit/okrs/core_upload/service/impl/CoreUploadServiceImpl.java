@@ -16,12 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class CoreUploadServiceImpl implements CoreUploadService {
 
-  @Value("${application.upload.url.view}")
-  private String subUriViewFile;
+  private String pathStorageFile;
   private final Path fileStorageLocation;
 
-  public CoreUploadServiceImpl(String pathStorageFolder) {
-    this.fileStorageLocation = Paths.get(pathStorageFolder).toAbsolutePath().normalize();
+  public CoreUploadServiceImpl(String pathStorageFile) {
+    this.pathStorageFile = pathStorageFile;
+    this.fileStorageLocation = Paths.get(pathStorageFile).toAbsolutePath().normalize();
     createFolderStorage(fileStorageLocation);
   }
 
@@ -45,7 +45,7 @@ public class CoreUploadServiceImpl implements CoreUploadService {
       Path targetLocation = fileStorageLocation.resolve(fileName);
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-      return subUriViewFile.replace("/**", "/") + fileName;
+      return pathStorageFile + "\\" + fileName;
     } catch (Exception ex) {
       log.error("(uploadFile)exception: {}", ex.toString());
       throw new InternalServerError(
@@ -77,17 +77,5 @@ public class CoreUploadServiceImpl implements CoreUploadService {
       log.error("(createFolderStorage)exception: {}", ex.getMessage());
       throw new InternalServerError("Unable to create folder containing uploaded files.");
     }
-  }
-
-  private String setPath(String subPath) {
-    log.info("(setPath)subPath: {}", subPath);
-    var path = Paths.get(subPath).toAbsolutePath().normalize().toString();
-    if (path.contains(":")) {
-      path = "file:\\\\\\" + path + "\\";
-    } else {
-      path = "file:~\\" + path + "\\";
-    }
-    log.info("(setPath)path: {}", path);
-    return path;
   }
 }
