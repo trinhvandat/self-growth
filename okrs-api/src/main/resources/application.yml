@@ -26,9 +26,7 @@ application:
   upload:
     path:
       file:
-        storage: ./uploads/images/
-    url:
-      view: ./uploads/images/**
+        storage: C:\Users\X1\Downloads\Document\upload_image
   #MAIL
   email:
     from: ${SPRING_EMAIL_FROM:}
