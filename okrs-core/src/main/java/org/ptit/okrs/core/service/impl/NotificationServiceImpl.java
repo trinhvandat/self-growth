@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class NotificationServiceImpl extends BaseServiceImpl<Notification> implements NotificationService {
@@ -37,15 +36,22 @@ public class NotificationServiceImpl extends BaseServiceImpl<Notification> imple
   @Override
   public void deleteById(String id) {
     log.info("(deleteById)id: {}", id);
+    if (!isExist(id)) {
+      log.error("(deleteById)id: {} not found", id);
+      throw new NotFoundException(id, Notification.class.getSimpleName());
+    }
     repository.deleteById(id);
   }
 
   @Override
-  public List<NotificationResponse> getById(String id) {
+  public NotificationResponse getById(String id) {
     log.info("(getById)id: {}", id);
-    return repository.findById(id).stream()
-        .map(NotificationResponse::from)
-        .collect(Collectors.toList());
+    if (!isExist(id)) {
+      log.error("(getById)id: {} not found", id);
+      throw new NotFoundException(id, Notification.class.getSimpleName());
+    }
+    return NotificationResponse.from(find(id));
+
   }
 
   @Override
