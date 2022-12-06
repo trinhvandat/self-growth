@@ -2,7 +2,7 @@ package org.ptit.okrs.core_authentication.facade;
 
 import static org.ptit.okrs.core_authentication.constant.CacheConstant.CacheToken.KEY_CACHE_ACCESS_TOKEN;
 import static org.ptit.okrs.core_authentication.constant.CacheConstant.CacheToken.KEY_CACHE_REFRESH_TOKEN;
-import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.*;
+import static org.ptit.okrs.core_authentication.constant.PropertiesConstant.INACTIVE_ACCOUNT_MESSAGE_CODE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,16 +12,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_authentication.constant.CacheConstant.CacheResetPassword;
 import org.ptit.okrs.core_authentication.constant.CacheConstant.CacheVerifyOtpForgotPassword;
 import org.ptit.okrs.core_authentication.constant.MailConstant;
-import org.ptit.okrs.core_authentication.constant.MailConstant.MailUnlockAccount;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailForgotPassword;
 import org.ptit.okrs.core_authentication.constant.MailConstant.MailRegister;
-import org.ptit.okrs.core_authentication.dto.request.*;
-import org.ptit.okrs.core_authentication.dto.response.*;
-import org.ptit.okrs.core_authentication.entity.AuthAccount;
+import org.ptit.okrs.core_authentication.constant.MailConstant.MailUnlockAccount;
+import org.ptit.okrs.core_authentication.dto.request.AuthUnlockAccountRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserActiveAccountRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordOtpVerifyRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserForgotPasswordResetRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserLoginRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserRegisterRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserResetPasswordRequest;
+import org.ptit.okrs.core_authentication.dto.request.AuthUserSentOtpToMail;
+import org.ptit.okrs.core_authentication.dto.response.AuthActiveUserResponse;
+import org.ptit.okrs.core_authentication.dto.response.AuthInactiveUserResponse;
+import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
+import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
+import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
 import org.ptit.okrs.core_authentication.exception.OtpNotFoundException;
 import org.ptit.okrs.core_authentication.exception.PasswordConfirmNotMatchException;
 import org.ptit.okrs.core_authentication.exception.PasswordInvalidException;
+import org.ptit.okrs.core_authentication.exception.PermanentLockException;
 import org.ptit.okrs.core_authentication.exception.ResetKeyInvalidException;
+import org.ptit.okrs.core_authentication.exception.TemporaryLockException;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
@@ -119,19 +131,16 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
           messageService.getI18nMessage(INACTIVE_ACCOUNT_MESSAGE_CODE, locale, null));
     }
     if (accountUser.getIsLockPermanent()) {
-      return AuthPermanentLockUserResponse.from(
-          messageService.getI18nMessage(
-              PERMANENT_LOCK_ACCOUNT_CODE,
-              locale,
-              loginFailService.returnParamMaps(accountUser.getEmail())));
+      throw new PermanentLockException(
+          accountUser.getUserId(), loginFailService.getFailAttempts(accountUser.getEmail()));
     }
     if (loginFailService.isTemporaryLock(accountUser.getEmail())) {
-      return AuthTemporaryLockUserResponse.from(
-          messageService.getI18nMessage(
-              TEMPORARY_LOCK_ACCOUNT_CODE,
-              locale,
-              loginFailService.returnParamMaps(accountUser.getEmail())));
+      throw new TemporaryLockException(
+          accountUser.getUserId(),
+          loginFailService.getFailAttempts(accountUser.getEmail()),
+          loginFailService.getUnlockTime(accountUser.getEmail()));
     }
+
     if (!CryptUtil.getPasswordEncoder().matches(request.getPassword(), accountUser.getPassword())) {
       log.error("(login)password : {} --> PasswordInvalidException", request.getPassword());
       loginFailService.increaseFailAttempts(accountUser.getEmail());
@@ -265,11 +274,11 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
     var otpUnlockAccount = GeneratorUtils.generateOtp();
     otpService.set(request.getEmail(), otpUnlockAccount);
     sendMailOTPTemplate(
-            request.getEmail(),
-            otpUnlockAccount,
-            MailUnlockAccount.KEY_PARAM_OTP_TIME_LIFE,
-            MailUnlockAccount.KEY_PARAM_OTP,
-            MailUnlockAccount.SUBJECT);
+        request.getEmail(),
+        otpUnlockAccount,
+        MailUnlockAccount.KEY_PARAM_OTP_TIME_LIFE,
+        MailUnlockAccount.KEY_PARAM_OTP,
+        MailUnlockAccount.SUBJECT);
   }
 
   @Override

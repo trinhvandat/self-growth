@@ -9,8 +9,6 @@ import static org.ptit.okrs.core_authentication.constant.LoginFailConstant.SECON
 import static org.ptit.okrs.core_authentication.constant.LoginFailConstant.SECOND_LOCK_TIME;
 import static org.ptit.okrs.core_authentication.constant.LoginFailConstant.THIRD_LOCK_LIMIT;
 
-import java.util.HashMap;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.LoginFailService;
@@ -29,6 +27,18 @@ public class LoginFailServiceImpl extends BaseRedisHashServiceImpl<Long>
       RedisTemplate<String, Object> redisTemplate, AuthAccountService authAccountService) {
     super(redisTemplate);
     this.authAccountService = authAccountService;
+  }
+
+  @Override
+  public Long getFailAttempts(String email) {
+    log.info("(getFailAttempts)email : {}", email);
+    return (Long) get(KEY_CACHE_FAIL_ATTEMPTS, email);
+  }
+
+  @Override
+  public Long getUnlockTime(String email) {
+    log.info("(getUnlockTime)email : {}", email);
+    return (Long) get(KEY_CACHE_UNLOCK_TIME, email);
   }
   @Override
   public void increaseFailAttempts(String email) {
@@ -56,29 +66,6 @@ public class LoginFailServiceImpl extends BaseRedisHashServiceImpl<Long>
     log.info("(resetFailAttempts)email : {}", email);
     delete(KEY_CACHE_FAIL_ATTEMPTS, email);
     delete(KEY_CACHE_UNLOCK_TIME, email);
-  }
-
-  @Override
-  public Map<String, String> returnParamMaps(String email) {
-    log.info("(returnParamMaps)email : {}", email);
-    Map<String, String> params = new HashMap<>();
-    Long failAttempts = (Long) get(KEY_CACHE_FAIL_ATTEMPTS, email);
-    log.info("(returnParamMaps)failAttempts : {}", failAttempts);
-    if (failAttempts == null) {
-      return null;
-    }
-    if (failAttempts >= THIRD_LOCK_LIMIT) {
-      params.put("failAttempts", String.valueOf(THIRD_LOCK_LIMIT));
-      return params;
-    }
-    if (failAttempts >= SECOND_LOCK_LIMIT) {
-      params.put("failAttempts", String.valueOf(SECOND_LOCK_LIMIT));
-      params.put("lockTime", String.valueOf(SECOND_LOCK_TIME));
-      return params;
-    }
-    params.put("failAttempts", String.valueOf(FIRST_LOCK_LIMIT));
-    params.put("lockTime", String.valueOf(FIRST_LOCK_TIME));
-    return params;
   }
 
   @Override
