@@ -34,17 +34,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   @Transactional
   public UserCreateResponse create(String name, String email) {
     log.info("(create)name: {}, email: {}", name, email);
-
-    if (!email.contains(".")) {
-      log.error("(create)email: {} invalid ", email);
-      throw new EmailInvalidException(email);
-    }
-
-    if (repository.existsByEmail(email)) {
-      log.error("(create)email: {} conflict data", email);
-      throw new EmailAlreadyExistsException(email);
-    }
-
+    validateUserExistsByEmail(email);
     return UserCreateResponse.from(create(User.of(name, email)));
   }
 
@@ -66,32 +56,16 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         gender,
         address);
 
-    var regexPhoneNumber = "(0)(3|5|7|8|9)+([0-9]{8})\\b";
-    if (!phone.matches(regexPhoneNumber)) {
-      log.error("(update)phone: {} invalid ", phone);
-      throw new PhoneNumberInvalidException(phone);
-    }
-
-
-    var userUpdate = find(id);
-    if (Objects.isNull(userUpdate)) {
-      log.info("(update)id: {} not found", id);
-      throw new NotFoundException(id, User.class.getSimpleName());
-    }
-
-    userUpdate.setName(name);
-    userUpdate.setPhone(phone);
-    userUpdate.setDateOfBirth(dateOfBirth);
-    userUpdate.setGender(gender);
-    userUpdate.setAddress(address);
-    return UserResponse.from(update(userUpdate));
-
+    validatePhoneNumber(phone);
+    validateUserExists(id);
+    return UserResponse.from(update(buildUser( id, name, phone, dateOfBirth, gender, address)));
   }
 
   @Override
   @Transactional(readOnly = true)
   public UserResponse get(String userId) {
     log.debug("(get)userId: {}", userId);
+    validateUserExists(userId);
     return UserResponse.from(find(userId));
   }
 
@@ -99,10 +73,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   @Transactional
   public void changePathAvatar(String userId, String pathAvatar) {
     log.info("(changePathAvatar)userId: {}, pathAvatar: {}", userId, pathAvatar);
-    if (!isExist(userId)) {
-      log.error("(changePathAvatar)userId: {} not found", userId);
-      throw new NotFoundException(userId, User.class.getSimpleName());
-    }
+    validateUserExists(userId);
     repository.updateAvatar(userId, pathAvatar);
   }
 
@@ -111,23 +82,78 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
   public InputStreamResource getAvatar(String userId) {
     log.info("(getAvatar)userId: {}", userId);
 
-    if (!isExist(userId)) {
-      log.error("(getAvatar)userId: {} not found", userId);
-      throw new NotFoundException(userId, User.class.getSimpleName());
-    }
+    validateUserExists(userId);
 
     var pathFile = repository.findAvatar(userId);
+    validatePathFileNull(pathFile, userId);
+
+    return retrieveImage(pathFile);
+  }
+
+  private User buildUser(String id,
+                         String name,
+                         String phone,
+                         Integer dateOfBirth,
+                         Gender gender,
+                         String address) {
+    log.info("(buildUser)id: {}, name: {}, phone: {}, dateOfBirth: {}, gender: {}, address: {}",
+            id,
+            name,
+            phone,
+            dateOfBirth,
+            gender,
+            address);
+
+    var userUpdate = find(id);
+    userUpdate.setName(name);
+    userUpdate.setPhone(phone);
+    userUpdate.setDateOfBirth(dateOfBirth);
+    userUpdate.setGender(gender);
+    userUpdate.setAddress(address);
+    return update(userUpdate);
+  }
+
+  private void validatePhoneNumber(String phoneNumber) {
+    log.info("(validatePhoneNumber)");
+    var regexPhoneNumber = "(0)(3|5|7|8|9)+([0-9]{8})\\b";
+    if (!phoneNumber.matches(regexPhoneNumber)) {
+      log.error("(update)phone: {} invalid ", phoneNumber);
+      throw new PhoneNumberInvalidException(phoneNumber);
+    }
+  }
+
+  private void validateUserExists(String id) {
+    log.info("(validateUser)id: {}", id);
+    if (!isExist(id)) {
+      log.error("(validateUser)userId: {} not found", id);
+      throw new NotFoundException(id, User.class.getSimpleName());
+    }
+  }
+
+  private void validatePathFileNull(String pathFile, String userId) {
+    log.info("(validatePathFileNull)pathFile: {}", pathFile);
     if (Objects.isNull(pathFile)) {
       log.error("(getAvatar)userId: {} not found", userId);
       throw new AvatarNotFoundException(userId);
     }
+  }
 
+  private InputStreamResource retrieveImage(String pathFile) {
+    log.info("(retrieveAvatar)pathFile: {}", pathFile);
     try {
       var file = new File(pathFile);
       return new InputStreamResource(new FileInputStream(file));
     } catch (Exception e) {
       log.error("(getAvatar)exception: {}", e.getMessage());
       throw new InternalServerError();
+    }
+  }
+
+  private void validateUserExistsByEmail(String email) {
+    log.info("(validateUserExistsByEmail)email: {}", email);
+    if (repository.existsByEmail(email)) {
+      log.error("(create)email: {} conflict data", email);
+      throw new EmailAlreadyExistsException(email);
     }
   }
 }
