@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_exception.InternalServerError;
@@ -21,7 +22,7 @@ public class CoreUploadServiceImpl implements CoreUploadService {
 
   public CoreUploadServiceImpl(String pathStorageFile) {
     this.pathStorageFile = pathStorageFile;
-    this.fileStorageLocation = Paths.get(pathStorageFile).toAbsolutePath().normalize();
+    this.fileStorageLocation = Paths.get(pathStorageFile).normalize();
     createFolderStorage(fileStorageLocation);
   }
 
@@ -34,18 +35,14 @@ public class CoreUploadServiceImpl implements CoreUploadService {
   public String uploadFile(MultipartFile file) {
     log.info("(uploadFile)fileName: {}", file.getOriginalFilename());
     var fileName = file.getOriginalFilename();
-
-    if (!fileName.contains(".")) {
-      log.error("(uploadFile)fileName: {} invalid", fileName);
-      throw new FileNameInvalidException(fileName);
-    }
+    validateFileName(fileName);
 
     try {
       fileName = UUID.randomUUID() + "_" + new Date().getTime() + "." + getFileExtension(file.getOriginalFilename());
       Path targetLocation = fileStorageLocation.resolve(fileName);
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-      return pathStorageFile + "\\" + fileName;
+      return buildPathAvatar(fileName, pathStorageFile);
     } catch (Exception ex) {
       log.error("(uploadFile)exception: {}", ex.toString());
       throw new InternalServerError(
@@ -77,5 +74,19 @@ public class CoreUploadServiceImpl implements CoreUploadService {
       log.error("(createFolderStorage)exception: {}", ex.getMessage());
       throw new InternalServerError("Unable to create folder containing uploaded files.");
     }
+  }
+
+  private void validateFileName(String fileName) {
+    log.info("(validateFileName)fileName: {}", fileName);
+    if (!fileName.contains(".")) {
+      log.error("(uploadFile)fileName: {} invalid", fileName);
+      throw new FileNameInvalidException(fileName);
+    }
+  }
+
+  private String buildPathAvatar(String fileName, String pathStorageFile) {
+    log.info("(buildPathAvatar)fileName: {}, pathStorageFile: {}", fileName, pathStorageFile);
+    var replacePathStorageFile = pathStorageFile.replace("\\", "/");
+    return replacePathStorageFile + "/" + fileName;
   }
 }

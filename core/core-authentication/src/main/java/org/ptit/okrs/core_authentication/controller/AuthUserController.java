@@ -6,6 +6,7 @@ import java.util.Locale;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core_authentication.dto.request.*;
+import org.ptit.okrs.core_authentication.dto.response.AuthResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserForgotPasswordOtpVerifyResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserLoginResponse;
 import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
@@ -33,74 +34,79 @@ public class AuthUserController {
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/active")
   @ResponseStatus(HttpStatus.OK)
-  public void activeAccount(@Valid @RequestBody AuthUserActiveAccountRequest request) {
+  public AuthResponse activeAccount(@Valid @RequestBody AuthUserActiveAccountRequest request) {
     log.info("(activeAccount)request: {}", request);
     authFacadeService.activeAccount(request);
+    return AuthResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("Step 1: Create new user for sign up account")
   @ApiResponse(code = 201, message = "Successfully response.")
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.CREATED)
-  public AuthUserRegisterResponse register(@Valid @RequestBody AuthUserRegisterRequest request) {
+  public AuthResponse register(@Valid @RequestBody AuthUserRegisterRequest request) {
     log.info("(createUser)request: {}", request);
-    return authFacadeService.register(request);
+    return AuthResponse.of(HttpStatus.CREATED.value(), authFacadeService.register(request));
   }
 
   @ApiOperation("User login")
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/login")
   @ResponseStatus(HttpStatus.OK)
-  public AuthUserLoginResponse login(
+  public AuthResponse login(
       @Valid @RequestBody AuthUserLoginRequest request,
       @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
     log.info("(login)request: {}, locale : {}", request, locale);
-    return authFacadeService.login(request, locale);
+    return AuthResponse.of(HttpStatus.OK.value(), authFacadeService.login(request, locale));
   }
 
   @ApiOperation("User request forgot password")
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/forgot-password")
   @ResponseStatus(HttpStatus.OK)
-  public void forgotPassword(@Valid @RequestBody AuthUserResetPasswordRequest request) {
+  public AuthResponse forgotPassword(@Valid @RequestBody AuthUserResetPasswordRequest request) {
     log.info("(forgotPassword)request: {}", request);
     authFacadeService.forgotPassword(request);
+    return AuthResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("User verify otp forgot password")
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/forgot-password/otp-verify")
   @ResponseStatus(HttpStatus.OK)
-  public AuthUserForgotPasswordOtpVerifyResponse verifyOtpForgotPassword(
+  public AuthResponse verifyOtpForgotPassword(
       @Valid @RequestBody AuthUserForgotPasswordOtpVerifyRequest request) {
     log.info("(verifyOtpForgotPassword)request: {}", request);
-    return authFacadeService.verifyOtpForgotPassword(request);
+    return AuthResponse.of(HttpStatus.OK.value(), authFacadeService.verifyOtpForgotPassword(request));
   }
 
   @ApiOperation("User reset password")
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/forgot-password/reset")
   @ResponseStatus(HttpStatus.OK)
-  public void resetPassword(@Valid @RequestBody AuthUserForgotPasswordResetRequest request) {
+  public AuthResponse resetPassword(@Valid @RequestBody AuthUserForgotPasswordResetRequest request) {
     log.info("(resetPassword)request: {}", request);
     authFacadeService.resetPassword(request);
+    return AuthResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("Send otp to mail unlock account")
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/unlock-account")
   @ResponseStatus(HttpStatus.OK)
-  public void unlockAccount(@Valid @RequestBody AuthUserSentOtpToMail request) {
+  public AuthResponse unlockAccount(@Valid @RequestBody AuthUserSentOtpToMail request) {
     log.info("(sendOTPToMailUnlockAccount)request: {}", request);
     authFacadeService.unlockAccount(request);
+    return AuthResponse.of(HttpStatus.OK.value());
   }
 
   @ApiOperation("User unlock account")
   @ApiResponse(code = 200, message = "Successfully response.")
   @PostMapping("/unlock-account/otp-verify")
   @ResponseStatus(HttpStatus.OK)
-  public void verifyOtpUnlockAccount(@Valid @RequestBody AuthUnlockAccountRequest request) {
+  public AuthResponse verifyOtpUnlockAccount(@Valid @RequestBody AuthUnlockAccountRequest request) {
     log.info("(verifyOtpUnlockAccount)request: {}", request);
     authFacadeService.verifyOtpUnlockAccount(request);
+    return AuthResponse.of(HttpStatus.OK.value());
   }
 }
