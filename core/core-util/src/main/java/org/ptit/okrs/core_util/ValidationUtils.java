@@ -47,11 +47,11 @@ public class ValidationUtils {
       if (endDate == null) {
         return validateDate(startDate);
       } else {
-        return validateDate(startDate)
-            && validateDate(endDate)
-            && (startDate > endDate)
-            && (endDate < DateUtils.getCurrentDateInteger())
-            && (startDate < DateUtils.getCurrentDateInteger());
+        return !validateDate(startDate)
+            || !validateDate(endDate)
+            || (startDate > endDate)
+            || (startDate < DateUtils.getCurrentDateInteger())
+            || (endDate < DateUtils.getCurrentDateInteger());
       }
     }
   }
