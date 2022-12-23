@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   okr-mysql-db:
-    container_name: okr_mysql_db
+    container_name: okr_mysql_db_dev
     image: mysql
     ports:
       - 3307:3306
