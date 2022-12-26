@@ -26,10 +26,10 @@ application:
   upload:
     path:
       file:
-        storage: C:\Users\nguye\Downloads\Document\upload_image
+        storage: ${FILE_STORAGE_PATH:}
   #MAIL
   email:
-    from: ${SPRING_EMAIL_FROM}
+    from: ${SPRING_EMAIL_FROM:}
 
 spring:
   main:
@@ -42,8 +42,8 @@ spring:
   #DATABASE
   datasource:
     url: ${SPRING_DATASOURCE_URL:}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
   #SWAGGER
   mvc:
     pathmatch:
@@ -66,8 +66,8 @@ spring:
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com
-    username: ${SPRING_EMAIL_USERNAME}
-    password: ${SPRING_EMAIL_PASSWORD}
+    username: ${SPRING_EMAIL_USERNAME:}
+    password: ${SPRING_EMAIL_PASSWORD:}
     port: 587
     properties:
       mail:

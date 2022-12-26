@@ -8,6 +8,7 @@ public class PrepareDataUtils {
   public static User createUser() {
     var user = new User();
     user.setId("userIdTest1");
+    user.setEmail("dat@gmail.com");
     user.setName("Leonard");
     return user;
   }

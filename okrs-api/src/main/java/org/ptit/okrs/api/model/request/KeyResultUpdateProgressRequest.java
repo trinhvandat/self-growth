@@ -18,10 +18,10 @@ public class KeyResultUpdateProgressRequest {
   @Max(100)
   private Integer progress;
 
-  public void validatePathVariable(String id) {
-    if (!this.id.equals(id)) {
-      log.error("id : {} --> PathVariableException", id);
-      throw new PathVariableException(this.id, id);
+  public void validate(String pathVariableId) {
+    if (!this.id.equals(pathVariableId)) {
+      log.error("(validate)pathVariableId : {} --> PathVariableException", pathVariableId);
+      throw new PathVariableException(this.id, pathVariableId);
     }
   }
 }

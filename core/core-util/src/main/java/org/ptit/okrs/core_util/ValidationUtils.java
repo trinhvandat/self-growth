@@ -1,5 +1,8 @@
 package org.ptit.okrs.core_util;
 
+import org.ptit.okrs.core_exception.ForbiddenException;
+import org.ptit.orks.core_audit.SecurityService;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -53,6 +56,13 @@ public class ValidationUtils {
             || (startDate < DateUtils.getCurrentDateInteger())
             || (endDate < DateUtils.getCurrentDateInteger());
       }
+    }
+  }
+
+  public static void validateForbiddenUser(String userId) {
+
+    if (!SecurityService.getUserId().equals(userId)) {
+      throw new ForbiddenException(userId);
     }
   }
 }
