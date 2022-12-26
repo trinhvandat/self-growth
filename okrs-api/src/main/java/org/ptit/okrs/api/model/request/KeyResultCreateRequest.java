@@ -27,7 +27,7 @@ public class KeyResultCreateRequest {
   @Max(100)
   private Integer progress;
 
-  public void validate() {
+  public void validate(String pathObjectiveId) {
     if (ValidationUtils.validateStartDateAndEndDate(startDate, endDate)) {
       log.error(
           "(validate)startDate : {}, endDate : {} --> OkrsDateInvalidException",
@@ -36,12 +36,13 @@ public class KeyResultCreateRequest {
       throw new OkrsDateInvalidException(
           KeyResult.class.getSimpleName(), String.valueOf(startDate), String.valueOf(endDate));
     }
+    validateObjectiveIdPathVariable(pathObjectiveId);
   }
 
-  public void validatePathVariable(String objectiveId) {
-    if (!this.objectiveId.equals(objectiveId)) {
-      log.error("(validatePathVariable)objectiveId : {} --> PathVariableException", objectiveId);
-      throw new PathVariableException(this.objectiveId, objectiveId);
+  private void validateObjectiveIdPathVariable(String pathObjectiveId) {
+    if (!this.objectiveId.equals(pathObjectiveId)) {
+      log.error("(validatePathVariable)objectiveId : {} --> PathVariableException", pathObjectiveId);
+      throw new PathVariableException(this.objectiveId, pathObjectiveId);
     }
   }
 }
