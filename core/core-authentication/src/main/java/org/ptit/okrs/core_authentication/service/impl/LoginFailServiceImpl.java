@@ -10,6 +10,8 @@ import static org.ptit.okrs.core_authentication.constant.LoginFailConstant.SECON
 import static org.ptit.okrs.core_authentication.constant.LoginFailConstant.THIRD_LOCK_LIMIT;
 
 import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_authentication.exception.PermanentLockException;
+import org.ptit.okrs.core_authentication.exception.TemporaryLockException;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.LoginFailService;
 import org.ptit.okrs.core_redis.BaseRedisHashServiceImpl;
@@ -40,6 +42,7 @@ public class LoginFailServiceImpl extends BaseRedisHashServiceImpl<Long>
     log.info("(getUnlockTime)email : {}", email);
     return (Long) get(KEY_CACHE_UNLOCK_TIME, email);
   }
+
   @Override
   public void increaseFailAttempts(String email) {
     log.info("(increaseFailAttempts)email : {}", email);
@@ -82,6 +85,17 @@ public class LoginFailServiceImpl extends BaseRedisHashServiceImpl<Long>
     }
     if (failAttempts.equals(FIRST_LOCK_LIMIT)) {
       set(KEY_CACHE_UNLOCK_TIME, email, DateUtils.getCurrentEpoch() + FIRST_LOCK_TIME);
+    }
+  }
+
+  @Override
+  public void checkLock(String email, String userId, Boolean isLockPermanent) {
+
+    if (isLockPermanent) {
+      throw new PermanentLockException(userId, getFailAttempts(email));
+    }
+    if (isTemporaryLock(email)) {
+      throw new TemporaryLockException(userId, getFailAttempts(email), getUnlockTime(email));
     }
   }
 }
