@@ -22,4 +22,7 @@ public interface DailyPlanRepository extends BaseRepository<DailyPlan> {
   @Modifying
   void updateStatus(@Param("id")String id, @Param("status")DailyPlanStatus status);
 
+  @Query("update DailyPlan d set d.keyResultId = :keyResultId where d.id = :id")
+  @Modifying
+  DailyPlan updateKeyResultId(@Param("id")String id, @Param("keyResultId")String keyResultId);
 }

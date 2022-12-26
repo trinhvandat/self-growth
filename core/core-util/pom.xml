@@ -21,5 +21,13 @@
       <artifactId>core-exception</artifactId>
       <groupId>org.ptit.okrs</groupId>
     </dependency>
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
   </dependencies>
 </project>

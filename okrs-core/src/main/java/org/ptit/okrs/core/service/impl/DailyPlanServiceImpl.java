@@ -5,15 +5,13 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.ptit.okrs.core.constant.DailyPlanStatus;
 import org.ptit.okrs.core.entity.DailyPlan;
-import org.ptit.okrs.core.exception.DailyPlanDataConflictException;
-import org.ptit.okrs.core.exception.DailyPlanDateInvalidException;
+import org.ptit.okrs.core.exception.TitleAlreadyExitException;
 import org.ptit.okrs.core.exception.DuplicateKeyException;
 import org.ptit.okrs.core.model.DailyPlanResponse;
 import org.ptit.okrs.core.repository.DailyPlanRepository;
 import org.ptit.okrs.core.service.DailyPlanService;
 import org.ptit.okrs.core.service.UserService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
-import org.ptit.okrs.core_exception.ConflictException;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
 import org.ptit.okrs.core_util.DateUtils;
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements DailyPlanService {
 
-  public static final String DUPLICATE_KEY_MESSAGE = "Not be able to perform tasks at the same time";
   private final DailyPlanRepository repository;
   private final UserService userService;
 
@@ -48,13 +45,13 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
         keyResultId);
     if (repository.existsByTitleAndDate(title, DateUtils.getCurrentDateInteger())) {
       log.error("(create)title: {}, date:{} --> Error: Title on date daily plan is already taken!", title, DateUtils.getCurrentDateInteger());
-      throw new DailyPlanDataConflictException(title, String.valueOf(DateUtils.getCurrentDateInteger()));
+      throw new TitleAlreadyExitException(title, String.valueOf(DateUtils.getCurrentDateInteger()));
     }
     try {
       return DailyPlanResponse.from(
           create(DailyPlan.of(title, description, userId, keyResultId)));
     } catch (DuplicateKeyException er) {
-      log.error("(create)exception : {}", er.getClass().getName());
+      log.error("(create)exception duplicate: {}", er.getClass().getName());
       throw new DuplicateKeyException();
     }
   }
@@ -73,10 +70,7 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   @Transactional(readOnly = true)
   public List<DailyPlanResponse> getByDate(Integer date, String userId) {
     log.info("(getByDate) date: {}", date);
-    if (!ValidationUtils.validateDate(date)) {
-      log.error("(validate)date : {}", date);
-      throw new DailyPlanDateInvalidException(DailyPlan.class.getSimpleName());
-    }
+    ValidationUtils.validateDateFormat(date);
     return repository.findByDateAndUserId(date, userId)
         .stream()
         .map(DailyPlanResponse :: from)
@@ -88,14 +82,8 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
   @Transactional
   public DailyPlanResponse linkDailyPlanToKeyResults(String id, String keyResultId, String userId) {
     log.info("(linkDailyPlanToKeyResults)id: {}, keyResultId: {}", id, keyResultId);
-    DailyPlan dailyPlanCheck = find(id);
-    if (!dailyPlanCheck.getUserId().equals(userId)) {
-      log.error("(update)userId : {} --> FORBIDDEN EXCEPTION", userId);
-      throw new ForbiddenException(userId);
-    }
-    dailyPlanCheck.setKeyResultId(keyResultId);
-    DailyPlan update = update(dailyPlanCheck);
-    return DailyPlanResponse.from(update);
+    ValidationUtils.validateForbiddenUser(userId);
+    return DailyPlanResponse.from(repository.updateKeyResultId(id, keyResultId));
   }
 
   @Override
@@ -115,21 +103,17 @@ public class DailyPlanServiceImpl extends BaseServiceImpl<DailyPlan> implements 
         note,
         keyResultId,
         userId);
-    var dailyPlanCheck = find(id);
-    if (!dailyPlanCheck.getUserId().equals(userId)) {
-      log.error("(update)userId : {} --> FORBIDDEN EXCEPTION", userId);
-      throw new ForbiddenException(userId);
+    var dailyPlan = find(id);
+    ValidationUtils.validateForbiddenUser(userId);
+    if (repository.existsByTitleAndDate(title, dailyPlan.getDate())) {
+      log.error("(update)title: {}, date: {} --> Error: Title on date daily plan is already taken!", title, dailyPlan.getDate());
+      throw new TitleAlreadyExitException(title, String.valueOf(dailyPlan.getDate()));
     }
-    if (repository.existsByTitleAndDate(title, dailyPlanCheck.getDate())) {
-      log.error("(update)title: {}, date: {} --> Error: Title on date daily plan is already taken!", title, dailyPlanCheck.getDate());
-      throw new DailyPlanDataConflictException(title, String.valueOf(dailyPlanCheck.getDate()));
-    }
-    dailyPlanCheck.setTitle(title);
-    dailyPlanCheck.setDescription(description);
-    dailyPlanCheck.setNote(note);
-    dailyPlanCheck.setKeyResultId(keyResultId);
-    DailyPlan update = update(dailyPlanCheck);
-    return DailyPlanResponse.from(update);
+    dailyPlan.setTitle(title);
+    dailyPlan.setDescription(description);
+    dailyPlan.setNote(note);
+    dailyPlan.setKeyResultId(keyResultId);
+    return DailyPlanResponse.from(update(dailyPlan));
   }
 
   @Override
