@@ -31,9 +31,7 @@ import org.ptit.okrs.core_authentication.dto.response.AuthUserRegisterResponse;
 import org.ptit.okrs.core_authentication.exception.OtpNotFoundException;
 import org.ptit.okrs.core_authentication.exception.PasswordConfirmNotMatchException;
 import org.ptit.okrs.core_authentication.exception.PasswordInvalidException;
-import org.ptit.okrs.core_authentication.exception.PermanentLockException;
 import org.ptit.okrs.core_authentication.exception.ResetKeyInvalidException;
-import org.ptit.okrs.core_authentication.exception.TemporaryLockException;
 import org.ptit.okrs.core_authentication.service.AuthAccountService;
 import org.ptit.okrs.core_authentication.service.AuthTokenService;
 import org.ptit.okrs.core_authentication.service.AuthUserService;
@@ -130,16 +128,9 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
       return AuthInactiveUserResponse.from(
           messageService.getI18nMessage(INACTIVE_ACCOUNT_MESSAGE_CODE, locale, null));
     }
-    if (accountUser.getIsLockPermanent()) {
-      throw new PermanentLockException(
-          accountUser.getUserId(), loginFailService.getFailAttempts(accountUser.getEmail()));
-    }
-    if (loginFailService.isTemporaryLock(accountUser.getEmail())) {
-      throw new TemporaryLockException(
-          accountUser.getUserId(),
-          loginFailService.getFailAttempts(accountUser.getEmail()),
-          loginFailService.getUnlockTime(accountUser.getEmail()));
-    }
+
+    loginFailService.checkLock(
+        accountUser.getEmail(), accountUser.getUserId(), accountUser.getIsLockPermanent());
 
     if (!CryptUtil.getPasswordEncoder().matches(request.getPassword(), accountUser.getPassword())) {
       log.error("(login)password : {} --> PasswordInvalidException", request.getPassword());
