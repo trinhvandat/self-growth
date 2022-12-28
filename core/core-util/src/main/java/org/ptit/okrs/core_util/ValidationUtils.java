@@ -1,5 +1,7 @@
 package org.ptit.okrs.core_util;
 
+import lombok.extern.slf4j.Slf4j;
+import org.ptit.okrs.core_exception.DateInvalidException;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.orks.core_audit.SecurityService;
 
@@ -7,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+@Slf4j
 public class ValidationUtils {
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.BASIC_ISO_DATE;
@@ -62,7 +65,15 @@ public class ValidationUtils {
   public static void validateForbiddenUser(String userId) {
 
     if (!SecurityService.getUserId().equals(userId)) {
+      log.info("(validateForbiddenUser)userId : {}", userId);
       throw new ForbiddenException(userId);
+    }
+  }
+
+  public static void validateDateFormat(int date) {
+    if (!validateDate(date)) {
+      log.info("(validateDateFormat)date : {}", date);
+      throw new DateInvalidException(date);
     }
   }
 }
