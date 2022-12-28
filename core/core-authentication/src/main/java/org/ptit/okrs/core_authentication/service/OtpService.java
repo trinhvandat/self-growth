@@ -10,4 +10,6 @@ public interface OtpService extends BaseRedisService<String> {
    * @param otpRequest - the otpReuqest is otp can compare
    */
   void validateOtp(String email, String otpRequest);
+
+  void checkOtpRedis(String email, String otp);
 }

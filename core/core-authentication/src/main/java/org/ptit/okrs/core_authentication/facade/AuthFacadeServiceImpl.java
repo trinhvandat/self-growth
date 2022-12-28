@@ -99,16 +99,7 @@ public class AuthFacadeServiceImpl implements AuthFacadeService {
   public void activeAccount(AuthUserActiveAccountRequest request) {
     log.info("(activeAccount)request: {}", request);
     authUserService.validateExistedWithEmail(request.getEmail());
-
-    var otpRedis = otpService.get(request.getEmail());
-    if (Objects.isNull(otpRedis)) {
-      throw new OtpNotFoundException(request.getOtp(), "Otp code has expired!");
-    }
-    if (Objects.equals(otpRedis, request.getOtp())) {
-      authAccountService.activeByEmail(request.getEmail());
-    } else {
-      throw new OtpNotFoundException(request.getOtp(), "Invalid Otp code!");
-    }
+    otpService.checkOtpRedis(request.getEmail(), request.getOtp());
   }
 
   @Override
