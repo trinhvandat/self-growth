@@ -77,9 +77,10 @@ public class DailyPlanController {
   @GetMapping(params = "key_result_id")
   public OkrsResponse getByKeyResultId(
       @ApiParam(required = true) @RequestParam("key_result_id") String keyResultId) {
+    log.info("(getByKeyResultId)keyResultId: {}", keyResultId);
     keyResultService.validateExist(keyResultId);
     if (log.isDebugEnabled()) {
-      log.debug("(getByKeyResultId)keyResultId: {}", keyResultId);
+      log.info("(getByKeyResultId)keyResultId: {}", keyResultId);
     }
     return OkrsResponse.of(HttpStatus.OK.value(), service.getByKeyResultId(keyResultId, getUserId()));
   }
@@ -91,8 +92,9 @@ public class DailyPlanController {
   public OkrsResponse getByDate(
       @ApiParam(required = true) @RequestParam("date") Integer date
   ) {
+    log.info("(getByDate)date: {}", date);
     if (log.isDebugEnabled()) {
-      log.debug("(list)date: {}", date);
+      log.info("(list)date: {}", date);
     }
     return OkrsResponse.of(HttpStatus.OK.value(), service.getByDate(date, getUserId()));
   }

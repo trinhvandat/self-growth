@@ -41,8 +41,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 
 @Configuration
 @EnableJpaRepositories(
-    basePackages = {"org.ptit.okrs.core.repository"},
-    transactionManagerRef = "jpaOkrsTransactionConfiguration")
+    basePackages = {"org.ptit.okrs.core.repository"})
 @ComponentScan(basePackages = {"org.ptit.okrs.core.repository"})
 @EnableJpaAuditing
 @EntityScan(basePackages = "org.ptit.okrs.core.entity")

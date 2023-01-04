@@ -12,11 +12,11 @@ import org.ptit.okrs.api.exception.PathVariableException;
 public class KeyResultUpdateRequest extends KeyResultCreateRequest {
   @NotBlank private String id;
 
-  public void validatePathVariable(String id, String objectiveId) {
-    super.validatePathVariable(objectiveId);
-    if (!this.id.equals(id)) {
-      log.error("id : {} --> PathVariableException", id);
-      throw new PathVariableException(this.id, id);
+  public void validate(String pathVariableId, String objectiveId) {
+    super.validate(objectiveId);
+    if (!this.id.equals(pathVariableId)) {
+      log.error("id : {} --> PathVariableException", pathVariableId);
+      throw new PathVariableException(this.id, pathVariableId);
     }
   }
 }

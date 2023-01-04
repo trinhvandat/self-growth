@@ -11,4 +11,23 @@
     <groupId>org.ptit.okrs</groupId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
+
+  <dependencies>
+    <dependency>
+      <artifactId>core-audit</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>core-exception</artifactId>
+      <groupId>org.ptit.okrs</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+  </dependencies>
 </project>

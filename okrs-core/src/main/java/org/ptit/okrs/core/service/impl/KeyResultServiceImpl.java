@@ -12,6 +12,7 @@ import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
 import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.ptit.okrs.core_util.ValidationUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -133,10 +134,7 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
       log.error("(update)id : {} --> NOT FOUND EXCEPTION", id);
       throw new NotFoundException(id, KeyResult.class.getSimpleName());
     }
-    if (!keyResult.getUserId().equals(userId)) {
-      log.error("(update)userId : {} --> FORBIDDEN EXCEPTION", userId);
-      throw new ForbiddenException(userId);
-    }
+    ValidationUtils.validateForbiddenUser(userId);
     keyResult.setObjectiveId(objectiveId);
     keyResult.setTitle(title);
     keyResult.setDescription(description);
@@ -164,6 +162,7 @@ public class KeyResultServiceImpl extends BaseServiceImpl<KeyResult> implements 
   @Override
   @Transactional(readOnly = true)
   public void validateExist(String keyResultId) {
+    log.info("(validateExist)keyResultId : {}", keyResultId);
     if (!isExist(keyResultId)) {
       throw new NotFoundException(keyResultId, KeyResult.class.getSimpleName());
     }

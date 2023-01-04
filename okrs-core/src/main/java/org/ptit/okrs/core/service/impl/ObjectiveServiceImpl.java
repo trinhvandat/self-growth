@@ -15,8 +15,8 @@ import org.ptit.okrs.core.service.CacheObjectiveService;
 import org.ptit.okrs.core.service.KeyResultService;
 import org.ptit.okrs.core.service.ObjectiveService;
 import org.ptit.okrs.core.service.base.impl.BaseServiceImpl;
-import org.ptit.okrs.core_exception.ForbiddenException;
 import org.ptit.okrs.core_exception.NotFoundException;
+import org.ptit.okrs.core_util.ValidationUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,7 +88,7 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
   @Override
   @Transactional(readOnly = true)
   public List<ObjectiveResponse> list(String userId) {
-    log.debug("(list)userId : {}", userId);
+    log.info("(list)userId : {}", userId);
     return repository.findByUserId(userId).stream()
         .map(ObjectiveResponse::from)
         .collect(Collectors.toList());
@@ -107,16 +107,12 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
       String userId) {
     log.info("(update)id : {}, title : {}, userId : {}", id, title, userId);
 
-    if (!isExist(id)) {
+    var objective = find(id);
+    if (Objects.isNull(objective)) {
       log.error("(update)id : {} --> NOT FOUND EXCEPTION", id);
       throw new NotFoundException(id, Objective.class.getSimpleName());
     }
-
-    var objective = find(id);
-    if (!objective.getUserId().equals(userId)) {
-      log.error("(update)userId : {} --> FORBIDDEN EXCEPTION", userId);
-      throw new ForbiddenException(userId);
-    }
+    ValidationUtils.validateForbiddenUser(userId);
     objective.setTitle(title);
     objective.setDescription(description);
     objective.setStartDate(startDate);
@@ -141,12 +137,12 @@ public class ObjectiveServiceImpl extends BaseServiceImpl<Objective> implements 
         keyResultStartDate,
         keyResultEndDate);
 
-    if (!isExist(id)) {
+
+    var objective = find(id);
+    if (Objects.isNull(objective)) {
       log.error("(validateKeyResultPeriodTime)objectiveId : {} --> NOT FOUND EXCEPTION", id);
       throw new NotFoundException(id, Objective.class.getSimpleName());
     }
-
-    var objective = find(id);
     var objectiveStartDate = objective.getStartDate();
     var objectiveEndDate = objective.getEndDate();
 

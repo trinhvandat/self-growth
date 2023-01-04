@@ -90,8 +90,7 @@ public class ObjectiveController {
   public OkrsResponse update(
       @PathVariable("id") String id, @Validated @RequestBody ObjectiveUpdateRequest request) {
     log.info("(update)id : {}, request : {}", id, request);
-    request.validate();
-    request.validatePathVariable(id);
+    request.validate(id);
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         service.update(
@@ -113,8 +112,7 @@ public class ObjectiveController {
       @PathVariable("objective_id") String objectiveId,
       @Validated @RequestBody KeyResultCreateRequest request) {
     log.info("(createKeyResult)objectiveId : {}, request : {}", objectiveId, request);
-    request.validatePathVariable(objectiveId);
-    request.validate();
+    request.validate(objectiveId);
     service.validateExist(request.getObjectiveId());
     service.validateKeyResultPeriodTime(
         request.getObjectiveId(), request.getStartDate(), request.getEndDate());
@@ -155,11 +153,10 @@ public class ObjectiveController {
   ) {
     log.info("(update)objectiveId : {}, keyResultId : {}, request : {}",
         objectiveId, keyResultId, request);
-    request.validatePathVariable(keyResultId, objectiveId);
+    request.validate(keyResultId, objectiveId);
     service.validateExist(request.getObjectiveId());
     service.validateKeyResultPeriodTime(
         request.getObjectiveId(), request.getStartDate(), request.getEndDate());
-    request.validate();
     return OkrsResponse.of(
         HttpStatus.OK.value(),
         keyResultService.update(
@@ -185,8 +182,8 @@ public class ObjectiveController {
     log.info(
         "(updateProgress)objectiveId : {}, keyResultId : {}, request : {}",
         objectiveId, keyResultId, request);
+    request.validate(keyResultId);
     service.validateExist(objectiveId);
-    request.validatePathVariable(keyResultId);
     keyResultService.updateProgress(keyResultId, getUserId(), request.getProgress());
     return OkrsResponse.of(HttpStatus.OK.value());
   }
