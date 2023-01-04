@@ -1,16 +1,16 @@
 package org.ptit.okrs.core_exception;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class BaseException extends RuntimeException {
 
-  @Serial
   private static final long serialVersionUID = 128763123L;
 
   private int status = 0;

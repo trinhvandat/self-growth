@@ -45,17 +45,20 @@ public class ObjectiveCreateRequest {
 
   private boolean checkTimePeriod() {
     switch (timePeriodType) {
-      case A_MONTH, THREE_MONTH, SIX_MONTH -> {
+      case A_MONTH:
+      case THREE_MONTH:
+      case SIX_MONTH: {
         return ChronoUnit.MONTHS.between(
                 DateUtils.getLocalDate(startDate), DateUtils.getLocalDate(endDate))
             != timePeriodType.getValue();
       }
-      case A_YEAR, THREE_YEAR -> {
+      case A_YEAR:
+      case THREE_YEAR: {
         return ChronoUnit.YEARS.between(
                 DateUtils.getLocalDate(startDate), DateUtils.getLocalDate(endDate))
             != timePeriodType.getValue();
       }
-      default -> {
+      default: {
         return false;
       }
     }
